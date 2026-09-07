@@ -1,0 +1,6 @@
+datasets==5.0.1
+fsspec==2026.6.0
+numpy==2.4.6
+pandas==3.0.5
+pyarrow==25.0.1
+requests==2.34.2

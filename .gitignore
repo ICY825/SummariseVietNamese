@@ -1,0 +1,21 @@
+# Moi truong
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Du lieu: khong commit noi dung, chi giu cau truc thu muc
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Cache va checkpoint
+.cache/
+checkpoints/
+*.ckpt
+wandb/
+
+# He dieu hanh / IDE
+.DS_Store
+.ipynb_checkpoints/
