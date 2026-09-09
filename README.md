@@ -34,19 +34,32 @@ bài **ngẫu nhiên với `seed=13`** — bộ này xếp theo nguồn/chuyên 
 | Độ dài bài — âm tiết thật | tb 495, p90 871, **p95 1.001** | Kích thước đầu vào ViT5/BARTpho |
 | Tỷ lệ nén (sapo / bài) | 0,085 | Sapo dài tb 25 token / 35 âm tiết |
 
-Con số quyết định `max_input_length` là **âm tiết**, không phải token: ViT5 và
-BARTpho-syllable đọc văn bản thô đã khử gạch dưới. Tỷ lệ bài bị cắt theo từng ngưỡng
-(cùng mẫu 4.000 bài):
+Con số quyết định `max_input_length` phải đo bằng **chính tokenizer của mô hình**, và
+trên văn bản thô đã khử gạch dưới — đó là thứ ViT5 và BARTpho-syllable thực sự đọc.
+Đo bằng `src/models/measure_tokens.py` trên 2.000 bài của `train_20k` (`seed=13`):
 
 | Ngưỡng | 512 | 768 | 1.024 | 1.536 |
 |---|---|---|---|---|
-| Bài bị cắt | 37,5% | 15,3% | 4,5% | 0,2% |
+| Bài bị cắt — **token ViT5** | **49,3%** | **24,6%** | **10,2%** | 0,4% |
+| Bài bị cắt — **token BARTpho** | 50,6% | 24,9% | 11,2% | 0,5% |
+| Bài bị cắt — âm tiết (cận dưới) | 37,5% | 16,5% | 4,2% | 0,1% |
 
-Đây là **cận dưới**: một âm tiết tiếng Việt thường tách thành nhiều subword của
-SentencePiece, nên số token thật của ViT5 còn cao hơn và tỷ lệ cắt thực tế còn lớn
-hơn các con số trên. Phải đo lại bằng chính tokenizer của mô hình ở tuần 2. Chênh
-lệch giữa ngưỡng 512 và 1.024 chính là mức mất mát mà câu hỏi nghiên cứu số 2 và
-pipeline lai ở tầng 4 phải xử lý.
+Ước lượng theo âm tiết đúng là **cận dưới** như đã dự đoán: hệ số nở token/âm tiết đo
+được là **1,18** với ViT5 và **1,20** với BARTpho, nên ở ngưỡng 1.024 tỷ lệ cắt thật
+gấp gần 2,4 lần con số theo âm tiết. Hai mô hình gần như trùng nhau, nên dùng chung
+một ngưỡng — nhờ vậy so ViT5 với BARTpho là so mô hình chứ không phải so ngân sách
+đầu vào.
+
+**Quyết định: `max_input_length = 1024`, `max_target_length = 80`.**
+
+Không chọn 1.536 dù nó hạ tỷ lệ cắt xuống 0,4%. Dài gấp 1,5 lần thì chi phí attention
+gấp khoảng 2,25 lần, đủ để `train_20k` không chạy xong trong một phiên Colab free. Và
+quan trọng hơn: **việc cắt bài chính là đối tượng nghiên cứu** của câu hỏi số 2, đồng
+thời là lý do tồn tại của tầng 4 — nới cửa sổ cho nó biến mất là xoá luôn câu hỏi.
+Mức 10,2% đủ lớn để đo được tác động, đủ nhỏ để không phá kết quả chung.
+
+`max_target_length = 80` vì sapo có p99 là 74 token (ViT5) và 78 (BARTpho); 80 che
+được 99% và là bội của 8, thuận cho fp16. Bài dài nhất 144 token là ngoại lệ.
 
 **Lưu ý quan trọng:** văn bản trong bộ này **đã được tách từ sẵn** bằng VnCoreNLP
 (`Khởi_tố`, `ma_tuý`) và dấu câu cũng đã tách rời. PhoBERT và phép tính ROUGE dùng
