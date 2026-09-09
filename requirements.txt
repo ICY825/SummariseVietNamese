@@ -4,3 +4,9 @@ numpy==2.4.6
 pandas==3.0.5
 pyarrow==25.0.1
 requests==2.34.2
+
+# Tuan 4 tro di (cai tren Colab, chua co trong .venv o may nay):
+# torch          -- chon ban khop CUDA cua Colab
+# transformers   -- ViT5, BARTpho, PhoBERT
+# bert-score     -- eval/bertscore.py
+# underthesea    -- CHI dung o demo Gradio de tach tu input nguoi dung

@@ -143,6 +143,30 @@ dạng tách từ để đối chiếu với các bài báo trước, kèm ghi c
 Quy trình blind cũng dùng đúng dạng đó: nếu bản tóm tắt extractive còn nguyên gạch
 dưới còn bản của ViT5 thì không, người chấm nhận ra ngay đâu là hệ thống nào.
 
+**Cài đặt.** `src/eval/` tự cài đặt ROUGE thay vì gọi thư viện ngoài, vì bộ tách token
+mặc định của `rouge_score` (Google) chỉ giữ `[a-z0-9]` nên **xoá sạch dấu tiếng Việt**.
+Bản cài đặt ở đây đã được đối chiếu với `rouge_score` (truyền tokenizer tiếng Việt)
+trên 600 cặp thật và **khớp tuyệt đối cả bốn chỉ số**. Mọi hàm công khai chỉ nhận chuỗi
+thô rồi tự gọi `for_scoring()`, không nhận danh sách token tách sẵn — làm đúng là việc
+duy nhất làm được.
+
+Biến thể L chính là `rougeL` (LCS toàn chuỗi), **không phải** `rougeLsum`: `rougeLsum`
+buộc phải cắt câu trên văn bản thô, mà ở đó "TP." trông y hệt dấu chấm kết câu, và sai
+số ấy lệch một chiều vì chỉ đầu ra abstractive mới cần cắt câu ở dạng thô. `rougeLsum`
+vẫn được tính kèm (có bộ chặn viết tắt) để đối chiếu với các bài báo khác.
+
+**Mọi kết quả phải kèm khoảng tin cậy.** Độ lệch chuẩn ROUGE-1 giữa các bài là 9,8 —
+lớn hơn khoảng cách giữa các hệ thống. `eval.report.compare()` dùng bootstrap cặp đôi:
+lấy lại mẫu chỉ số bài rồi áp **cùng bộ chỉ số** cho cả hai hệ thống, vì hai hệ thống
+chấm trên cùng một bài có điểm tương quan mạnh và giữ ghép cặp sẽ khử phần lớn phương
+sai do độ khó của bài.
+
+Chạy tự kiểm tra sau mỗi lần sửa module đánh giá:
+
+```bash
+.venv/Scripts/python.exe src/eval/selftest.py
+```
+
 ## Cấu trúc
 
 ```
@@ -153,7 +177,8 @@ notebooks/         notebook trình bày
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra)
 src/models/        các tầng mô hình
-src/eval/          ROUGE tiếng Việt, BERTScore, bootstrap
+src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
+                   report.py (khung chấm điểm), bertscore.py, selftest.py
 app/               demo Gradio
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
@@ -189,7 +214,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 
 - [x] Tuần 1 — Dựng khung dự án, xác minh dữ liệu
 - [x] Tuần 2 — Cố định split, ba phép biến đổi văn bản dùng chung, chốt dạng chấm điểm
-- [ ] Tuần 3 — Baseline tầng 0–1 và khung đánh giá
+- [x] Tuần 3a — Khung đánh giá: ROUGE, bootstrap, bảng kết quả
+- [ ] Tuần 3b — Baseline tầng 0–1
 - [ ] Tuần 4 — Fine-tune ViT5 lần đầu
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
 - [ ] Tuần 6 — Tầng 2 và tầng 4
