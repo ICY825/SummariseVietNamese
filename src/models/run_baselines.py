@@ -103,6 +103,7 @@ def main():
         print(f"  CHẠY THỬ trên {len(rows)} bài đầu — số liệu KHÔNG dùng để báo cáo.")
     refs = [r["abstract"] for r in rows]
     arts = [r["article"] for r in rows]
+    guids = [str(r["guid"]) for r in rows]
     print(f"  {len(rows)} bài.\n")
 
     results, preds = [], {}
@@ -113,7 +114,7 @@ def main():
         gen = time.time() - t0
 
         t0 = time.time()
-        r = evaluate(name, p, refs, arts, n_boot=args.n_boot)
+        r = evaluate(name, p, refs, arts, guids=guids, n_boot=args.n_boot)
         r["seconds"] = {"generate": gen, "evaluate": time.time() - t0}
         results.append(r)
         preds[name] = p

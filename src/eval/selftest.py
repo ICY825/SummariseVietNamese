@@ -3,10 +3,11 @@
     .venv/Scripts/python.exe src/eval/selftest.py
 
 Các giá trị kỳ vọng ở đây tính được bằng tay trên giấy, nên file này không phụ thuộc
-thư viện ngoài nào. Bốn chỉ số đã được đối chiếu khớp tuyệt đối với `rouge_score` của
-Google trên 600 cặp thật (tokenizer tuỳ biến, vì bộ tách token mặc định của họ xoá sạch
-dấu tiếng Việt); phép đối chiếu đó không nằm trong đây vì `rouge-score` không phải phụ
-thuộc của dự án.
+thư viện ngoài nào ngoài numpy. Bốn chỉ số đã được đối chiếu khớp tuyệt đối (lệch 0,0)
+với `rouge_score` của Google trên 1.200 cặp thật của 6 hệ thống baseline — tokenizer
+tuỳ biến, vì bộ tách token mặc định của họ xoá sạch dấu tiếng Việt. Phép đối chiếu đó
+không nằm trong đây vì `rouge-score` không phải phụ thuộc của dự án; cách tái lập ghi
+ở phần "Đánh giá" của README.
 """
 
 import sys
@@ -17,6 +18,7 @@ if hasattr(sys.stdout, "reconfigure"):
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from eval.report import compare, evaluate  # noqa: E402
 from eval.rouge import score, sentences_raw  # noqa: E402
 from eval.stats import bootstrap_ci, paired_bootstrap  # noqa: E402
 
@@ -80,6 +82,36 @@ try:
     check_true("lệch số bài thì phải báo lỗi", False)
 except ValueError:
     check_true("lệch số bài thì phải báo lỗi", True)
+
+print("\n5. Chốt chặn ghép cặp: hai hệ thống phải chấm trên CÙNG tập bài")
+# `paired_bootstrap()` chi kiem duoc SO LUONG bai. Cung co bai khong he co nghia la
+# cung tap bai: truoc khi co chot chan nay, hai he thong cham tren hai tap roi nhau
+# van cho ra "+100,00 [+100,00, +100,00] p=0,0000 CO y nghia" ma khong bao gi.
+P, R = ["a b", "c d"], ["a b", "c d"]
+r_same = evaluate("A", P, R, guids=["g1", "g2"], n_boot=200)
+r_alt = evaluate("B", ["a b", "c e"], R, guids=["g1", "g2"], n_boot=200)
+r_khac = evaluate("C", ["x y", "z w"], ["q r", "s t"], guids=["g9", "g8"], n_boot=200)
+r_thieu = evaluate("D", P, R, n_boot=200)
+
+check_true("evaluate(guids=...) lưu lại guid", r_same["guid"] == ["g1", "g2"])
+try:
+    compare(r_same, r_alt, n_boot=200)
+    check_true("cùng tập bài -> ghép cặp chạy bình thường", True)
+except ValueError:
+    check_true("cùng tập bài -> ghép cặp chạy bình thường", False)
+for ten, x, y in (("KHÁC tập bài -> phải báo lỗi", r_same, r_khac),
+                  ("thiếu guid ở vế phải -> phải báo lỗi", r_same, r_thieu),
+                  ("thiếu guid ở vế trái -> phải báo lỗi", r_thieu, r_same)):
+    try:
+        compare(x, y, n_boot=200)
+        check_true(ten, False)
+    except ValueError:
+        check_true(ten, True)
+try:
+    evaluate("E", P, R, guids=["g1"], n_boot=200)
+    check_true("lệch số guid với số dự đoán -> phải báo lỗi", False)
+except ValueError:
+    check_true("lệch số guid với số dự đoán -> phải báo lỗi", True)
 
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

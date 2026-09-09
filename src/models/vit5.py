@@ -285,7 +285,8 @@ def main():
     name = f"{args.model.split('/')[-1]}-{args.train_split}"
     refs = [r["abstract_raw"] for r in eval_rows]
     arts = [r["article_raw"] for r in eval_rows]
-    result = evaluate(name, preds, refs, arts)
+    guids = [str(r["guid"]) for r in eval_rows]
+    result = evaluate(name, preds, refs, arts, guids=guids)
 
     tag = f"{name}_{args.eval_split}" + (f"_thu{args.eval_limit}" if args.eval_limit else "")
     print("\n" + table([result]))
@@ -293,8 +294,16 @@ def main():
     base_path = RESULTS / "tables" / f"baselines_{args.eval_split}.json"
     if base_path.exists() and not args.eval_limit:
         base = [r for r in json.loads(base_path.read_text(encoding="utf-8")) if r["name"] == "Lead-3"]
-        if base and base[0]["n"] == result["n"]:
-            print("\n" + compare(result, base[0], "rouge1"))
+        if base:
+            # Bang Lead-3 nay do MOT LAN CHAY KHAC ghi ra, co the la truoc khi
+            # `data/splits/` duoc sinh lai. `compare()` doi chieu guid nen se bao
+            # loi neu hai ben khac tap bai — do la tin tuc that su can biet chu
+            # khong phai phien toai. Bat lai vi khoi so sanh nay chay TRUOC buoc
+            # ghi file: de no nem loi la mat trang mot phien Colab 60 phut.
+            try:
+                print("\n" + compare(result, base[0], "rouge1"))
+            except ValueError as e:
+                print(f"\nBỎ QUA so sánh với Lead-3 — {e}")
 
     table_path = save([result], f"{tag}.json")
     pred_dir = RESULTS / "predictions"

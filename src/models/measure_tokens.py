@@ -6,8 +6,8 @@
 
 Vì sao phải chạy script này trước khi viết bất cứ dòng code huấn luyện nào:
 
-README hiện ghi tỷ lệ bài bị cắt theo **âm tiết** — 512 cắt 37,5%, 768 cắt 15,3%,
-1.024 cắt 4,5%. Đó là **cận dưới**, vì SentencePiece băm một âm tiết tiếng Việt thành
+README ghi tỷ lệ bài bị cắt theo **âm tiết** — 512 cắt 37,5%, 768 cắt 16,5%,
+1.024 cắt 4,2%. Đó là **cận dưới**, vì SentencePiece băm một âm tiết tiếng Việt thành
 nhiều subword nên số token thật luôn lớn hơn số âm tiết. Chọn `max_input_length` bằng
 những con số cận dưới ấy là tự lừa mình: tỷ lệ bài bị cắt thực tế sẽ cao hơn, và phần
 bị cắt chính là thứ câu hỏi nghiên cứu số 2 phải đo.

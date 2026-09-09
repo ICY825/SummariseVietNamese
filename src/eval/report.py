@@ -5,8 +5,9 @@ Dùng chung cho cả năm tầng. Mỗi tầng chỉ cần sinh ra một danh s�
 văn bản, tự tính ROUGE hay tự báo cáo trung bình trần không kèm khoảng tin cậy.
 
     from eval.report import evaluate, compare, table
-    r_lead3 = evaluate("Lead-3", preds_lead3, refs, articles)
-    r_vit5  = evaluate("ViT5",   preds_vit5,  refs, articles)
+    guids   = [str(r["guid"]) for r in rows]        # BAT BUOC neu con muon compare()
+    r_lead3 = evaluate("Lead-3", preds_lead3, refs, articles, guids=guids)
+    r_vit5  = evaluate("ViT5",   preds_vit5,  refs, articles, guids=guids)
     print(table([r_lead3, r_vit5]))
     print(compare(r_vit5, r_lead3, "rouge1"))
 """
@@ -39,10 +40,23 @@ def novel_ngram_rate(summary, article, n):
     return 100 * len(S - A) / len(S)
 
 
-def evaluate(name, predictions, references, articles=None, n_boot=10_000, seed=13):
-    """Chấm một hệ thống. Giữ lại điểm TỪNG BÀI vì `compare()` cần chúng."""
+def evaluate(name, predictions, references, articles=None, guids=None,
+             n_boot=10_000, seed=13):
+    """Chấm một hệ thống. Giữ lại điểm TỪNG BÀI vì `compare()` cần chúng.
+
+    `guids` là ID của các bài, theo ĐÚNG thứ tự của `predictions`. Luôn truyền vào:
+    `compare()` dựa vào nó để từ chối ghép cặp hai hệ thống chấm trên hai tập bài
+    khác nhau. Không có nó thì bảng kết quả ghi ra đĩa không còn tự chứng minh được
+    mình chấm trên bài nào, và một lần chấm sai cặp sẽ không để lại dấu vết nào.
+    """
     per_article = score_all(predictions, references)
     out = {"name": name, "n": len(predictions), "per_article": {}, "corpus": {}}
+    if guids is not None:
+        if len(guids) != len(predictions):
+            raise ValueError(
+                f"{name}: {len(guids)} guid nhưng {len(predictions)} dự đoán."
+            )
+        out["guid"] = [str(g) for g in guids]
 
     for m in METRICS:
         vals = [x[m] for x in per_article]
@@ -67,8 +81,41 @@ def evaluate(name, predictions, references, articles=None, n_boot=10_000, seed=1
     return out
 
 
+def same_articles(a, b):
+    """Chặn việc ghép cặp hai hệ thống đã chấm trên HAI TẬP BÀI khác nhau.
+
+    `paired_bootstrap()` chỉ kiểm được số lượng bài, mà cỡ bằng nhau hoàn toàn không
+    có nghĩa là cùng tập bài — thử hai hệ thống chấm trên hai tập rời nhau, nó vẫn
+    vui vẻ trả về `+100,00 [+100,00, +100,00] p=0,0000 CÓ ý nghĩa`.
+
+    Đường đi nguy hiểm có thật: `vit5.py` nạp Lead-3 từ
+    `results/tables/baselines_<split>.json` do một lần chạy KHÁC, ở thời điểm KHÁC
+    ghi ra. Nếu `data/splits/` bị sinh lại giữa hai lần chạy thì hai bên vẫn cùng
+    cỡ 1.000 bài nhưng khác bài, và bootstrap ghép cặp sẽ cho ra một khoảng tin cậy
+    sai mà không báo gì. Sai kiểu đó không lộ ra ở bất cứ đâu trong bảng kết quả,
+    nên phải chặn ngay tại chỗ ghép cặp.
+    """
+    ga, gb = a.get("guid"), b.get("guid")
+    if ga is None or gb is None:
+        thieu = ", ".join(r["name"] for r, g in ((a, ga), (b, gb)) if g is None)
+        raise ValueError(
+            f"Thiếu danh sách guid ở: {thieu}. Không kiểm chứng được hai hệ thống có "
+            "chấm trên cùng tập bài hay không, mà cỡ bằng nhau thì không bảo đảm điều "
+            "đó. Chấm lại bằng `evaluate(..., guids=...)` để sinh lại bảng."
+        )
+    if ga != gb:
+        lech = sum(1 for x, y in zip(ga, gb) if x != y) + abs(len(ga) - len(gb))
+        raise ValueError(
+            f"{a['name']} và {b['name']} chấm trên HAI TẬP BÀI khác nhau "
+            f"({lech} vị trí lệch guid) — không được ghép cặp. Thường là do "
+            "`data/splits/` đã bị sinh lại sau khi bảng cũ được ghi; phải chấm lại "
+            "cả hai hệ thống trên cùng tập bài đã đóng băng."
+        )
+
+
 def compare(a, b, metric="rouge1", n_boot=10_000, seed=13):
     """So sánh cặp đôi hai kết quả của `evaluate()` trên cùng tập bài."""
+    same_articles(a, b)
     r = paired_bootstrap(
         a["per_article"][metric], b["per_article"][metric], n_boot=n_boot, seed=seed
     )

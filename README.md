@@ -159,9 +159,13 @@ dưới còn bản của ViT5 thì không, người chấm nhận ra ngay đâu 
 **Cài đặt.** `src/eval/` tự cài đặt ROUGE thay vì gọi thư viện ngoài, vì bộ tách token
 mặc định của `rouge_score` (Google) chỉ giữ `[a-z0-9]` nên **xoá sạch dấu tiếng Việt**.
 Bản cài đặt ở đây đã được đối chiếu với `rouge_score` (truyền tokenizer tiếng Việt)
-trên 600 cặp thật và **khớp tuyệt đối cả bốn chỉ số**. Mọi hàm công khai chỉ nhận chuỗi
-thô rồi tự gọi `for_scoring()`, không nhận danh sách token tách sẵn — làm đúng là việc
-duy nhất làm được.
+trên **1.200 cặp thật** của cả sáu hệ thống baseline và **khớp tuyệt đối cả bốn chỉ
+số** (lệch lớn nhất 0,0). Tái lập: cài `rouge-score` vào một thư mục riêng
+(`pip install --target=... rouge_score`, đừng cài vào `.venv` của dự án), truyền
+tokenizer `syllables()`, và với `rougeLsum` phải tự cắt câu bằng `sentences_raw()` rồi
+nối lại bằng ký tự xuống dòng, vì `rouge_score` cắt câu theo xuống dòng. Mọi hàm
+công khai chỉ nhận chuỗi thô rồi tự gọi `for_scoring()`, không nhận danh sách token
+tách sẵn — làm đúng là việc duy nhất làm được.
 
 Biến thể L chính là `rougeL` (LCS toàn chuỗi), **không phải** `rougeLsum`: `rougeLsum`
 buộc phải cắt câu trên văn bản thô, mà ở đó "TP." trông y hệt dấu chấm kết câu, và sai
@@ -173,6 +177,16 @@ lớn hơn khoảng cách giữa các hệ thống. `eval.report.compare()` dùn
 lấy lại mẫu chỉ số bài rồi áp **cùng bộ chỉ số** cho cả hai hệ thống, vì hai hệ thống
 chấm trên cùng một bài có điểm tương quan mạnh và giữ ghép cặp sẽ khử phần lớn phương
 sai do độ khó của bài.
+
+**Ghép cặp chỉ hợp lệ khi hai hệ thống chấm trên đúng cùng những bài đó**, mà cỡ mẫu
+bằng nhau thì không hề bảo đảm điều ấy. Nên `evaluate()` lưu luôn danh sách `guid` vào
+bảng kết quả và `compare()` đối chiếu hai danh sách trước khi bootstrap, sai thì báo
+lỗi chứ không chạy tiếp. Chốt chặn này không thừa: `vit5.py` nạp mốc Lead-3 từ
+`results/tables/baselines_<split>.json` do **một lần chạy khác, ở thời điểm khác** ghi
+ra; nếu `data/splits/` bị sinh lại giữa hai lần chạy thì hai bên vẫn cùng 1.000 bài
+nhưng khác bài, và khoảng tin cậy sinh ra sẽ sai mà không để lại dấu vết nào trong bảng.
+Bảng của tuần 3b đã được bổ sung `guid` lấy từ file dự đoán của chính lần chạy đó, và
+đối chiếu lại bằng cách chấm lại vài bài theo `guid` để chắc chắn chúng trỏ đúng dòng.
 
 Chạy tự kiểm tra sau mỗi lần sửa module đánh giá:
 
