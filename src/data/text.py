@@ -1,4 +1,4 @@
-"""Ba phép biến đổi văn bản dùng chung cho TOÀN BỘ dự án.
+r"""Ba phép biến đổi văn bản dùng chung cho TOÀN BỘ dự án.
 
 Bộ VietNews lưu văn bản đã tách từ sẵn bằng VnCoreNLP: các âm tiết của một từ ghép
 nối bằng dấu gạch dưới (`Khởi_tố`) và dấu câu đứng rời thành token riêng (`hoa ,`).

@@ -1,4 +1,4 @@
-"""Bước 1 của kế hoạch: xác minh bộ dữ liệu VietNews (VNDS) dùng được.
+r"""Bước 1 của kế hoạch: xác minh bộ dữ liệu VietNews (VNDS) dùng được.
 
 Script trả lời đúng 5 câu hỏi, mỗi câu là một cái bẫy đã nêu trong kế hoạch:
   1. Schema và kích thước các split có đúng như mô tả không?

@@ -48,6 +48,43 @@ THRESHOLDS = (512, 768, 1024, 1536)
 COVERAGE = 90.0
 
 
+def load_tokenizer(name):
+    """Nạp tokenizer, có đường lui khi bản `transformers` và `tokenizers` lệch nhau.
+
+    Colab đôi khi có sẵn một bộ `transformers` rất mới, ở đó lớp tokenizer của T5 dựng
+    bộ máy Unigram từ `spiece.model` bằng thư viện `tokenizers`. Nếu hai gói lệch phiên
+    bản, bước dựng đó chết với `TypeError: argument 'vocab': 'dict' object is not an
+    instance of 'Sequence'` — lỗi nằm ở môi trường, không phải ở mô hình hay ở dữ liệu.
+
+    Đường lui: hầu hết checkpoint trên Hub (ViT5 có) kèm sẵn `tokenizer.json`, tức bộ
+    tokenizer đã dựng xong. Nạp thẳng file đó bằng `PreTrainedTokenizerFast` thì bỏ qua
+    hoàn toàn bước chuyển đổi từ SentencePiece đang hỏng.
+
+    Nếu cả hai đường đều tắc thì báo lỗi kèm số phiên bản, vì thứ cần biết để sửa là
+    hai con số đó chứ không phải vết ngăn xếp.
+    """
+    import transformers
+    from transformers import AutoTokenizer, PreTrainedTokenizerFast
+
+    try:
+        return AutoTokenizer.from_pretrained(name, use_fast=True)
+    except Exception as e:
+        print(f"  AutoTokenizer hỏng ({type(e).__name__}), thử nạp thẳng tokenizer.json ...")
+        try:
+            return PreTrainedTokenizerFast.from_pretrained(name)
+        except Exception:
+            import tokenizers
+
+            raise RuntimeError(
+                f"Không nạp được tokenizer của {name}.\n"
+                f"  transformers = {transformers.__version__}\n"
+                f"  tokenizers   = {tokenizers.__version__}\n"
+                "Gần như chắc chắn là hai gói lệch phiên bản. Cách sửa trên Colab:\n"
+                '  !pip install -q "transformers<5"\n'
+                "rồi Runtime > Restart session và chạy lại từ ô clone."
+            ) from e
+
+
 def stats(lengths):
     a = np.asarray(lengths, dtype=float)
     return {
@@ -82,10 +119,8 @@ def main():
     )
     args = ap.parse_args()
 
-    from transformers import AutoTokenizer
-
     print(f"Nạp tokenizer {args.model} ...")
-    tok = AutoTokenizer.from_pretrained(args.model, use_fast=True)
+    tok = load_tokenizer(args.model)
     # Tat canh bao "sequence longer than model_max_length": o day CO Y do do dai
     # that, chua cat gi ca, nen canh bao do la nhieu.
     tok.model_max_length = int(1e9)
