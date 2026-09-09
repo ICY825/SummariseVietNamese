@@ -167,6 +167,55 @@ Chạy tự kiểm tra sau mỗi lần sửa module đánh giá:
 .venv/Scripts/python.exe src/eval/selftest.py
 ```
 
+## Kết quả baseline (tầng 0–1)
+
+Chấm trên `test` (2.000 bài), 3 câu mỗi bản tóm tắt, bootstrap 10.000 lần, `seed=13`.
+Số trong ngoặc là **nửa khoảng tin cậy 95%**. Tái lập bằng
+`src/models/run_baselines.py`.
+
+| Hệ thống | rouge1 | rouge2 | rougeL | rougeLsum | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|---|
+| Random-3 | 23,44 ±0,42 | 10,65 ±0,38 | 15,76 ±0,35 | 18,95 ±0,39 | 91 | 2,0% |
+| Lead-1 | 27,03 ±0,65 | 14,77 ±0,58 | 20,73 ±0,58 | 21,14 ±0,58 | 36 | 0,0% |
+| Lead-3 | 27,22 ±0,44 | 14,73 ±0,43 | 19,17 ±0,41 | 22,32 ±0,43 | 102 | 0,0% |
+| TextRank | 23,12 ±0,38 | 11,81 ±0,37 | 16,40 ±0,34 | 18,74 ±0,36 | 132 | 1,4% |
+| LexRank | 24,80 ±0,40 | 12,52 ±0,38 | 17,29 ±0,35 | 20,07 ±0,38 | 112 | 1,7% |
+| Oracle-3 | 48,14 ±0,63 | 31,89 ±0,76 | 36,21 ±0,76 | 40,19 ±0,71 | 50 | 1,1% |
+
+**Lead-1 ngang Lead-3.** Chênh lệch ROUGE-1 chỉ −0,19 [−0,76, +0,37], p = 0,50 — không
+đủ bằng chứng để nói cái nào hơn. Nguyên nhân là độ dài: sapo dài trung bình 35 âm tiết
+còn Lead-1 dài 36, khớp gần như hoàn hảo; Lead-3 dài 102 âm tiết nên được recall cao
+hơn nhưng mất đúng chừng ấy precision, và F1 triệt tiêu hai chiều. Hệ quả cho tuần 4:
+mốc phải vượt là 27,2 chứ không phải một con số dễ hơn, và độ dài sinh ra của ViT5 phải
+được kiểm soát chứ không thả nổi.
+
+**Hai phương pháp đồ thị đều THUA lead.** TextRank −4,10 [−4,51, −3,69] và LexRank
+−2,42 [−2,85, −2,00] so với Lead-3, cả hai p < 0,0001. Đây không phải lỗi cài đặt mà là
+đặc trưng của thể loại: tin tức viết theo tháp ngược nên thông tin quan trọng nhất nằm
+ngay câu đầu, trong khi xếp hạng theo độ trung tâm lại chuộng câu dài nhiều từ chung —
+TextRank ra 132 âm tiết, gần gấp bốn lần sapo. Trung tâm của đồ thị tương đồng không
+phải là "đáng tóm tắt".
+
+**Trần của extractive là 48,1.** Oracle-3 hơn Lead-3 +20,91 [+20,29, +21,53]. Con số
+này chia đôi câu chuyện của cả đề tài: khoảng 21 điểm còn nằm trong tầm với chỉ nhờ
+**chọn câu khéo hơn** — đó chính là việc của tầng 2; còn phần từ 48 lên 100 thì
+extractive không bao giờ với tới, vì 59,5% bigram của sapo vốn không có trong bài. Chỉ
+tầng 3 mới lấy được phần đó, và đó là lý do tồn tại của nó.
+
+**Cỡ mẫu đúng như thiết kế.** Nửa khoảng tin cậy quan sát được nằm trong khoảng ±0,38
+đến ±0,65, khớp với ước lượng ±0,55 lúc chốt n = 2.000 ở phần trên.
+
+**Kiểm tra tính nhất quán.** Tỷ lệ 1-gram mới bằng 0,0% ở cả sáu hệ thống, đúng như
+định nghĩa extractive. Tỷ lệ 2-gram mới khác 0 chỉ ở những hệ thống ghép các câu **không
+liền nhau** (Random-3 2,0%, LexRank 1,7%, TextRank 1,4%): bigram "mới" đó sinh ra ngay
+tại chỗ nối hai câu rời. Lead-1 và Lead-3 ghép câu liền nhau nên đúng 0,0%. Không có
+bản tóm tắt rỗng nào.
+
+**Còn thiếu ở tầng 1:** LexRank bản nhúng PhoBERT cần `torch` và `transformers`, chưa
+có trong `.venv` trên máy này (xem `requirements.txt`) nên dời sang tuần 4, chạy cùng
+lúc dựng môi trường GPU. Phần xếp hạng đã viết chung ở `pagerank()` nên chỉ cần thay
+cách dựng ma trận tương đồng.
+
 ## Cấu trúc
 
 ```
@@ -176,7 +225,8 @@ data/splits/       file ID cố định của train/val/test
 notebooks/         notebook trình bày
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra)
-src/models/        các tầng mô hình
+src/models/        extractive.py (tầng 0-1), run_baselines.py (chạy + chấm),
+                   selftest.py (tự kiểm tra)
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py
 app/               demo Gradio
@@ -197,6 +247,15 @@ python -m venv .venv
 ```bash
 .venv/Scripts/python.exe src/data/inspect_vietnews.py   # kiểm tra dữ liệu
 .venv/Scripts/python.exe src/data/make_splits.py        # đóng băng tập con (chạy MỘT lần)
+.venv/Scripts/python.exe src/models/run_baselines.py    # baseline tầng 0-1 trên test
+```
+
+Tự kiểm tra, chạy lại sau mỗi lần sửa module tương ứng — cả hai đều không cần mạng và
+xong trong vài giây:
+
+```bash
+.venv/Scripts/python.exe src/eval/selftest.py     # ROUGE, bootstrap
+.venv/Scripts/python.exe src/models/selftest.py   # tầng 0-1
 ```
 
 Từ tuần 3 trở đi, mọi tầng nạp dữ liệu như sau:
@@ -215,7 +274,7 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 1 — Dựng khung dự án, xác minh dữ liệu
 - [x] Tuần 2 — Cố định split, ba phép biến đổi văn bản dùng chung, chốt dạng chấm điểm
 - [x] Tuần 3a — Khung đánh giá: ROUGE, bootstrap, bảng kết quả
-- [ ] Tuần 3b — Baseline tầng 0–1
+- [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT dời sang tuần 4, cần torch)
 - [ ] Tuần 4 — Fine-tune ViT5 lần đầu
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
 - [ ] Tuần 6 — Tầng 2 và tầng 4
