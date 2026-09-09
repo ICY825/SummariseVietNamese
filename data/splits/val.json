@@ -4,7 +4,7 @@
  "split": "validation",
  "seed": 13,
  "size": 1000,
- "created": "2026-09-10",
+ "created": "2026-09-09",
  "note": "Theo dõi loss/ROUGE qua từng epoch.",
  "guid": [
   2,
