@@ -240,6 +240,45 @@ có trong `.venv` trên máy này (xem `requirements.txt`) nên dời sang tuầ
 lúc dựng môi trường GPU. Phần xếp hạng đã viết chung ở `pagerank()` nên chỉ cần thay
 cách dựng ma trận tương đồng.
 
+## Kết quả tầng 3 — fine-tune ViT5 lần đầu
+
+`VietAI/vit5-base` fine-tune trên `train_5k`, 3 epoch, `lr=3e-5`, batch hiệu dụng 16,
+fp16, đầu vào 1.024 / đầu ra 80, `seed=13`. Chấm trên **`val`** (1.000 bài) vì `test`
+để dành cho lần chấm cuối. Colab free T4, 63 phút.
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|
+| Lead-3 (mốc) | 27,45 ±0,60 | 14,68 ±0,58 | 19,20 ±0,55 | 102 | 0,0% |
+| **ViT5-base, train_5k** | **31,62 ±0,93** | **17,63 ±0,81** | **25,05 ±0,85** | 30 | 10,7% |
+| Oracle-3 (trần extractive) | 48,09 ±0,90 | 31,60 ±1,07 | 35,90 ±1,05 | 50 | 1,0% |
+
+**Câu hỏi nghiên cứu số 1 có câu trả lời sơ bộ: CÓ.** ViT5 hơn Lead-3 **+4,17
+[+3,29, +5,04] điểm ROUGE-1, p < 0,0001** (bootstrap ghép cặp). Khoảng cách này lớn
+hơn hẳn nửa khoảng tin cậy nên không phải nhiễu. Đáng chú ý là nó thắng trong khi
+bản tóm tắt **ngắn hơn ba lần** Lead-3 (30 so với 102 âm tiết) — tức thắng bằng chọn
+đúng chữ chứ không phải bằng rải chữ cho trúng.
+
+**Fine-tune bão hoà rất sớm.** `eval_loss` qua ba epoch: 1,802 → 1,790 → **1,796**.
+Epoch 3 còn nhỉnh hơn epoch 2 một chút, tức mô hình đã hết học từ sau epoch 1. Đây là
+bằng chứng thực nghiệm cho quyết định giới hạn train ở 20.000 bài: thêm dữ liệu và
+thêm epoch cho ViT5 đã pretrain hầu như không đổi được gì, và phần GPU tiết kiệm được
+nên đổ vào đường cong học với khảo sát tham số sinh.
+
+**Vẫn còn xa trần extractive.** ViT5 đạt 31,62 trong khi Oracle-3 đạt 48,09 — nghĩa là
+một bộ chọn câu hoàn hảo vẫn vượt xa mô hình sinh. Đây là lý do tầng 2 (PhoBERT chọn
+câu có giám sát) và tầng 4 (lai) đáng làm: khoảng 16 điểm nằm giữa hai con số ấy là
+phần mà việc chọn câu tốt hơn có thể lấy được.
+
+**Mô hình chép nhiều hơn người rất nhiều.** Tỷ lệ 2-gram mới của ViT5 là 10,7%, trong
+khi sapo do người viết là **59,5%**. Nó có viết lại thật (baseline extractive chỉ
+0-2%) nhưng còn cách xa mức trừu tượng của con người. Quan sát này là nguyên liệu
+trực tiếp cho câu hỏi nghiên cứu số 3: ROUGE đang trao điểm cao nhất cho một hệ thống
+chép nhiều hơn hẳn tham chiếu, nên điểm ROUGE và cảm nhận người đọc có thể lệch nhau.
+
+**Độ dài 30 âm tiết so với sapo thật 35** — hơi ngắn, có thể đang mất recall. Đây là
+việc của khảo sát tham số sinh ở tuần 5 (`length_penalty`, `min_length`), làm trên
+tập `tune`.
+
 ## Cấu trúc
 
 ```
@@ -249,8 +288,9 @@ data/splits/       file ID cố định của train/val/test
 notebooks/         notebook trình bày
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra)
-src/models/        extractive.py (tầng 0-1), run_baselines.py (chạy + chấm),
-                   selftest.py (tự kiểm tra)
+src/models/        extractive.py (tầng 0-1), vit5.py (tầng 3, cần GPU),
+                   run_baselines.py (chạy + chấm), measure_tokens.py (đo
+                   độ dài cắt), selftest.py (tự kiểm tra)
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py
 app/               demo Gradio
@@ -272,6 +312,7 @@ python -m venv .venv
 .venv/Scripts/python.exe src/data/inspect_vietnews.py   # kiểm tra dữ liệu
 .venv/Scripts/python.exe src/data/make_splits.py        # đóng băng tập con (chạy MỘT lần)
 .venv/Scripts/python.exe src/models/run_baselines.py    # baseline tầng 0-1 trên test
+.venv/Scripts/python.exe src/models/measure_tokens.py   # đo độ dài cắt (cần transformers)
 ```
 
 Tự kiểm tra, chạy lại sau mỗi lần sửa module tương ứng — cả hai đều không cần mạng và
@@ -299,7 +340,7 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 2 — Cố định split, ba phép biến đổi văn bản dùng chung, chốt dạng chấm điểm
 - [x] Tuần 3a — Khung đánh giá: ROUGE, bootstrap, bảng kết quả
 - [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT dời sang tuần 4, cần torch)
-- [ ] Tuần 4 — Fine-tune ViT5 lần đầu
+- [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio

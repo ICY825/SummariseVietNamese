@@ -239,12 +239,20 @@ def main():
             gradient_checkpointing=True,   # doi toc do lay VRAM, can o 1.024 token
             fp16=use_fp16,
             logging_steps=args.logging_steps,
-            save_total_limit=1,
+            save_total_limit=2,   # can giu >1 de con checkpoint tot nhat
             seed=SEED,
             report_to=[],
         )
         targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("eval_strategy", "evaluation_strategy"), "epoch"))
         targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("save_strategy",), "epoch"))
+        # Lan chay train_5k cho eval_loss 1,802 -> 1,790 -> 1,796: epoch cuoi TE HON
+        # epoch 2. Lay checkpoint cuoi la lay ban da bat dau qua khop. Ba tham so
+        # duoi bao Trainer nap lai ban co eval_loss thap nhat truoc khi sinh van ban.
+        # Chi hoat dong khi save_strategy va eval_strategy trung nhau - o day deu la
+        # "epoch" - va save_total_limit > 1.
+        targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("load_best_model_at_end",), True))
+        targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("metric_for_best_model",), "eval_loss"))
+        targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("greater_is_better",), False))
         if args.max_steps:
             targs["max_steps"] = args.max_steps
 
