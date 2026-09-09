@@ -270,9 +270,16 @@ def main():
         # Colab free ngat phien bat chot. `save_strategy="epoch"` da ghi checkpoint
         # vao --out sau moi epoch, nen --resume cho phep chay tiep thay vi lam lai
         # tu dau. Trainer tu tim checkpoint moi nhat khi truyen True.
-        Seq2SeqTrainer(**trainer_kwargs).train(resume_from_checkpoint=args.resume or None)
+        trainer = Seq2SeqTrainer(**trainer_kwargs)
+        trainer.train(resume_from_checkpoint=args.resume or None)
         mins = (time.time() - t0) / 60
         print(f"Huấn luyện xong sau {mins:.1f} phút.")
+        # `load_best_model_at_end` khong in ra dau vet nao trong log cua Colab, nen
+        # khong the biet ban tom tat duoc sinh bang trong so cua epoch nao. In ra
+        # day de lan chay sau tu ghi lai dieu do vao ket qua.
+        best = getattr(trainer.state, "best_model_checkpoint", None)
+        print(f"  Checkpoint tốt nhất: {best or 'KHÔNG có — dùng trọng số cuối'}"
+              f" (eval_loss {getattr(trainer.state, 'best_metric', None)})")
         model.save_pretrained(out_dir / "final")
         tok.save_pretrained(out_dir / "final")
 
@@ -321,11 +328,22 @@ def main():
     # phien la mat sach, va mot lan chay 62 phut ma mat ket qua thi phai chay lai tu
     # dau. Chep them mot ban vao `--out` (thuong tro vao Drive) de ket qua song sot.
     # Chep chu khong doi cho ghi: doc so lieu van o dung noi ma README trich dan.
+    #
+    # PHAI them tien to thu muc cha. `table_path` va `pred_path` dung CHUNG mot
+    # `tag` nen basename cua chung giong het nhau; chep thang bang `src_path.name`
+    # thi ban predictions de len ban bang chi so, va thu duy nhat song sot qua mot
+    # phien Colab bi ngat lai la thu KHONG chua diem tung bai, khoang tin cay hay
+    # guid. Dung cai ma ban sao an toan sinh ra de bao ve.
+    saved = []
     for src_path in (table_path, pred_path):
-        shutil.copy2(src_path, out_dir / src_path.name)
+        dest = out_dir / f"{src_path.parent.name}_{src_path.name}"
+        shutil.copy2(src_path, dest)
+        saved.append(dest)
 
     print(f"\nĐã ghi kết quả:\n  {table_path}\n  {pred_path}")
-    print(f"Bản sao an toàn (sống sót khi ngắt phiên): {out_dir}")
+    print("Bản sao an toàn (sống sót khi ngắt phiên):")
+    for dest in saved:
+        print(f"  {dest}")
     print(f"Checkpoint: {out_dir / 'final'}")
 
 
