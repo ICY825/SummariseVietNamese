@@ -146,6 +146,14 @@ def main():
     ap.add_argument("--max-target", type=int, default=MAX_TARGET)
     ap.add_argument("--prefix", default="", help='tiền tố kiểu T5, ví dụ "vietnews: "')
     ap.add_argument("--eval-limit", type=int, default=0, help="chỉ sinh N bài đầu khi chạy thử")
+    ap.add_argument("--logging-steps", type=int, default=25)
+    ap.add_argument("--max-steps", type=int, default=0, help="dừng sớm, để chẩn đoán")
+    ap.add_argument(
+        "--fp16",
+        default="auto",
+        choices=["auto", "on", "off"],
+        help="auto = TẮT với họ T5 (xem docstring), BẬT với mô hình khác",
+    )
     ap.add_argument("--out", default="runs", help="thư mục lưu; trên Colab hãy trỏ vào Drive")
     ap.add_argument("--no-train", action="store_true", help="chỉ nạp và sinh, để thử đường ống")
     args = ap.parse_args()
@@ -188,6 +196,16 @@ def main():
     out_dir = Path(args.out) / f"{args.model.replace('/', '_')}_{args.train_split}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # Ho T5 (ke ca ViT5) duoc pretrain o bfloat16. Fine-tune chung o fp16 la loi kinh
+    # dien: kich hoat tran so mu cua fp16, loss vot len hang chuc roi moi bo ve, va
+    # trong truong hop xau thi thanh NaN. Dau hieu nhan ra: train_loss lon gap nhieu
+    # lan eval_loss tren cung du lieu. T4 khong ho tro bf16, nen duong an toan la fp32.
+    is_t5 = "t5" in args.model.lower()
+    use_fp16 = torch.cuda.is_available() and (
+        args.fp16 == "on" or (args.fp16 == "auto" and not is_t5)
+    )
+    print(f"  fp16 = {use_fp16}" + ("  (tat vi la ho T5)" if is_t5 and not use_fp16 else ""))
+
     if not args.no_train:
         train_ds = tokenize(train_rows, tok, args.max_input, args.max_target, args.prefix)
         eval_ds = tokenize(eval_rows, tok, args.max_input, args.max_target, args.prefix)
@@ -200,14 +218,16 @@ def main():
             per_device_eval_batch_size=args.batch,
             gradient_accumulation_steps=args.grad_accum,
             gradient_checkpointing=True,   # doi toc do lay VRAM, can o 1.024 token
-            fp16=torch.cuda.is_available(),  # T4 khong ho tro bf16
-            logging_steps=50,
+            fp16=use_fp16,
+            logging_steps=args.logging_steps,
             save_total_limit=1,
             seed=SEED,
             report_to=[],
         )
         targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("eval_strategy", "evaluation_strategy"), "epoch"))
         targs.update(_pick_kwarg(Seq2SeqTrainingArguments, ("save_strategy",), "epoch"))
+        if args.max_steps:
+            targs["max_steps"] = args.max_steps
 
         trainer_kwargs = dict(
             model=model,
