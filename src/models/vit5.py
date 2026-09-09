@@ -165,7 +165,7 @@ def main():
         "--fp16",
         default="auto",
         choices=["auto", "on", "off"],
-        help="auto = BẬT (nhanh hơn 33%); off nếu eval_loss thành NaN",
+        help="auto = BẬT (nhanh hơn 33%%); off nếu eval_loss thành NaN",
     )
     ap.add_argument("--out", default="runs", help="thư mục lưu; trên Colab hãy trỏ vào Drive")
     ap.add_argument("--no-train", action="store_true", help="chỉ nạp và sinh, để thử đường ống")
