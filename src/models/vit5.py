@@ -44,6 +44,19 @@ so sánh có kiểm soát mà tầng 0-1 đã dựng.
 CẢNH BÁO RÒ RỈ: trên Hub có checkpoint ViT5 đã fine-tune sẵn cho tóm tắt VietNews.
 Điểm khởi đầu phải là bản pretrain thuần (`VietAI/vit5-base`). Dùng bản đã fine-tune
 là để mô hình nhìn trước tập test, và mọi con số sau đó vô nghĩa.
+
+ĐỪNG HOẢNG VÌ `loss` IN RA QUÁ CAO. Bản `transformers` trên Colab ghi loss huấn
+luyện **đã nhân với `gradient_accumulation_steps`**. Đo thực tế trên `train_2k`:
+
+    grad_accum = 8  ->  loss in ra 18,4   eval_loss 1,97
+    grad_accum = 1  ->  loss in ra  4,1   eval_loss 3,28
+
+Cùng một mô hình, cùng dữ liệu, chỉ khác cách gộp gradient. Đây là lỗi chuẩn hoá khi
+báo cáo, không đụng đến gradient nên không ảnh hưởng chất lượng. Dấu hiệu nhận ra:
+loss huấn luyện cao gấp đúng `grad_accum` lần so với `eval_loss`. **Luôn nhìn
+`eval_loss` để phán đoán**, vì nó không đi qua đường tích luỹ gradient. Mốc lành
+mạnh cho T5 fine-tune tóm tắt là khoảng 1,8-3,5; trên 10 là thật sự có vấn đề (từ
+vựng ~36k nên đoán bừa đã là ln(36000) ≈ 10,5).
 """
 
 import argparse
@@ -152,7 +165,7 @@ def main():
         "--fp16",
         default="auto",
         choices=["auto", "on", "off"],
-        help="auto = TẮT với họ T5 (xem docstring), BẬT với mô hình khác",
+        help="auto = BẬT (nhanh hơn 33%); off nếu eval_loss thành NaN",
     )
     ap.add_argument("--out", default="runs", help="thư mục lưu; trên Colab hãy trỏ vào Drive")
     ap.add_argument("--no-train", action="store_true", help="chỉ nạp và sinh, để thử đường ống")
@@ -196,15 +209,15 @@ def main():
     out_dir = Path(args.out) / f"{args.model.replace('/', '_')}_{args.train_split}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Ho T5 (ke ca ViT5) duoc pretrain o bfloat16. Fine-tune chung o fp16 la loi kinh
-    # dien: kich hoat tran so mu cua fp16, loss vot len hang chuc roi moi bo ve, va
-    # trong truong hop xau thi thanh NaN. Dau hieu nhan ra: train_loss lon gap nhieu
-    # lan eval_loss tren cung du lieu. T4 khong ho tro bf16, nen duong an toan la fp32.
-    is_t5 = "t5" in args.model.lower()
-    use_fp16 = torch.cuda.is_available() and (
-        args.fp16 == "on" or (args.fp16 == "auto" and not is_t5)
-    )
-    print(f"  fp16 = {use_fp16}" + ("  (tat vi la ho T5)" if is_t5 and not use_fp16 else ""))
+    # fp16 BAT mac dinh vi do duoc nhanh hon 33% tren T4 (4,0 so voi 3,0 mau/giay),
+    # va do thuc te khong thay bat on: eval_loss lanh manh o ca fp16 lan fp32.
+    #
+    # Rui ro co that nhung chua xay ra o day: ho T5 duoc pretrain o bfloat16, ma fp16
+    # co dai so mu hep hon nen ve ly thuyet co the tran va cho NaN o nhung lan chay
+    # dai. No se lo ra ngay tai eval_loss cuoi moi epoch. Thay NaN thi chay lai voi
+    # `--fp16 off` (T4 khong ho tro bf16 nen duong lui la fp32, cham hon 33%).
+    use_fp16 = torch.cuda.is_available() and args.fp16 in ("auto", "on")
+    print(f"  fp16 = {use_fp16}")
 
     if not args.no_train:
         train_ds = tokenize(train_rows, tok, args.max_input, args.max_target, args.prefix)
