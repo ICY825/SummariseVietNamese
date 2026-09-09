@@ -45,29 +45,46 @@ from eval.report import evaluate, compare, save, table  # noqa: E402
 from models.extractive import lead, lexrank, oracle, random_k, textrank  # noqa: E402
 
 RESULTS = Path(__file__).resolve().parents[2] / "results"
-BASELINE = "Lead-3"  # moc de so cap doi, vi day la baseline manh cua tin tuc
+
+SYSTEMS = ["random", "lead1", "leadk", "textrank", "lexrank", "oracle"]
+BASELINE = "leadk"  # moc de so cap doi, vi day la baseline manh cua tin tuc
 
 
-def build(name, rows, k):
+def label(key, k):
+    """Tên hiển thị, LUÔN suy ra từ `k` chứ không viết cứng.
+
+    Viết cứng "Lead-3" rồi để `k` là tham số thì chạy `--k 5` sẽ cho một bảng ghi
+    "Lead-3" trong khi số liệu là của Lead-5 — sai lệch không thể phát hiện lại từ
+    file kết quả. Lead-1 cố ý không phụ thuộc `k`: nó là mốc một câu, không phải
+    biến thể của Lead-k.
+    """
+    return {
+        "random": f"Random-{k}",
+        "lead1": "Lead-1",
+        "leadk": f"Lead-{k}",
+        "textrank": "TextRank",
+        "lexrank": "LexRank",
+        "oracle": f"Oracle-{k}",
+    }[key]
+
+
+def build(key, rows, k):
     """Sinh bản tóm tắt cho một hệ thống, giữ đúng thứ tự bài của tập con."""
-    if name == "Lead-1":
+    if key == "lead1":
         return [lead(r["article"], 1) for r in rows]
-    if name == "Lead-3":
+    if key == "leadk":
         return [lead(r["article"], k) for r in rows]
-    if name == "Random-3":
+    if key == "random":
         # guid lam khoa: moi bai co bo cau ngau nhien co dinh, khong phu thuoc
         # thu tu duyet hay viec dang chay tren tap con nao.
         return [random_k(r["article"], k, key=str(r["guid"])) for r in rows]
-    if name == "TextRank":
+    if key == "textrank":
         return [textrank(r["article"], k) for r in rows]
-    if name == "LexRank":
+    if key == "lexrank":
         return [lexrank(r["article"], k) for r in rows]
-    if name == "Oracle-3":
+    if key == "oracle":
         return [oracle(r["article"], r["abstract"], k) for r in rows]
-    raise ValueError(f"Không biết hệ thống {name!r}.")
-
-
-SYSTEMS = ["Random-3", "Lead-1", "Lead-3", "TextRank", "LexRank", "Oracle-3"]
+    raise ValueError(f"Không biết hệ thống {key!r}.")
 
 
 def main():
@@ -89,9 +106,10 @@ def main():
     print(f"  {len(rows)} bài.\n")
 
     results, preds = [], {}
-    for name in SYSTEMS:
+    for key in SYSTEMS:
+        name = label(key, args.k)
         t0 = time.time()
-        p = build(name, rows, args.k)
+        p = build(key, rows, args.k)
         gen = time.time() - t0
 
         t0 = time.time()
@@ -108,13 +126,20 @@ def main():
     md = table(results)
     print("\n" + md)
 
-    print(f"\nSo cặp đôi với {BASELINE} (bootstrap ghép cặp, seed=13):")
-    base = next(r for r in results if r["name"] == BASELINE)
+    base_name = label(BASELINE, args.k)
+    print(f"\nSo cặp đôi với {base_name} (bootstrap ghép cặp, seed=13):")
+    base = next(r for r in results if r["name"] == base_name)
     for r in results:
-        if r["name"] != BASELINE:
+        if r["name"] != base_name:
             print("  " + compare(r, base, "rouge1", n_boot=args.n_boot))
 
-    tag = args.split + ("" if not args.limit else f"_thu{args.limit}")
+    # k phai nam trong ten file khi khac mac dinh, neu khong mot lan chay --k 5 se
+    # ghi de im lang len bang ket qua k=3 dang duoc trich trong README.
+    tag = args.split
+    if args.k != 3:
+        tag += f"_k{args.k}"
+    if args.limit:
+        tag += f"_thu{args.limit}"
     path = save(results, f"baselines_{tag}.json")
     md_path = RESULTS / "tables" / f"baselines_{tag}.md"
     md_path.write_text(md + "\n", encoding="utf-8")

@@ -178,8 +178,8 @@ Số trong ngoặc là **nửa khoảng tin cậy 95%**. Tái lập bằng
 | Random-3 | 23,44 ±0,42 | 10,65 ±0,38 | 15,76 ±0,35 | 18,95 ±0,39 | 91 | 2,0% |
 | Lead-1 | 27,03 ±0,65 | 14,77 ±0,58 | 20,73 ±0,58 | 21,14 ±0,58 | 36 | 0,0% |
 | Lead-3 | 27,22 ±0,44 | 14,73 ±0,43 | 19,17 ±0,41 | 22,32 ±0,43 | 102 | 0,0% |
-| TextRank | 23,12 ±0,38 | 11,81 ±0,37 | 16,40 ±0,34 | 18,74 ±0,36 | 132 | 1,4% |
-| LexRank | 24,80 ±0,40 | 12,52 ±0,38 | 17,29 ±0,35 | 20,07 ±0,38 | 112 | 1,7% |
+| TextRank | 23,14 ±0,39 | 11,83 ±0,37 | 16,37 ±0,34 | 18,77 ±0,36 | 132 | 1,4% |
+| LexRank | 24,81 ±0,40 | 12,52 ±0,38 | 17,26 ±0,35 | 20,08 ±0,38 | 112 | 1,6% |
 | Oracle-3 | 48,14 ±0,63 | 31,89 ±0,76 | 36,21 ±0,76 | 40,19 ±0,71 | 50 | 1,1% |
 
 **Lead-1 ngang Lead-3.** Chênh lệch ROUGE-1 chỉ −0,19 [−0,76, +0,37], p = 0,50 — không
@@ -189,8 +189,8 @@ hơn nhưng mất đúng chừng ấy precision, và F1 triệt tiêu hai chiề
 mốc phải vượt là 27,2 chứ không phải một con số dễ hơn, và độ dài sinh ra của ViT5 phải
 được kiểm soát chứ không thả nổi.
 
-**Hai phương pháp đồ thị đều THUA lead.** TextRank −4,10 [−4,51, −3,69] và LexRank
-−2,42 [−2,85, −2,00] so với Lead-3, cả hai p < 0,0001. Đây không phải lỗi cài đặt mà là
+**Hai phương pháp đồ thị đều THUA lead.** TextRank −4,08 [−4,49, −3,67] và LexRank
+−2,42 [−2,84, −2,00] so với Lead-3, cả hai p < 0,0001. Đây không phải lỗi cài đặt mà là
 đặc trưng của thể loại: tin tức viết theo tháp ngược nên thông tin quan trọng nhất nằm
 ngay câu đầu, trong khi xếp hạng theo độ trung tâm lại chuộng câu dài nhiều từ chung —
 TextRank ra 132 âm tiết, gần gấp bốn lần sapo. Trung tâm của đồ thị tương đồng không
@@ -202,14 +202,25 @@ này chia đôi câu chuyện của cả đề tài: khoảng 21 điểm còn n�
 extractive không bao giờ với tới, vì 59,5% bigram của sapo vốn không có trong bài. Chỉ
 tầng 3 mới lấy được phần đó, và đó là lý do tồn tại của nó.
 
-**Cỡ mẫu đúng như thiết kế.** Nửa khoảng tin cậy quan sát được nằm trong khoảng ±0,38
+**Cỡ mẫu đúng như thiết kế.** Nửa khoảng tin cậy quan sát được nằm trong khoảng ±0,39
 đến ±0,65, khớp với ước lượng ±0,55 lúc chốt n = 2.000 ở phần trên.
 
 **Kiểm tra tính nhất quán.** Tỷ lệ 1-gram mới bằng 0,0% ở cả sáu hệ thống, đúng như
 định nghĩa extractive. Tỷ lệ 2-gram mới khác 0 chỉ ở những hệ thống ghép các câu **không
-liền nhau** (Random-3 2,0%, LexRank 1,7%, TextRank 1,4%): bigram "mới" đó sinh ra ngay
+liền nhau** (Random-3 2,0%, LexRank 1,6%, TextRank 1,4%): bigram "mới" đó sinh ra ngay
 tại chỗ nối hai câu rời. Lead-1 và Lead-3 ghép câu liền nhau nên đúng 0,0%. Không có
 bản tóm tắt rỗng nào.
+
+**Tầng 1 khử câu trùng nội dung, tầng 0 thì không.** 179 trong 2.000 bài test chứa sẵn
+câu lặp lại (thường là chú thích ảnh xuất hiện hai lần). Hai bản sao của cùng một câu
+có điểm trung tâm bằng hệt nhau nên bộ xếp hạng vơ cả hai, khiến 2,2% bản tóm tắt của
+TextRank và 1,5% của LexRank thực chất chỉ còn hai câu nội dung. Đo tác động trước khi
+sửa: bỏ lặp và chọn bù câu kế tiếp chỉ đổi ROUGE-1 thêm **+0,018 (p = 0,31)** cho
+TextRank và **+0,003 (p = 0,76)** cho LexRank — tức đây **không** phải nguyên nhân
+khiến hai phương pháp đồ thị thua Lead-3. Vẫn sửa, vì lý do khác: tuần 7 có khâu người
+chấm blind và một bản tóm tắt lặp nguyên một câu thì người chấm nhận ra ngay. Lead-k và
+Random-k cố ý giữ nguyên câu lặp — định nghĩa của chúng là "k câu đầu" và "k câu rút
+ngẫu nhiên", sửa đi thì không còn là mốc ngây thơ nữa.
 
 **Còn thiếu ở tầng 1:** LexRank bản nhúng PhoBERT cần `torch` và `transformers`, chưa
 có trong `.venv` trên máy này (xem `requirements.txt`) nên dời sang tuần 4, chạy cùng

@@ -30,6 +30,7 @@ from models.extractive import (  # noqa: E402
     _tfidf,
     join,
     lead,
+    lexrank,
     lexrank_indices,
     oracle,
     oracle_indices,
@@ -119,16 +120,31 @@ check("hai câu không chung từ -> cosin 0", float(X[0] @ X[2]), 0.0, tol=1e-9
 check_true("không có từ nào -> không làm vỡ", _tfidf([". ."]).shape[0] == 1)
 
 print("\n6. TextRank và LexRank")
-C = ("cảnh_sát bắt nghi_phạm . cảnh_sát bắt nghi_phạm . "
-     "cảnh_sát bắt nghi_phạm . giá vàng tăng .")
+C = ("cảnh_sát bắt nghi_phạm ma_tuý . cảnh_sát khám_xét nhà nghi_phạm . "
+     "nghi_phạm ma_tuý bị bắt hôm_qua . giá vàng tăng .")
 check_true("TextRank bỏ câu lạc đề", textrank_indices(C, 3) == [0, 1, 2])
 check_true("LexRank bỏ câu lạc đề", lexrank_indices(C, 3) == [0, 1, 2])
 check_true("TextRank tất định", textrank(C, 3) == textrank(C, 3))
 check_true("k lớn hơn số câu -> lấy hết", textrank_indices(A, 99) == [0, 1, 2])
-D = "một hai . một hai . một hai . một hai ."
+# Tam giac doi xung: ba cau khac nhau nhung diem trung tam bang het nhau.
+D = "một hai . hai ba . ba một ."
 check_true("hoà điểm -> ưu tiên câu đứng trước", textrank_indices(D, 2) == [0, 1])
 check_true("bài rỗng không làm vỡ", textrank("", 3) == "" and lexrank_indices("", 3) == [])
 check_true("đầu ra TextRank giữ dạng tách từ", "_" in textrank(C, 1))
+
+print("\n7. Khử câu trùng nội dung — chỉ ở tầng 1, không ở tầng 0")
+# Cau 0 va cau 2 giong het nhau: chung co diem trung tam bang nhau nen bo xep hang
+# se vo ca hai neu khong khu trung.
+E = "cảnh_sát bắt nghi_phạm . giá vàng tăng mạnh . cảnh_sát bắt nghi_phạm ."
+check_true("TextRank không chọn hai bản sao", len(textrank_indices(E, 3)) == 2)
+check_true("LexRank không chọn hai bản sao", len(lexrank_indices(E, 3)) == 2)
+for nhan, ra in (("TextRank", textrank(E, 3)), ("LexRank", lexrank(E, 3))):
+    c = sentences(ra)
+    check_true(f"{nhan}: đầu ra không lặp câu", len(c) == len(set(c)))
+check_true(
+    "Lead-3 CỐ Ý giữ nguyên câu lặp (mốc ngây thơ)",
+    len(sentences(lead(E, 3))) == 3 and len(set(sentences(lead(E, 3)))) == 2,
+)
 
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

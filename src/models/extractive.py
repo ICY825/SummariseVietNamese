@@ -4,7 +4,7 @@ Tầng 0 không học gì (Lead-1, Lead-3, Random-3, Oracle); tầng 1 không gi
 (TextRank, LexRank). Chúng là mốc để trả lời câu hỏi nghiên cứu số 1 — nếu ViT5
 fine-tune không vượt được Lead-3 thì cả hướng abstractive mất lý do tồn tại.
 
-Bốn quy ước bắt buộc, và lý do:
+Năm quy ước bắt buộc, và lý do:
 
 **Cắt câu bằng `data.text.sentences()`, không tự viết lại.** Mọi baseline ở đây xây
 trên cùng một ranh giới câu. Nếu mỗi baseline cắt một kiểu thì chênh lệch điểm giữa
@@ -23,6 +23,12 @@ trật tự của tham chiếu — tham chiếu thì viết theo mạch bài.
 nên `Khởi_tố` là một đơn vị mang nghĩa; tách nó thành "khởi" và "tố" chỉ làm nhiễu đồ
 thị tương đồng. Đây là lựa chọn của riêng tầng 1 và không ảnh hưởng khâu chấm điểm —
 `eval.rouge` luôn chấm trên âm tiết của dạng thô, bất kể tầng này làm gì bên trong.
+
+**Tầng 1 khử câu trùng nội dung, tầng 0 thì không.** 179 trong 2.000 bài của tập test
+chứa sẵn câu lặp lại, mà hai bản sao thì có điểm trung tâm bằng hệt nhau nên bộ xếp
+hạng vơ cả hai. Lead-k và Random-k giữ nguyên vì định nghĩa của chúng là "k câu đầu"
+và "k câu rút ngẫu nhiên" — sửa đi thì chúng không còn là mốc ngây thơ nữa. Chi tiết
+và số đo tác động nằm ở `_pick()`.
 
 Không loại từ dừng: dự án không có sẵn danh sách từ dừng tiếng Việt nào đã kiểm chứng,
 và một danh sách tự chế sẽ là một biến không kiểm soát nằm giữa tầng 1 và mọi tầng
@@ -188,14 +194,38 @@ def pagerank(sim, damping=0.85, iters=100, tol=1e-8):
     return p
 
 
-def _top_k(scores, k):
-    """Chỉ số của k câu điểm cao nhất; hoà nhau thì câu đứng trước thắng.
+def _pick(sents, scores, k):
+    """Chỉ số của k câu điểm cao nhất, BỎ QUA câu trùng nội dung với câu đã chọn.
 
-    `argsort` ổn định trên khoá âm giữ nguyên thứ tự bài khi điểm bằng nhau, nên kết
-    quả tất định — quan trọng với những bài ngắn nơi nhiều câu cùng điểm.
+    Hoà điểm thì câu đứng trước thắng: `argsort` ổn định trên khoá âm giữ nguyên thứ
+    tự bài khi điểm bằng nhau, nên kết quả tất định — quan trọng với những bài ngắn
+    nơi nhiều câu cùng điểm.
+
+    Vì sao phải khử trùng: 179 trong 2.000 bài của tập test chứa sẵn câu lặp lại
+    (thường là chú thích ảnh xuất hiện hai lần). Hai bản sao của cùng một câu có điểm
+    trung tâm **bằng hệt nhau**, nên bộ xếp hạng chọn cả hai và bản tóm tắt 3 câu thực
+    chất chỉ còn 2 câu nội dung. Đo thử trên tập test: lỗi này xảy ra ở 2,2% bản tóm
+    tắt của TextRank và 1,5% của LexRank, và sửa nó chỉ đổi ROUGE-1 thêm +0,018
+    (p = 0,31) — tức **không** phải nguyên nhân khiến hai phương pháp đồ thị thua
+    Lead-3. Sửa vì lý do khác: tuần 7 có khâu người chấm blind, và một bản tóm tắt lặp
+    nguyên một câu thì người chấm nhận ra ngay.
+
+    Chỉ áp dụng cho tầng 1 (xếp hạng), không áp dụng cho Lead-k và Random-k: hai
+    baseline đó cố ý ngây thơ, định nghĩa của chúng là "k câu đầu" và "k câu rút ngẫu
+    nhiên", sửa đi thì chúng không còn là mốc ngây thơ nữa. Oracle không cần vì thêm
+    một câu trùng không làm tăng điểm nên nó tự bỏ qua.
     """
     order = np.argsort(-np.asarray(scores), kind="stable")
-    return sorted(int(i) for i in order[:k])
+    out, seen = [], set()
+    for i in order:
+        s = sents[int(i)]
+        if s in seen:
+            continue
+        seen.add(s)
+        out.append(int(i))
+        if len(out) == k:
+            break
+    return sorted(out)
 
 
 def textrank_indices(article, k=K):
@@ -220,7 +250,7 @@ def textrank_indices(article, k=K):
                 continue
             v = len(sets[i] & sets[j]) / denom
             sim[i, j] = sim[j, i] = v
-    return _top_k(pagerank(sim), min(k, n))
+    return _pick(sents, pagerank(sim), min(k, n))
 
 
 def _tfidf(sents):
@@ -277,7 +307,7 @@ def lexrank_indices(article, k=K, threshold=0.1):
     if threshold is not None:
         sim = (sim >= threshold).astype(float)
         np.fill_diagonal(sim, 0.0)
-    return _top_k(pagerank(sim), min(k, n))
+    return _pick(sents, pagerank(sim), min(k, n))
 
 
 def textrank(article, k=K):
