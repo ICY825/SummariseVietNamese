@@ -4,13 +4,21 @@ Script trả lời đúng 5 câu hỏi, mỗi câu là một cái bẫy đã nê
   1. Schema và kích thước các split có đúng như mô tả không?
   2. Tiếng Việt có bị lỗi mã hoá / chưa chuẩn hoá NFC không?
   3. Có bài trùng lặp trong cùng một split không?
-  4. Có rò rỉ giữa train và test không?  <-- nguy hiểm nhất
+  4. Có rò rỉ giữa các split không?  <-- nguy hiểm nhất
   5. Sapo (abstract) có phải là câu đầu bài chép lại không?
+
+Văn bản của bộ này ĐÃ ĐƯỢC TÁCH TỪ sẵn bằng VnCoreNLP (`Khởi_tố`, `ma_tuý`) và
+dấu câu cũng đã tách rời thành token độc lập. Hai hệ quả chi phối toàn bộ script:
+
+  - Đếm độ dài phải phân biệt *token đã ghép* (PhoBERT ăn dạng này) với *âm tiết*
+    (ViT5 và BARTpho-syllable ăn văn bản thô, tính theo âm tiết). Regex `\w+` gộp
+    `Khởi_tố` thành một đơn vị nên chỉ đo được vế thứ nhất.
+  - Ranh giới câu là dấu chấm đứng riêng (" . "), không phải mọi dấu chấm. Cắt câu
+    bằng `(?<=[.!?])\s+` sẽ đứt ngay ở chữ viết tắt như "TP." và cho câu cụt.
 
 Chạy:  .venv/Scripts/python.exe src/data/inspect_vietnews.py
 """
 
-import io
 import sys
 
 # Console Windows mac dinh cp1252 -> khong in duoc tieng Viet. Ep UTF-8.
@@ -27,30 +35,50 @@ from datasets import load_dataset
 
 DATASET = "nam194/vietnews"
 SAMPLE = 4000  # số bài lấy mẫu cho các kiểm tra tốn thời gian
+SEED = 13  # cố định để mẫu lặp lại được giữa các lần chạy
+
+# Ranh gioi cau tren van ban da tach tu: dau cau la mot token dung rieng.
+SENT_SPLIT = re.compile(r"(?<=\s[.!?])\s+")
 
 
 def rule(title):
     print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
 
 
-def norm_words(text):
-    """Tách âm tiết thô, bỏ dấu câu. Đủ dùng cho việc đo độ trùng ở bước này."""
+def tokens(text):
+    """Token theo cách tách từ sẵn có: `Khởi_tố` là MỘT đơn vị (dạng PhoBERT ăn)."""
     return re.findall(r"\w+", text.lower(), flags=re.UNICODE)
 
 
-def first_sentence(text):
-    parts = re.split(r"(?<=[.!?])\s+", text.strip())
-    return parts[0] if parts else ""
+def syllables(text):
+    """Âm tiết thật: tách cả dấu gạch dưới (dạng ViT5 / BARTpho-syllable ăn)."""
+    return re.findall(r"[^\W_]+", text.lower(), flags=re.UNICODE)
+
+
+def sentences(text):
+    """Cắt câu theo dấu câu đứng riêng, không đứt ở viết tắt kiểu `TP.`."""
+    return [s.strip() for s in SENT_SPLIT.split(text.strip()) if s.strip()]
+
+
+def lead(text, n=1):
+    return " ".join(sentences(text)[:n])
 
 
 def coverage(reference, candidate):
-    """Tỷ lệ âm tiết của `reference` được `candidate` bao phủ (unigram recall)."""
-    ref = Counter(norm_words(reference))
+    """Tỷ lệ token của `reference` được `candidate` bao phủ (unigram recall)."""
+    ref = Counter(tokens(reference))
     if not ref:
         return 0.0
-    cand = Counter(norm_words(candidate))
+    cand = Counter(tokens(candidate))
     hit = sum(min(n, cand[w]) for w, n in ref.items())
     return hit / sum(ref.values())
+
+
+def percentiles(xs):
+    """Trả về (trung bình, p50, p90, p95, max). Kẹp chỉ số để q=1.0 không tràn."""
+    xs = sorted(xs)
+    p = lambda q: xs[min(int(len(xs) * q), len(xs) - 1)]
+    return statistics.mean(xs), p(0.5), p(0.9), p(0.95), xs[-1]
 
 
 def main():
@@ -72,13 +100,16 @@ def main():
         print(f"ABSTRACT: {row['abstract'][:220]}")
         print(f"ARTICLE : {row['article'][:220]}")
 
+    # Mau NGAU NHIEN co dinh seed: bo du lieu co thu tu (theo nguon/chuyen muc) nen
+    # lay 4000 bai dau se cho so lieu lech so voi toan bo split.
+    sample = ds["train"].shuffle(seed=SEED).select(range(min(SAMPLE, len(ds["train"]))))
+
     rule("3. MÃ HOÁ VÀ CHUẨN HOÁ UNICODE")
-    sample = ds["train"].select(range(min(SAMPLE, len(ds["train"]))))
     not_nfc = sum(
         1 for r in sample if not unicodedata.is_normalized("NFC", r["article"])
     )
-    has_replacement = sum(1 for r in sample if "�" in r["article"])
-    print(f"Mẫu kiểm tra          : {len(sample)} bài")
+    has_replacement = sum(1 for r in sample if "\ufffd" in r["article"])
+    print(f"Mẫu kiểm tra          : {len(sample)} bài (ngẫu nhiên, seed={SEED})")
     print(f"Chưa chuẩn NFC        : {not_nfc}  ({not_nfc / len(sample):.1%})")
     print(f"Có ký tự lỗi U+FFFD   : {has_replacement}")
     if not_nfc:
@@ -94,43 +125,65 @@ def main():
             for r in ds[split]
         ]
 
-    h = {s: hashes(s) for s in ("train", "validation", "test")}
-    for s, vals in h.items():
+    splits = ("train", "validation", "test")
+    h = {s: hashes(s) for s in splits}
+    for s in splits:
+        vals = h[s]
         dup = len(vals) - len(set(vals))
         print(f"{s:11s}: {len(vals):>7,} bài, trùng nội bộ {dup:>6,} ({dup / len(vals):.2%})")
 
-    train_set = set(h["train"])
-    for s in ("validation", "test"):
-        leak = len(train_set & set(h[s]))
-        pct = leak / len(set(h[s]))
+    print()
+    # Kiem tra DU CA BA CAP, khong chi train vs phan con lai.
+    for a, b in (("train", "validation"), ("train", "test"), ("validation", "test")):
+        leak = len(set(h[a]) & set(h[b]))
+        pct = leak / len(h[b])  # theo SO BAI cua split b, khong theo so hash duy nhat
         flag = "  <-- RÒ RỈ, PHẢI XỬ LÝ" if pct > 0.005 else ""
-        print(f"train ∩ {s:11s}: {leak:>6,} bài ({pct:.2%}){flag}")
+        print(f"{a} ∩ {b:11s}: {leak:>6,} bài ({pct:.2%} của {b}){flag}")
 
     rule("5. SAPO CÓ PHẢI LÀ CÂU ĐẦU BÀI CHÉP LẠI?")
-    covs = [coverage(r["abstract"], first_sentence(r["article"])) for r in sample]
-    near_copy = sum(1 for c in covs if c >= 0.9)
-    print(f"Độ bao phủ trung bình của Lead-1 lên sapo : {statistics.mean(covs):.3f}")
-    print(f"Trung vị                                  : {statistics.median(covs):.3f}")
-    print(f"Số bài sapo gần như chép câu đầu (>=0.9)  : {near_copy} ({near_copy / len(covs):.1%})")
-    if near_copy / len(covs) > 0.15:
-        print("  -> Lead-1 sẽ mạnh giả tạo. Phải nêu rõ tỷ lệ này trong báo cáo.")
+    for n in (1, 3):
+        covs = [coverage(r["abstract"], lead(r["article"], n)) for r in sample]
+        near_copy = sum(1 for c in covs if c >= 0.9)
+        print(
+            f"Lead-{n}: bao phủ tb {statistics.mean(covs):.3f} | "
+            f"trung vị {statistics.median(covs):.3f} | "
+            f"gần như chép lại (>=0.9) {near_copy} bài ({near_copy / len(covs):.1%})"
+        )
+        if n == 1 and near_copy / len(covs) > 0.15:
+            print("  -> Lead-1 sẽ mạnh giả tạo. Phải nêu rõ tỷ lệ này trong báo cáo.")
 
-    rule("6. THỐNG KÊ ĐỘ DÀI (theo âm tiết)")
-    art = [len(norm_words(r["article"])) for r in sample]
-    abs_ = [len(norm_words(r["abstract"])) for r in sample]
+    n_sents = [len(sentences(r["article"])) for r in sample]
+    mean, p50, p90, p95, mx = percentiles(n_sents)
+    print(
+        f"\nSố câu mỗi bài: tb {mean:.1f} | p50 {p50} | p90 {p90} | max {mx} | "
+        f"bài chỉ có 1 câu: {sum(1 for k in n_sents if k == 1)}"
+    )
+
+    rule("6. THỐNG KÊ ĐỘ DÀI")
 
     def show(name, xs):
-        xs = sorted(xs)
-        p = lambda q: xs[int(len(xs) * q)]
-        print(f"{name:9s} tb {statistics.mean(xs):7.1f} | p50 {p(.5):5d} | p90 {p(.9):5d} | p95 {p(.95):5d} | max {xs[-1]:5d}")
+        mean, p50, p90, p95, mx = percentiles(xs)
+        print(f"{name:26s} tb {mean:7.1f} | p50 {p50:5d} | p90 {p90:5d} | p95 {p95:5d} | max {mx:6d}")
 
-    show("Bài gốc", art)
-    show("Sapo", abs_)
-    print(f"Tỷ lệ nén trung bình: {statistics.mean(a / b for a, b in zip(abs_, art) if b):.3f}")
+    art_tok = [len(tokens(r["article"])) for r in sample]
+    art_syl = [len(syllables(r["article"])) for r in sample]
+    abs_tok = [len(tokens(r["abstract"])) for r in sample]
+    abs_syl = [len(syllables(r["abstract"])) for r in sample]
+
+    print("Token đã tách từ (PhoBERT đọc dạng này):")
+    show("  Bài gốc", art_tok)
+    show("  Sapo", abs_tok)
+    print("\nÂm tiết thật (ViT5 / BARTpho-syllable đọc dạng này):")
+    show("  Bài gốc", art_syl)
+    show("  Sapo", abs_syl)
+
+    ratio = statistics.mean(a / b for a, b in zip(abs_tok, art_tok) if b)
+    print(f"\nTỷ lệ nén trung bình (theo token): {ratio:.3f}")
 
     rule("KẾT LUẬN")
     print("Nếu mục 4 báo rò rỉ > 0.5% thì phải tự khử trùng lặp và chia lại split")
     print("trước khi train bất cứ mô hình nào.")
+    print("Cột 'âm tiết' ở mục 6 mới là con số dùng để chọn max_input_length cho ViT5.")
 
 
 if __name__ == "__main__":

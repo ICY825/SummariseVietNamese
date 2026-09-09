@@ -1,4 +1,4 @@
-# DL-SumariseVN
+# DL-SummariseVN
 
 Tóm tắt tin tức tiếng Việt — bài tập lớn môn Deep Learning.
 
@@ -17,22 +17,53 @@ Toàn bộ thiết kế chạy được trong giới hạn của Google Colab b�
 Nguồn chính: [`nam194/vietnews`](https://huggingface.co/datasets/nam194/vietnews) —
 143.816 bài, các cột `guid`, `title`, `abstract`, `article`.
 
-Kết quả kiểm tra dữ liệu (`src/data/inspect_vietnews.py`, chạy ngày 07/09/2026):
+Kết quả kiểm tra dữ liệu (`src/data/inspect_vietnews.py`, chạy lại ngày 09/09/2026).
+Các kiểm tra toàn bộ split chạy trên cả 143.816 bài; các kiểm tra lấy mẫu dùng 4.000
+bài **ngẫu nhiên với `seed=13`** — bộ này xếp theo nguồn/chuyên mục nên lấy 4.000 bài
+đầu sẽ cho số liệu lệch.
 
 | Kiểm tra | Kết quả | Hệ quả |
 |---|---|---|
 | Split | 99.134 / 22.184 / 22.498 | Dùng được split có sẵn |
 | Trùng lặp nội bộ | 0,00% ở cả ba split | Không cần khử trùng lặp |
-| Rò rỉ `train ∩ test` | 1 bài / 22.498 | Không cần chia lại split |
-| Chuẩn hoá Unicode | 6,5% chưa ở dạng NFC | **Bắt buộc** chuẩn hoá NFC |
-| Sapo chép câu đầu | 0,8% (bao phủ trung bình 0,193) | Bộ dữ liệu abstractive thật |
-| Độ dài bài (âm tiết) | tb 354, p90 596, p95 684 | Cần đo lại theo token thật |
+| Rò rỉ giữa các split | `train ∩ test` 1 bài; hai cặp còn lại 0 | Không cần chia lại split |
+| Chuẩn hoá Unicode | 4,5% chưa ở dạng NFC, 0 ký tự U+FFFD | **Bắt buộc** chuẩn hoá NFC |
+| Sapo chép câu đầu | Lead-1 0,7% (bao phủ tb 0,251); Lead-3 3,3% (0,491) | Bộ dữ liệu abstractive thật |
+| Số câu mỗi bài | tb 16,6, p50 14, p90 29; không bài nào chỉ có 1 câu | Tầng extractive có đủ câu để chọn |
+| Độ dài bài — token đã tách từ | tb 366, p90 641, p95 744 | Kích thước đầu vào PhoBERT |
+| Độ dài bài — âm tiết thật | tb 495, p90 871, **p95 1.001** | Kích thước đầu vào ViT5/BARTpho |
+| Tỷ lệ nén (sapo / bài) | 0,085 | Sapo dài tb 25 token / 35 âm tiết |
+
+Con số quyết định `max_input_length` là **âm tiết**, không phải token: ViT5 và
+BARTpho-syllable đọc văn bản thô đã khử gạch dưới. Tỷ lệ bài bị cắt theo từng ngưỡng
+(cùng mẫu 4.000 bài):
+
+| Ngưỡng | 512 | 768 | 1.024 | 1.536 |
+|---|---|---|---|---|
+| Bài bị cắt | 37,5% | 15,3% | 4,5% | 0,2% |
+
+Đây là **cận dưới**: một âm tiết tiếng Việt thường tách thành nhiều subword của
+SentencePiece, nên số token thật của ViT5 còn cao hơn và tỷ lệ cắt thực tế còn lớn
+hơn các con số trên. Phải đo lại bằng chính tokenizer của mô hình ở tuần 2. Chênh
+lệch giữa ngưỡng 512 và 1.024 chính là mức mất mát mà câu hỏi nghiên cứu số 2 và
+pipeline lai ở tầng 4 phải xử lý.
 
 **Lưu ý quan trọng:** văn bản trong bộ này **đã được tách từ sẵn** bằng VnCoreNLP
 (`Khởi_tố`, `ma_tuý`) và dấu câu cũng đã tách rời. PhoBERT và phép tính ROUGE dùng
 được trực tiếp; ViT5 và BARTpho-syllable thì **không** — phải khử dấu gạch dưới để
 lấy lại văn bản thô trước. Bản thô được lưu làm bản chuẩn, bản tách từ sinh lại bằng
 `underthesea` khi cần.
+
+Hai hệ quả kỹ thuật phải nhớ khi viết bất cứ đoạn xử lý văn bản nào cho bộ này:
+
+- **Đếm độ dài:** regex `\w+` coi `_` là ký tự chữ nên gộp `Khởi_tố` thành một đơn
+  vị và đếm hụt khoảng 35% so với số âm tiết thật. Muốn đếm âm tiết phải dùng
+  `[^\W_]+`. `src/data/inspect_vietnews.py` tách sẵn hai hàm `tokens()` và
+  `syllables()` cho hai mục đích này.
+- **Cắt câu:** dấu câu là token đứng riêng (` . `), nên phải cắt bằng
+  `(?<=\s[.!?])\s+`. Cắt bằng `(?<=[.!?])\s+` sẽ đứt ngay ở viết tắt như `TP.` và
+  cho ra câu cụt — mọi baseline extractive ở tầng 0–2 đều xây trên ranh giới câu này,
+  nên dùng chung hàm `sentences()` thay vì viết lại.
 
 ## Các tầng mô hình
 

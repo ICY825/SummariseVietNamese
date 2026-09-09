@@ -10,6 +10,10 @@ data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
+# Ket qua: giu cau truc, khong commit file du doan / bang chi so nang
+results/predictions/*
+!results/predictions/.gitkeep
+
 # Cache va checkpoint
 .cache/
 checkpoints/
