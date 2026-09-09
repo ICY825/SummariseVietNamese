@@ -62,6 +62,7 @@ vựng ~36k nên đoán bừa đã là ln(36000) ≈ 10,5).
 import argparse
 import inspect
 import json
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -168,6 +169,11 @@ def main():
         help="auto = BẬT (nhanh hơn 33%%); off nếu eval_loss thành NaN",
     )
     ap.add_argument("--out", default="runs", help="thư mục lưu; trên Colab hãy trỏ vào Drive")
+    ap.add_argument(
+        "--resume",
+        action="store_true",
+        help="chạy tiếp từ checkpoint gần nhất trong --out, khi Colab ngắt giữa chừng",
+    )
     ap.add_argument("--no-train", action="store_true", help="chỉ nạp và sinh, để thử đường ống")
     args = ap.parse_args()
 
@@ -253,7 +259,10 @@ def main():
 
         print("Bắt đầu huấn luyện ...")
         t0 = time.time()
-        Seq2SeqTrainer(**trainer_kwargs).train()
+        # Colab free ngat phien bat chot. `save_strategy="epoch"` da ghi checkpoint
+        # vao --out sau moi epoch, nen --resume cho phep chay tiep thay vi lam lai
+        # tu dau. Trainer tu tim checkpoint moi nhat khi truyen True.
+        Seq2SeqTrainer(**trainer_kwargs).train(resume_from_checkpoint=args.resume or None)
         mins = (time.time() - t0) / 60
         print(f"Huấn luyện xong sau {mins:.1f} phút.")
         model.save_pretrained(out_dir / "final")
@@ -279,17 +288,27 @@ def main():
         if base and base[0]["n"] == result["n"]:
             print("\n" + compare(result, base[0], "rouge1"))
 
-    save([result], f"{tag}.json")
+    table_path = save([result], f"{tag}.json")
     pred_dir = RESULTS / "predictions"
     pred_dir.mkdir(parents=True, exist_ok=True)
-    (pred_dir / f"{tag}.json").write_text(
+    pred_path = pred_dir / f"{tag}.json"
+    pred_path.write_text(
         json.dumps(
             {"guid": [r["guid"] for r in eval_rows], "reference": refs, name: preds},
             ensure_ascii=False,
         ),
         encoding="utf-8",
     )
-    print(f"\nĐã ghi kết quả vào {RESULTS / 'tables' / (tag + '.json')}")
+
+    # `RESULTS` nam trong ban clone cua repo. Tren Colab cho nay LA TAM THOI: ngat
+    # phien la mat sach, va mot lan chay 62 phut ma mat ket qua thi phai chay lai tu
+    # dau. Chep them mot ban vao `--out` (thuong tro vao Drive) de ket qua song sot.
+    # Chep chu khong doi cho ghi: doc so lieu van o dung noi ma README trich dan.
+    for src_path in (table_path, pred_path):
+        shutil.copy2(src_path, out_dir / src_path.name)
+
+    print(f"\nĐã ghi kết quả:\n  {table_path}\n  {pred_path}")
+    print(f"Bản sao an toàn (sống sót khi ngắt phiên): {out_dir}")
     print(f"Checkpoint: {out_dir / 'final'}")
 
 

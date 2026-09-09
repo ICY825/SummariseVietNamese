@@ -4,7 +4,7 @@
  "split": "test",
  "seed": 13,
  "size": 2000,
- "created": "2026-09-09",
+ "created": "2026-09-10",
  "note": "Chấm điểm cuối cùng, dùng một lần. Đã loại 1 bài rò rỉ train ∩ test. Nửa khoảng tin cậy 95% khi so cặp đôi: ±0,55 điểm ROUGE.",
  "guid": [
   5,

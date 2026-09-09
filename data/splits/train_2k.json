@@ -4,7 +4,7 @@
  "split": "train",
  "seed": 13,
  "size": 2000,
- "created": "2026-09-09",
+ "created": "2026-09-10",
  "note": "Tập con lồng nhau cho đường cong học; train_2k ⊂ các tập lớn hơn.",
  "guid": [
   14,
