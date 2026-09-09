@@ -65,6 +65,53 @@ Hai hệ quả kỹ thuật phải nhớ khi viết bất cứ đoạn xử lý 
   cho ra câu cụt — mọi baseline extractive ở tầng 0–2 đều xây trên ranh giới câu này,
   nên dùng chung hàm `sentences()` thay vì viết lại.
 
+### Đây có phải bài toán abstractive thật không?
+
+Tỷ lệ n-gram xuất hiện trong sapo nhưng **không** có trong bài gốc (mẫu 4.000 bài):
+
+| | 1-gram | 2-gram | 3-gram | 4-gram |
+|---|---|---|---|---|
+| Mới | 19,8% | **59,5%** | 77,0% | 85,4% |
+
+Gần 60% bigram của sapo là mới, nên mô hình buộc phải viết lại chứ không thể chép câu
+mà đạt điểm cao. Đây là điều kiện cần để câu hỏi nghiên cứu số 1 có nghĩa. Kèm theo,
+tỷ lệ token OOV của test so với từ vựng train chỉ 1,11% — không có vấn đề thưa dữ liệu.
+
+Kiểm tra mẫu bất thường trên 4.000 bài: **không có** bài nào dưới 50 âm tiết, không có
+sapo nào dài hơn bài gốc, không có sapo rỗng. Không cần viết bộ lọc chất lượng.
+
+## Tập con cố định
+
+Dữ liệu đầy đủ vượt xa ngân sách của Colab bản miễn phí, nên `src/data/make_splits.py`
+đóng băng sẵn các tập con vào `data/splits/` (`seed=13`). **Mọi tầng đều nạp qua
+`data.splits.load_split()`, không tầng nào được tự lấy mẫu lại** — có vậy tầng 0 và
+tầng 4 mới được chấm trên đúng cùng một tập bài.
+
+| Tập | Cỡ | Vai trò |
+|---|---|---|
+| `train_2k` ⊂ `train_5k` ⊂ `train_10k` ⊂ `train_20k` | 2k–20k | Lồng nhau, cho đường cong học |
+| `val` | 1.000 | Theo dõi qua từng epoch |
+| `tune` | 500 | Dò tham số sinh văn bản (tuần 5), rời hẳn `val` và `test` |
+| `test` | 2.000 | Chấm điểm cuối cùng, dùng một lần |
+
+**Vì sao test chỉ 2.000 bài.** Đo trên tập test thật: độ lệch chuẩn ROUGE-1 giữa các
+bài là 9,8, độ lệch chuẩn của *hiệu* khi so cặp đôi là 12,5. Nửa khoảng tin cậy 95%
+khi so hai hệ thống:
+
+| n | 500 | 1.000 | **2.000** | 5.000 | 22.498 |
+|---|---|---|---|---|---|
+| ± điểm ROUGE | 1,10 | 0,78 | **0,55** | 0,35 | 0,16 |
+
+Khoảng cách giữa các tầng thường là 2–5 điểm nên ±0,55 dư dùng; chạy toàn bộ test chỉ
+siết xuống ±0,16 mà tốn gấp 11 lần, chưa kể mỗi hệ thống neural phải sinh lại từng ấy
+bản tóm tắt. Bài duy nhất rò rỉ `train ∩ test` (guid 16992) đã bị loại khỏi `test`.
+
+**Vì sao train tối đa 20.000 bài.** Một epoch trên 99.134 bài với ViT5-base ở đầu vào
+1.024 token vượt giới hạn một phiên Colab free. ViT5 đã pretrain nên fine-tune tóm tắt
+bão hoà sớm; phần GPU tiết kiệm được đổ vào đường cong học và khảo sát tham số sinh sẽ
+cho kết quả có nội dung hơn là thêm 1–2 điểm ROUGE. Đường cong học chính là bằng chứng
+để bảo vệ lựa chọn này trong báo cáo.
+
 ## Các tầng mô hình
 
 | Tầng | Phương pháp | Tính chất |
@@ -77,9 +124,24 @@ Hai hệ quả kỹ thuật phải nhớ khi viết bất cứ đoạn xử lý 
 
 ## Đánh giá
 
-ROUGE-1/2/L trên văn bản đã tách từ, BERTScore, thống kê độ dài và tỷ lệ n-gram mới,
-đánh giá của người chấm theo quy trình blind trên 50 bài, phân tích lỗi định tính,
-và bootstrap để ước lượng khoảng tin cậy.
+ROUGE-1/2/L, BERTScore, thống kê độ dài và tỷ lệ n-gram mới, đánh giá của người chấm
+theo quy trình blind trên 50 bài, phân tích lỗi định tính, và bootstrap để ước lượng
+khoảng tin cậy.
+
+**Dạng văn bản để chấm điểm — quyết định đã chốt.** Đầu ra tầng 0–2 là văn bản tách
+từ, đầu ra tầng 3 là văn bản thô. Chấm trực tiếp hai thứ đó với nhau là so sánh vô
+nghĩa: `học_sinh` đếm một đơn vị còn `học sinh` đếm hai. Riêng việc đổi dạng đã dịch
+ROUGE-2 của Lead-3 từ 10,19 lên 14,21 — lớn hơn khoảng cách kỳ vọng giữa các hệ thống.
+
+Chuẩn chính là **dạng thô**, và mọi bản tóm tắt của mọi tầng — kể cả tham chiếu — phải
+đi qua `data.text.for_scoring()` trước khi chấm. Lý do chọn dạng thô chứ không phải
+dạng tách từ: khử tách từ là chiều **tất định** mà hệ thống nào cũng làm được, còn
+chiều ngược lại phải nhờ `underthesea`, khác công cụ với VnCoreNLP đã tách tham chiếu,
+và sai khác công cụ đó chỉ giáng lên phía abstractive. Có thể báo cáo thêm ROUGE trên
+dạng tách từ để đối chiếu với các bài báo trước, kèm ghi chú về bất lợi này.
+
+Quy trình blind cũng dùng đúng dạng đó: nếu bản tóm tắt extractive còn nguyên gạch
+dưới còn bản của ViT5 thì không, người chấm nhận ra ngay đâu là hệ thống nào.
 
 ## Cấu trúc
 
@@ -88,7 +150,8 @@ data/raw/          dữ liệu tải về, không chỉnh sửa
 data/processed/    đã chuẩn hoá và khử tách từ
 data/splits/       file ID cố định của train/val/test
 notebooks/         notebook trình bày
-src/data/          tải, kiểm tra, tiền xử lý
+src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
+                   make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra)
 src/models/        các tầng mô hình
 src/eval/          ROUGE tiếng Việt, BERTScore, bootstrap
 app/               demo Gradio
@@ -104,16 +167,28 @@ python -m venv .venv
 # source .venv/bin/activate && pip install -r requirements.txt  # Linux/macOS
 ```
 
-## Chạy kiểm tra dữ liệu
+## Chạy
 
 ```bash
-.venv/Scripts/python.exe src/data/inspect_vietnews.py
+.venv/Scripts/python.exe src/data/inspect_vietnews.py   # kiểm tra dữ liệu
+.venv/Scripts/python.exe src/data/make_splits.py        # đóng băng tập con (chạy MỘT lần)
+```
+
+Từ tuần 3 trở đi, mọi tầng nạp dữ liệu như sau:
+
+```python
+import sys; sys.path.insert(0, "src")
+from data.splits import load_split
+from data.text import sentences, for_scoring
+
+test = load_split("test")        # 2.000 bài, có sẵn article_raw / abstract_raw
+cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng extractive
 ```
 
 ## Tiến độ
 
 - [x] Tuần 1 — Dựng khung dự án, xác minh dữ liệu
-- [ ] Tuần 2 — Tiền xử lý, phân tích khám phá, cố định split
+- [x] Tuần 2 — Cố định split, ba phép biến đổi văn bản dùng chung, chốt dạng chấm điểm
 - [ ] Tuần 3 — Baseline tầng 0–1 và khung đánh giá
 - [ ] Tuần 4 — Fine-tune ViT5 lần đầu
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản

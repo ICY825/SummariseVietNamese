@@ -16,6 +16,9 @@ dấu câu cũng đã tách rời thành token độc lập. Hai hệ quả chi 
   - Ranh giới câu là dấu chấm đứng riêng (" . "), không phải mọi dấu chấm. Cắt câu
     bằng `(?<=[.!?])\s+` sẽ đứt ngay ở chữ viết tắt như "TP." và cho câu cụt.
 
+Các phép biến đổi văn bản lấy từ `src/data/text.py` — cả dự án dùng chung một
+cách cắt câu và một cách đếm độ dài.
+
 Chạy:  .venv/Scripts/python.exe src/data/inspect_vietnews.py
 """
 
@@ -26,38 +29,22 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 import hashlib
-import re
 import statistics
 import unicodedata
 from collections import Counter
+from pathlib import Path
 
 from datasets import load_dataset
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from data.text import sentences, syllables, tokens  # noqa: E402
 
 DATASET = "nam194/vietnews"
 SAMPLE = 4000  # số bài lấy mẫu cho các kiểm tra tốn thời gian
 SEED = 13  # cố định để mẫu lặp lại được giữa các lần chạy
 
-# Ranh gioi cau tren van ban da tach tu: dau cau la mot token dung rieng.
-SENT_SPLIT = re.compile(r"(?<=\s[.!?])\s+")
-
-
 def rule(title):
     print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
-
-
-def tokens(text):
-    """Token theo cách tách từ sẵn có: `Khởi_tố` là MỘT đơn vị (dạng PhoBERT ăn)."""
-    return re.findall(r"\w+", text.lower(), flags=re.UNICODE)
-
-
-def syllables(text):
-    """Âm tiết thật: tách cả dấu gạch dưới (dạng ViT5 / BARTpho-syllable ăn)."""
-    return re.findall(r"[^\W_]+", text.lower(), flags=re.UNICODE)
-
-
-def sentences(text):
-    """Cắt câu theo dấu câu đứng riêng, không đứt ở viết tắt kiểu `TP.`."""
-    return [s.strip() for s in SENT_SPLIT.split(text.strip()) if s.strip()]
 
 
 def lead(text, n=1):
