@@ -331,6 +331,25 @@ thích đầu `vit5.py`); `eval_loss` mới là đường đáng tin để đọ
 `--no-repeat-ngram` — và được ghi vào cả `run.json` lẫn tên file. Tuần 5 khảo sát
 chúng trên `tune` bằng `--no-train --model runs/.../final`, không phải train lại.
 
+### Chạy trên Kaggle
+
+`notebooks/kaggle_train_vit5.ipynb` là notebook huấn luyện tầng 3 trên Kaggle. Kaggle
+hơn Colab free ở hai điểm quyết định với đề tài này: **30 giờ GPU mỗi tuần** thay vì
+hạn mức không công bố, và **chạy ngầm** — `Save Version → Save & Run All (Commit)` chạy
+notebook trên máy khác, tối đa 12 giờ, không cần giữ trình duyệt mở. `train_20k` khoảng
+4 giờ nên vẫn gọn trong một phiên.
+
+Hai điều dễ sai:
+
+- **Kaggle cấp hai T4.** `Trainer` thấy hai thiết bị sẽ bật DataParallel và `--batch 2`
+  thành mỗi GPU, tức batch hiệu dụng 32 chứ không phải 16. Mọi lệnh trong notebook mở
+  đầu bằng `CUDA_VISIBLE_DEVICES=0` để giữ đúng cấu hình đã chốt — đổi batch hiệu dụng
+  giữa hai lần chạy là xoá mất chính thứ đang được so sánh.
+- **Chỉ `/kaggle/working` được ghi**, nên `--out` phải trỏ vào đó, và output một phiên
+  không quá 20 GB (mỗi `checkpoint-*` của ViT5-base nặng khoảng 2,7 GB).
+
+Notebook clone repo từ GitHub, nên phải `git push` trước khi chạy.
+
 ## Cấu trúc
 
 ```
