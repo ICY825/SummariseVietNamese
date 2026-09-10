@@ -293,6 +293,44 @@ chép nhiều hơn hẳn tham chiếu, nên điểm ROUGE và cảm nhận ngư�
 việc của khảo sát tham số sinh ở tuần 5 (`length_penalty`, `min_length`), làm trên
 tập `tune`.
 
+### Hồ sơ mỗi lần chạy
+
+Một bảng chỉ số trả lời "được bao nhiêu điểm" nhưng không trả lời "điểm đó sinh ra
+bằng cách nào". Nên mỗi lần chạy `vit5.py` ghi ra **ba** file cùng tên gốc:
+
+| File | Nội dung |
+|---|---|
+| `results/tables/<tag>.json` | điểm từng bài, khoảng tin cậy, `guid` |
+| `results/predictions/<tag>.json` | bản tóm tắt sinh ra, kèm `guid` và tham chiếu |
+| `results/tables/<tag>_run.json` | **hồ sơ lần chạy** |
+
+`<tag>` mang theo cấu hình đã sinh ra nó, ví dụ
+`vit5-base-train_5k_val_e3_lr3e-05_bs16_in1024`. Trước đây tag chỉ gồm mô hình và tập
+train, nên hai lần chạy khác `lr` ghi trùng tên và lần sau đè im lặng lên lần trước —
+đúng thứ sẽ xảy ra ở tuần 5 khi đường cong học chạy nhiều cấu hình trên cùng một
+split. Trùng tên thì file mới được thêm hậu tố `-2`, không bao giờ đè.
+
+`run.json` giữ: toàn bộ tham số dòng lệnh, tham số sinh, cỡ hai tập, tên GPU, phiên
+bản `torch`/`transformers`, số phút chạy, checkpoint nào được `load_best_model_at_end`
+chọn kèm `eval_loss` của nó, kết quả tóm lược, so sánh với Lead-3, và
+`train.log_history` — loss mỗi 25 bước cùng `eval_loss` cuối mỗi epoch. Đó là nguyên
+liệu để vẽ đường cong học; trước đây nó chỉ tồn tại trên màn hình Colab và mất theo
+phiên. Vẽ lại:
+
+```python
+import json
+h = json.load(open("results/tables/<tag>_run.json", encoding="utf-8"))["train"]["log_history"]
+train = [(r["step"], r["loss"]) for r in h if "loss" in r]
+val   = [(r["step"], r["eval_loss"]) for r in h if "eval_loss" in r]
+```
+
+Nhớ rằng `loss` huấn luyện đã bị nhân với `gradient_accumulation_steps` (xem chú
+thích đầu `vit5.py`); `eval_loss` mới là đường đáng tin để đọc.
+
+**Tham số sinh giờ là cờ dòng lệnh** — `--beams`, `--length-penalty`, `--min-length`,
+`--no-repeat-ngram` — và được ghi vào cả `run.json` lẫn tên file. Tuần 5 khảo sát
+chúng trên `tune` bằng `--no-train --model runs/.../final`, không phải train lại.
+
 ## Cấu trúc
 
 ```

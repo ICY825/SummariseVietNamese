@@ -37,6 +37,12 @@ một lần ở cuối, và tập `tune` mới là chỗ dò tham số sinh văn
 là việc của tuần 5 và phải làm trên `tune`; dò trên `val` sẽ làm hỏng vai trò theo dõi
 của chính tập đó.
 
+**Mỗi lần chạy để lại `run.json`.** Siêu tham số, đường cong loss từng bước
+(`trainer.state.log_history`), checkpoint được chọn, tham số sinh, phiên bản thư
+viện và tên GPU — tất cả ghi ra đĩa cạnh bảng chỉ số. Trước đây những thứ ấy chỉ
+tồn tại trên màn hình Colab: đóng tab là một bảng kết quả không còn tự nói được nó
+sinh ra từ cấu hình nào, và đường cong học không vẽ lại được.
+
 **Chấm điểm qua `eval.report`.** Mô hình sinh ra văn bản thô còn baseline ra văn bản
 tách từ; `for_scoring()` đã lo việc quy về một dạng. Tự tính ROUGE ở đây là phá phép
 so sánh có kiểm soát mà tầng 0-1 đã dựng.
@@ -62,13 +68,18 @@ vựng ~36k nên đoán bừa đã là ln(36000) ≈ 10,5).
 import argparse
 import inspect
 import json
+import platform
 import shutil
 import sys
 import time
 from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+# Console Windows mac dinh khong phai UTF-8. Phai dat ca stderr, khong chi stdout:
+# thong bao chan `test` di ra bang SystemExit, tuc qua stderr — mot canh bao quan
+# trong ma doc khong noi thi coi nhu khong co.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from data.splits import load_split  # noqa: E402
@@ -98,6 +109,52 @@ def _pick_kwarg(cls, options, value):
     return {}
 
 
+def gen_kwargs(args):
+    """Tham số sinh, gom một chỗ để vừa truyền vào `generate()` vừa ghi vào `run.json`."""
+    return {
+        "num_beams": args.beams,
+        "no_repeat_ngram_size": args.no_repeat_ngram,
+        "length_penalty": args.length_penalty,
+        "min_length": args.min_length,
+        "early_stopping": True,
+    }
+
+
+def run_tag(args, name):
+    """Tên file mang theo cấu hình đã sinh ra nó.
+
+    Trước đây tag chỉ gồm mô hình và tập train, nên hai lần chạy khác `lr` hay khác
+    `epochs` ghi trùng tên và lần sau ĐÈ IM LẶNG lên lần trước. Tuần 5 chạy đường
+    cong học với nhiều cấu hình trên cùng một split nên chắc chắn dính. Nhét cấu
+    hình vào tên là cách rẻ nhất để một file kết quả tự khai nó là của lần chạy nào.
+    """
+    bits = [name, args.eval_split, f"e{args.epochs:g}", f"lr{args.lr:g}",
+            f"bs{args.batch * args.grad_accum}", f"in{args.max_input}"]
+    if args.beams != 4:
+        bits.append(f"beam{args.beams}")
+    if args.length_penalty != 1.0:
+        bits.append(f"lp{args.length_penalty:g}")
+    if args.min_length:
+        bits.append(f"min{args.min_length}")
+    if args.eval_limit:
+        bits.append(f"thu{args.eval_limit}")
+    return "_".join(bits)
+
+
+def free_tag(tag, dirs):
+    """Tag chưa bị dùng ở bất kỳ thư mục nào trong `dirs`.
+
+    Một lần chạy 60 phút trên Colab không bao giờ được phép đè kết quả cũ, kể cả khi
+    cấu hình trùng khít. Trùng thì thêm hậu tố, không hỏi và không đè.
+    """
+    candidate, i = tag, 2
+    while any((d / f"{candidate}.json").exists() for d in dirs):
+        candidate, i = f"{tag}-{i}", i + 1
+    if candidate != tag:
+        print(f"  {tag}.json đã có — ghi thành {candidate}.json để không đè kết quả cũ.")
+    return candidate
+
+
 def tokenize(rows, tok, max_input, max_target, prefix=""):
     """Văn bản thô -> tensor. Cắt ở đây, đúng ngưỡng đã chốt."""
     x = tok(
@@ -116,10 +173,16 @@ def tokenize(rows, tok, max_input, max_target, prefix=""):
     ]
 
 
-def generate(model, tok, rows, max_input, max_target, batch=16, beams=4, prefix=""):
-    """Sinh bản tóm tắt cho cả tập, giữ nguyên thứ tự bài."""
+def generate(model, tok, rows, max_input, max_target, batch=16, prefix="", gen=None):
+    """Sinh bản tóm tắt cho cả tập, giữ nguyên thứ tự bài.
+
+    `gen` là các tham số sinh. Truyền vào tường minh chứ không ghim trong thân hàm,
+    vì tuần 5 khảo sát đúng chúng: một bảng chỉ số không nói rõ nó sinh bằng
+    `length_penalty` nào thì không so được với bảng khác.
+    """
     import torch
 
+    gen = dict(gen or {"num_beams": 4, "no_repeat_ngram_size": 3, "early_stopping": True})
     model.eval()
     out = []
     for i in range(0, len(rows), batch):
@@ -132,13 +195,7 @@ def generate(model, tok, rows, max_input, max_target, batch=16, beams=4, prefix=
             return_tensors="pt",
         ).to(model.device)
         with torch.no_grad():
-            ids = model.generate(
-                **enc,
-                max_length=max_target,
-                num_beams=beams,
-                no_repeat_ngram_size=3,
-                early_stopping=True,
-            )
+            ids = model.generate(**enc, max_length=max_target, **gen)
         out.extend(tok.batch_decode(ids, skip_special_tokens=True))
         done = min(i + batch, len(rows))
         print(f"\r  sinh {done}/{len(rows)}", end="", flush=True)
@@ -156,6 +213,13 @@ def main():
     ap.add_argument("--batch", type=int, default=2, help="mỗi thiết bị")
     ap.add_argument("--grad-accum", type=int, default=8, help="batch hiệu dụng = batch * cái này")
     ap.add_argument("--gen-batch", type=int, default=16)
+    ap.add_argument("--beams", type=int, default=4, help="số tia khi sinh")
+    ap.add_argument("--no-repeat-ngram", type=int, default=3)
+    ap.add_argument(
+        "--length-penalty", type=float, default=1.0,
+        help="tuần 5 khảo sát trên `tune`; lớn hơn 1 thì sinh dài hơn",
+    )
+    ap.add_argument("--min-length", type=int, default=0, help="tuần 5 khảo sát trên `tune`")
     ap.add_argument("--max-input", type=int, default=MAX_INPUT)
     ap.add_argument("--max-target", type=int, default=MAX_TARGET)
     ap.add_argument("--prefix", default="", help='tiền tố kiểu T5, ví dụ "vietnews: "')
@@ -184,6 +248,7 @@ def main():
         )
 
     import torch
+    import transformers
     from transformers import (
         AutoModelForSeq2SeqLM,
         DataCollatorForSeq2Seq,
@@ -203,6 +268,11 @@ def main():
     print(f"Nạp {args.model} ...")
     tok = load_tokenizer(args.model)
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model)
+    # `Trainer` tu day model len GPU khi huan luyen, nhung luong `--no-train` thi
+    # KHONG ai lam viec do: model nam nguyen tren CPU va sinh 1.000 bai mat hang gio.
+    # Tuan 5 dung dung luong nay — nap checkpoint da luu roi chi sinh lai voi tham so
+    # sinh khac — nen phai chuyen thiet bi ngay tu day.
+    model.to("cuda" if torch.cuda.is_available() else "cpu")
 
     print(f"Nạp {args.train_split} và {args.eval_split} ...")
     train_rows = list(load_split(args.train_split, add_raw=True))
@@ -214,6 +284,7 @@ def main():
 
     out_dir = Path(args.out) / f"{args.model.replace('/', '_')}_{args.train_split}"
     out_dir.mkdir(parents=True, exist_ok=True)
+    train_info = None   # con None khi chay --no-train
 
     # fp16 BAT mac dinh vi do duoc nhanh hon 33% tren T4 (4,0 so voi 3,0 mau/giay),
     # va do thuc te khong thay bat on: eval_loss lanh manh o ca fp16 lan fp32.
@@ -278,15 +349,30 @@ def main():
         # khong the biet ban tom tat duoc sinh bang trong so cua epoch nao. In ra
         # day de lan chay sau tu ghi lai dieu do vao ket qua.
         best = getattr(trainer.state, "best_model_checkpoint", None)
+        best_loss = getattr(trainer.state, "best_metric", None)
         print(f"  Checkpoint tốt nhất: {best or 'KHÔNG có — dùng trọng số cuối'}"
-              f" (eval_loss {getattr(trainer.state, 'best_metric', None)})")
+              f" (eval_loss {best_loss})")
+        # `log_history` giu loss moi `logging_steps` buoc va `eval_loss` cuoi moi
+        # epoch — day la nguyen lieu duy nhat de ve duong cong hoc trong bao cao.
+        # No song trong bo nho cua tien trinh: het `main()` la mat, nen phai ghi ra
+        # dia chu khong chi in len man hinh Colab.
+        train_info = {
+            "minutes": round(mins, 1),
+            "best_checkpoint": best,
+            "best_eval_loss": best_loss,
+            "epochs_ran": getattr(trainer.state, "epoch", None),
+            "global_step": getattr(trainer.state, "global_step", None),
+            "log_history": list(getattr(trainer.state, "log_history", [])),
+        }
         model.save_pretrained(out_dir / "final")
         tok.save_pretrained(out_dir / "final")
 
     print("\nSinh bản tóm tắt trên tập đánh giá ...")
+    gen = gen_kwargs(args)
+    print(f"  tham số sinh: {gen}")
     preds = generate(
         model, tok, eval_rows, args.max_input, args.max_target,
-        batch=args.gen_batch, prefix=args.prefix,
+        batch=args.gen_batch, prefix=args.prefix, gen=gen,
     )
 
     name = f"{args.model.split('/')[-1]}-{args.train_split}"
@@ -295,10 +381,15 @@ def main():
     guids = [str(r["guid"]) for r in eval_rows]
     result = evaluate(name, preds, refs, arts, guids=guids)
 
-    tag = f"{name}_{args.eval_split}" + (f"_thu{args.eval_limit}" if args.eval_limit else "")
+    tables_dir = RESULTS / "tables"
+    pred_dir = RESULTS / "predictions"
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    pred_dir.mkdir(parents=True, exist_ok=True)
+    tag = free_tag(run_tag(args, name), (tables_dir, pred_dir, out_dir))
     print("\n" + table([result]))
 
-    base_path = RESULTS / "tables" / f"baselines_{args.eval_split}.json"
+    versus = None
+    base_path = tables_dir / f"baselines_{args.eval_split}.json"
     if base_path.exists() and not args.eval_limit:
         base = [r for r in json.loads(base_path.read_text(encoding="utf-8")) if r["name"] == "Lead-3"]
         if base:
@@ -308,13 +399,13 @@ def main():
             # khong phai phien toai. Bat lai vi khoi so sanh nay chay TRUOC buoc
             # ghi file: de no nem loi la mat trang mot phien Colab 60 phut.
             try:
-                print("\n" + compare(result, base[0], "rouge1"))
+                versus = compare(result, base[0], "rouge1")
+                print("\n" + versus)
             except ValueError as e:
+                versus = f"BỎ QUA — {e}"
                 print(f"\nBỎ QUA so sánh với Lead-3 — {e}")
 
     table_path = save([result], f"{tag}.json")
-    pred_dir = RESULTS / "predictions"
-    pred_dir.mkdir(parents=True, exist_ok=True)
     pred_path = pred_dir / f"{tag}.json"
     pred_path.write_text(
         json.dumps(
@@ -322,6 +413,50 @@ def main():
             ensure_ascii=False,
         ),
         encoding="utf-8",
+    )
+
+    # Ho so cua lan chay. Bang chi so tra loi "duoc bao nhieu diem"; file nay tra loi
+    # "diem do sinh ra bang cach nao" — sieu tham so, duong cong loss, checkpoint nao
+    # duoc chon, tham so sinh, GPU, phien ban thu vien. Do la thu can co khi trinh
+    # bay, va la thu duy nhat chung minh mot bang ket qua thuoc ve cau hinh nao.
+    run_path = tables_dir / f"{tag}_run.json"
+    record = {
+        "tag": tag,
+        "name": name,
+        "finished_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "args": vars(args),
+        "generation": gen,
+        "data": {
+            "train_split": args.train_split,
+            "n_train": len(train_rows),
+            "eval_split": args.eval_split,
+            "n_eval": len(eval_rows),
+            "max_input": args.max_input,
+            "max_target": args.max_target,
+            "seed": SEED,
+        },
+        "env": {
+            "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+            "fp16": use_fp16,
+            "torch": torch.__version__,
+            "transformers": transformers.__version__,
+            "python": platform.python_version(),
+        },
+        "train": train_info,
+        "scores": {
+            "corpus": result["corpus"],
+            "length": result["length"],
+            "novel": result.get("novel"),
+        },
+        "versus_lead3": versus,
+        "files": {
+            "table": str(table_path),
+            "predictions": str(pred_path),
+            "checkpoint": args.model if args.no_train else str(out_dir / "final"),
+        },
+    }
+    run_path.write_text(
+        json.dumps(record, ensure_ascii=False, indent=1), encoding="utf-8"
     )
 
     # `RESULTS` nam trong ban clone cua repo. Tren Colab cho nay LA TAM THOI: ngat
@@ -335,12 +470,12 @@ def main():
     # phien Colab bi ngat lai la thu KHONG chua diem tung bai, khoang tin cay hay
     # guid. Dung cai ma ban sao an toan sinh ra de bao ve.
     saved = []
-    for src_path in (table_path, pred_path):
+    for src_path in (table_path, pred_path, run_path):
         dest = out_dir / f"{src_path.parent.name}_{src_path.name}"
         shutil.copy2(src_path, dest)
         saved.append(dest)
 
-    print(f"\nĐã ghi kết quả:\n  {table_path}\n  {pred_path}")
+    print(f"\nĐã ghi kết quả:\n  {table_path}\n  {pred_path}\n  {run_path}  <- hồ sơ lần chạy")
     print("Bản sao an toàn (sống sót khi ngắt phiên):")
     for dest in saved:
         print(f"  {dest}")
