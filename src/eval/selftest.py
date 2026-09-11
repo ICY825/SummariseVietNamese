@@ -1,4 +1,4 @@
-"""Tự kiểm tra module đánh giá. Chạy lại sau mỗi lần sửa `rouge.py` hay `stats.py`.
+"""Tự kiểm tra module đánh giá. Chạy lại sau mỗi lần sửa `rouge.py`, `stats.py` hay `truncation.py`.
 
     .venv/Scripts/python.exe src/eval/selftest.py
 
@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from eval.report import compare, evaluate  # noqa: E402
 from eval.rouge import score, sentences_raw  # noqa: E402
 from eval.stats import bootstrap_ci, paired_bootstrap  # noqa: E402
+from eval.truncation import group_diff, lost_reference  # noqa: E402
 
 fails = []
 
@@ -112,6 +113,26 @@ try:
     check_true("lệch số guid với số dự đoán -> phải báo lỗi", False)
 except ValueError:
     check_true("lệch số guid với số dự đoán -> phải báo lỗi", True)
+
+print("\n6. Câu hỏi 2: đo mất mát do cắt bài")
+# Hai nhom bai bi cat / khong bi cat la hai tap ROI NHAU, khac co — phai lay mau doc
+# lap trong tung nhom. `paired_bootstrap()` o day se bao loi vi lech co, hoac te hon,
+# ghep cap bua hai bai khong lien quan neu tinh co cung co.
+a = [float(x) for x in range(100)]            # trung binh 49,5
+r = group_diff(a, a, n_boot=500)
+check("hai nhóm giống hệt -> chênh 0", r["diff"], 0.0)
+check_true("hai nhóm giống hệt -> không có ý nghĩa", not r["significant"])
+r = group_diff([x + 5 for x in a], a, n_boot=500)
+check("lệch đều +5", r["diff"], 5.0)
+check_true("lệch đều +5 -> khoảng tin cậy chứa 5", r["lo"] < 5 < r["hi"])
+check("hai nhóm khác cỡ (3 vs 100 bài)", group_diff([1.0, 2.0, 3.0], a, n_boot=500)["diff"], -47.5)
+# Chi tinh am tiet cua sapo CO trong bai: am tiet nguoi viet sapo tu them vao thi
+# dang nao mo hinh cung khong doc thay, khong phai loi cua viec cat.
+check("sapo nằm trọn trong phần giữ -> mất 0%", lost_reference("Hà Nội mưa", "hôm nay Hà Nội mưa", "mai nắng"), 0.0)
+check("sapo nằm trọn trong phần cắt -> mất 100%", lost_reference("mai nắng", "hôm nay mưa", "mai nắng"), 100.0)
+check("một nửa ở mỗi phần -> 50%", lost_reference("mưa nắng", "hôm nay mưa", "mai nắng"), 50.0)
+check("âm tiết mới của sapo không tính là mất", lost_reference("mưa bão", "hôm nay mưa", "mai nắng"), 0.0)
+check("không phân biệt hoa thường", lost_reference("Nắng", "hôm nay mưa", "mai nắng"), 100.0)
 
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

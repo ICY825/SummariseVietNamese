@@ -400,6 +400,42 @@ thành công mà không có kết quả nào. Mọi lệnh trong notebook đều
 ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
 Internet thay vì huấn luyện trên CPU hàng giờ.
 
+## Câu hỏi 2 — cắt bài ở 1.024 token mất bao nhiêu (sơ bộ)
+
+`src/eval/truncation.py` trên ViT5 `train_5k`, tập `val`. Không cần GPU và không chạy
+lại mô hình: đếm token bằng đúng tokenizer của ViT5, rồi chia điểm từng bài đã lưu
+thành hai nhóm bị cắt / không bị cắt.
+
+Bị cắt **93 / 1.000 bài (9,3%)**, khớp mức 10,2% đo trên mẫu `train_20k` lúc chốt ngưỡng.
+Bài bị cắt dài trung bình 1.173 token; phần bị cắt chiếm trung bình 11,9% số token.
+
+| Nhóm | n | ViT5 | Lead-3 | ViT5 − Lead-3 |
+|---|---|---|---|---|
+| Không bị cắt | 907 | 32,76 ±0,98 | 27,99 ±0,62 | +4,77 ±0,91 |
+| Bị cắt | 93 | 25,60 ±2,57 | 22,20 ±1,70 | +3,40 ±2,76 |
+
+**Bài bị cắt khó với mọi hệ thống, không riêng ViT5.** ViT5 sụt 7,16 điểm ở nhóm bị
+cắt, nhưng Lead-3 — không bao giờ đọc tới phần bị cắt — cũng sụt 5,79. Phần lớn cú sụt
+đến từ việc bài dài, không phải từ việc cắt. So thẳng ViT5 giữa hai nhóm sẽ đổ oan toàn
+bộ 7 điểm cho việc cắt.
+
+**Phần thực sự do cắt: −1,37 [−4,28, +1,58], p = 0,36 — chưa đủ bằng chứng.** Đó là
+hiệu của hiệu: khoảng cách ViT5 − Lead-3 ở nhóm bị cắt trừ ở nhóm còn lại. Khoảng tin
+cậy rộng vì chỉ có 93 bài bị cắt, nên phép đo này chỉ bắt được mất mát cỡ 3 điểm trở
+lên. Kết luận đúng là **"không thấy mất mát lớn"**, không phải "không mất gì".
+
+**Trần mất mát nhỏ.** Trong số âm tiết của sapo có mặt trong bài, trung bình chỉ
+**2,4%** nằm riêng ở phần bị cắt (p50 0%, p90 6,9%), và 63% số bài bị cắt không mất gì.
+Tin tức viết theo tháp ngược nên phần đuôi ít khi mang thông tin của sapo. Hệ quả cho
+tầng 4: lý do "cứu phần bị cắt" yếu hơn dự kiến; giá trị của nó, nếu có, phải đến từ
+chọn câu tốt hơn — khoảng 16 điểm còn cách Oracle-3.
+
+**Kiểm chứng.** Vị trí cắt script tính ra trùng từng token với cách tokenizer tự cắt
+(`truncation=True, max_length=1024`, đúng như `vit5.py`) trên cả 93 bài.
+
+Chạy lại cho mô hình khác bằng `--system <tag>`. Thêm dữ liệu train không làm hẹp
+khoảng tin cậy — vẫn là 93 bài bị cắt ấy; muốn hẹp hơn phải chấm trên nhiều bài hơn.
+
 ## Cấu trúc
 
 ```
@@ -414,7 +450,8 @@ src/models/        extractive.py (tầng 0-1), vit5.py (tầng 3, cần GPU),
                    run_baselines.py (chạy + chấm), measure_tokens.py (đo
                    độ dài cắt), selftest.py (tự kiểm tra)
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
-                   report.py (khung chấm điểm), bertscore.py, selftest.py
+                   report.py (khung chấm điểm), bertscore.py, selftest.py,
+                   truncation.py (câu hỏi 2, cần transformers)
 app/               demo Gradio
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
@@ -426,6 +463,17 @@ report/            báo cáo và slide
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt   # Windows
 # source .venv/bin/activate && pip install -r requirements.txt  # Linux/macOS
+```
+
+**Môi trường phân tích** — cho các script cần tokenizer nhưng không cần GPU
+(`truncation.py`, `measure_tokens.py`). Tách riêng khỏi `.venv` để không kéo lệch các
+phiên bản đã ghim, và ghim `transformers==5.0.0` cho trùng bản Kaggle đã huấn luyện,
+để số token đếm được đúng là thứ mô hình đã đọc:
+
+```bash
+python -m venv ~/.venvs/phan-tich
+~/.venvs/phan-tich/Scripts/python.exe -m pip install -r requirements.txt "transformers==5.0.0"
+~/.venvs/phan-tich/Scripts/python.exe src/eval/truncation.py
 ```
 
 ## Chạy
