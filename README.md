@@ -289,6 +289,12 @@ khi sapo do người viết là **59,5%**. Nó có viết lại thật (baseline
 trực tiếp cho câu hỏi nghiên cứu số 3: ROUGE đang trao điểm cao nhất cho một hệ thống
 chép nhiều hơn hẳn tham chiếu, nên điểm ROUGE và cảm nhận người đọc có thể lệch nhau.
 
+**File kết quả của lần chạy này không còn.** Nó chạy trên Colab trước khi có hồ sơ
+`run.json` và bản sao an toàn, nên điểm từng bài, bản tóm tắt sinh ra và đường loss mất
+theo phiên; bảng trên chỉ còn là số chép tay. Hệ quả: chưa so cặp được với hệ thống nào
+khác. Tuần 5 chạy lại đúng cấu hình này trên Kaggle làm điểm `train_5k` của đường cong
+học — số mới có thể lệch nhẹ vì khác phiên bản thư viện, và số mới là số được dùng.
+
 **Độ dài 30 âm tiết so với sapo thật 35** — hơi ngắn, có thể đang mất recall. Đây là
 việc của khảo sát tham số sinh ở tuần 5 (`length_penalty`, `min_length`), làm trên
 tập `tune`.
@@ -349,6 +355,23 @@ Hai điều dễ sai:
   không quá 20 GB (mỗi `checkpoint-*` của ViT5-base nặng khoảng 2,7 GB).
 
 Notebook clone repo từ GitHub, nên phải `git push` trước khi chạy.
+
+**Các bước:**
+
+1. Kaggle → *Create → New Notebook* → *File → Import Notebook*, tải lên
+   `notebooks/kaggle_train_vit5.ipynb`.
+2. *Settings*: Accelerator `GPU T4 x2`, Internet `On`.
+3. Sửa **ô cấu hình** (ô code đầu tiên): `TRAIN_SPLIT`, và `MODEL` nếu chạy BARTpho.
+   Mỗi version chạy một cấu hình.
+4. Chạy tay đến hết ô "chạy thử đường ống" (khoảng 3 phút) để chắc môi trường ổn.
+5. *Save Version → Save & Run All (Commit)*, rồi đóng trình duyệt.
+6. Xong thì tải `ket_qua_<mô hình>_<tập>.zip` ở tab *Output*, giải nén tại thư mục gốc
+   repo — file tự vào đúng `results/tables/` và `results/predictions/`.
+
+Lệnh `!python ...` bị lỗi **không** làm dừng notebook, nên một bản Commit hỏng vẫn báo
+thành công mà không có kết quả nào. Mọi lệnh trong notebook đều kiểm tra `_exit_code`
+ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
+Internet thay vì huấn luyện trên CPU hàng giờ.
 
 ## Cấu trúc
 
