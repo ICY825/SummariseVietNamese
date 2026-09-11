@@ -122,8 +122,11 @@ bản tóm tắt. Bài duy nhất rò rỉ `train ∩ test` (guid 16992) đã b�
 **Vì sao train tối đa 20.000 bài.** Một epoch trên 99.134 bài với ViT5-base ở đầu vào
 1.024 token vượt giới hạn một phiên Colab free. ViT5 đã pretrain nên fine-tune tóm tắt
 bão hoà sớm; phần GPU tiết kiệm được đổ vào đường cong học và khảo sát tham số sinh sẽ
-cho kết quả có nội dung hơn là thêm 1–2 điểm ROUGE. Đường cong học chính là bằng chứng
-để bảo vệ lựa chọn này trong báo cáo.
+cho kết quả có nội dung hơn là thêm 1–2 điểm ROUGE.
+
+**Đường cong học đo xong đã bác vế "bão hoà" của lập luận này** (xem mục Đường cong
+học): từ 5k lên 20k, ROUGE-1 vẫn tăng +1,30 [+0,40, +2,19]. Giới hạn 20.000 bài vì vậy
+phải được trình bày là ràng buộc ngân sách GPU, không phải là điểm mô hình hết học.
 
 ## Các tầng mô hình
 
@@ -272,11 +275,13 @@ hơn hẳn nửa khoảng tin cậy nên không phải nhiễu. Đáng chú ý l
 bản tóm tắt **ngắn hơn ba lần** Lead-3 (30 so với 102 âm tiết) — tức thắng bằng chọn
 đúng chữ chứ không phải bằng rải chữ cho trúng.
 
-**Fine-tune bão hoà rất sớm.** `eval_loss` qua ba epoch: 1,802 → 1,790 → **1,796**.
-Epoch 3 còn nhỉnh hơn epoch 2 một chút, tức mô hình đã hết học từ sau epoch 1. Đây là
-bằng chứng thực nghiệm cho quyết định giới hạn train ở 20.000 bài: thêm dữ liệu và
-thêm epoch cho ViT5 đã pretrain hầu như không đổi được gì, và phần GPU tiết kiệm được
-nên đổ vào đường cong học với khảo sát tham số sinh.
+**Thêm epoch thì bão hoà rất sớm.** `eval_loss` qua ba epoch: 1,802 → 1,790 → **1,796**.
+Epoch 3 còn nhỉnh hơn epoch 2 một chút, tức mô hình đã hết học từ sau epoch 1 — điều
+này lặp lại y hệt ở `train_10k` và `train_20k`, nên ba epoch là đủ.
+
+Đừng suy từ đây ra rằng thêm **dữ liệu** cũng vô ích: đường cong học đo sau đó cho thấy
+20k hơn 5k +1,30 ROUGE-1, có ý nghĩa. Bão hoà theo epoch và bão hoà theo cỡ dữ liệu là
+hai chuyện khác nhau.
 
 **Vẫn còn xa trần extractive.** ViT5 đạt 31,62 trong khi Oracle-3 đạt 48,09 — nghĩa là
 một bộ chọn câu hoàn hảo vẫn vượt xa mô hình sinh. Đây là lý do tầng 2 (PhoBERT chọn
@@ -326,7 +331,7 @@ và 1.000 tham chiếu khớp dữ liệu nạp lại trên máy; phép so với
 không bản nào rỗng, không có token lạ (`<...>`, `extra_id`, `▁`, U+FFFD), không lặp
 3-gram, không có hai bản trùng nhau. Đường lui không làm hỏng đầu ra.
 
-### Đường cong học — 2 / 3 điểm
+### Đường cong học — 3 / 3 điểm
 
 Cùng cấu hình, chỉ đổi cỡ tập train; mọi lần chạy trên Kaggle T4, chấm trên `val`.
 
@@ -334,19 +339,31 @@ Cùng cấu hình, chỉ đổi cỡ tập train; mọi lần chạy trên Kaggl
 |---|---|---|---|---|---|
 | `train_5k` | 32,09 ±0,94 | 17,99 ±0,84 | 25,24 ±0,86 | 1,789 (epoch 2) | 55,9 phút |
 | `train_10k` | 32,40 ±0,94 | 18,12 ±0,85 | 25,65 ±0,87 | 1,746 (epoch 2) | 112,9 phút |
-| `train_20k` | — | — | — | — | — |
+| **`train_20k`** | **33,40 ±0,99** | **19,15 ±0,91** | **26,59 ±0,92** | **1,707 (epoch 2)** | 232,4 phút |
 
-**Gấp đôi dữ liệu: `eval_loss` giảm, ROUGE chưa nhúc nhích.** So cặp `train_10k` với
-`train_5k` trên cùng 1.000 bài: rouge1 +0,30 [−0,47, +1,08] p = 0,44; rouge2 +0,13
-[−0,54, +0,81] p = 0,69; rougeL +0,40 [−0,31, +1,10] p = 0,26 — cả ba chưa đủ bằng
-chứng. Trong khi đó `eval_loss` giảm rõ, 1,789 → 1,746. Hai mô hình khác nhau thật chứ
-không phải sinh ra cùng một thứ: chỉ 71 / 1.000 bản tóm tắt trùng khớp.
+So cặp trên cùng 1.000 bài của `val`:
 
-Kết quả hợp với giả thuyết bão hoà sớm đã dùng để giới hạn train ở 20.000 bài, nhưng
-hai điểm chưa đủ để kết luận, và `val` 1.000 bài chỉ phát hiện được chênh lệch cỡ 0,8
-điểm trở lên (bảng cỡ mẫu ở phần Tập con cố định). `train_20k` là điểm quyết định.
-Mức hơn Lead-3 của `train_10k` là +4,95 [+4,08, +5,82]; `eval_loss` qua ba epoch
-1,769 → **1,746** → 1,753, epoch 2 vẫn là điểm tốt nhất như ở `train_5k`.
+| Cặp | rouge1 | rouge2 | rougeL |
+|---|---|---|---|
+| 10k − 5k | +0,30 [−0,47, +1,08] p = 0,44 | +0,13 p = 0,69 | +0,40 p = 0,26 |
+| **20k − 10k** | **+1,00 [+0,18, +1,83] p = 0,016** | **+1,03 p = 0,004** | **+0,94 p = 0,015** |
+| **20k − 5k** | **+1,30 [+0,40, +2,19] p = 0,005** | **+1,16 p = 0,005** | **+1,34 p = 0,002** |
+
+**Đường cong CHƯA phẳng ở 20.000 bài.** Bước 5k → 10k không đo được (`val` 1.000 bài
+chỉ phát hiện chênh lệch từ khoảng 0,8 điểm trở lên — xem bảng cỡ mẫu ở phần Tập con
+cố định), nhưng bước 10k → 20k thì có ý nghĩa ở **cả ba** chỉ số, và `eval_loss` giảm
+đều suốt: 1,789 → 1,746 → **1,707**. Mỗi lần chạy vẫn đạt tốt nhất ở cuối epoch 2.
+
+**Điều này sửa lại nhận định "bão hoà sớm" của tuần 4.** Nhận định đó rút ra từ ba
+epoch trên cùng một tập `train_5k`, nên nó chỉ đúng cho việc thêm **epoch**. Thêm
+**dữ liệu** vẫn còn tác dụng: +1,30 ROUGE-1 từ 5k lên 20k. Vì vậy con số 20.000 bài
+phải được trình bày trong báo cáo là **ràng buộc ngân sách GPU** (4 giờ một lần chạy),
+không phải là điểm mô hình hết học. Nếu còn quota, 40k và toàn bộ 99.134 bài là hướng
+kiểm chứng tiếp; đường cong hiện tại chưa cho phép đoán nó phẳng ở đâu.
+
+`train_20k` hơn Lead-3 **+5,95 [+5,03, +6,88]**, và đây là mô hình tốt nhất hiện có —
+mốc để tầng 2, tầng 4 và đối chứng BARTpho so với, cũng là mô hình dùng cho khâu dò
+tham số sinh trên tập `tune`.
 
 ### Hồ sơ mỗi lần chạy
 
@@ -445,7 +462,7 @@ thành công mà không có kết quả nào. Mọi lệnh trong notebook đều
 ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
 Internet thay vì huấn luyện trên CPU hàng giờ.
 
-## Câu hỏi 2 — cắt bài ở 1.024 token mất bao nhiêu (sơ bộ)
+## Câu hỏi 2 — cắt bài ở 1.024 token mất bao nhiêu
 
 `src/eval/truncation.py` trên ViT5 `train_5k`, tập `val`. Không cần GPU và không chạy
 lại mô hình: đếm token bằng đúng tokenizer của ViT5, rồi chia điểm từng bài đã lưu
@@ -471,29 +488,41 @@ lên. Kết luận đúng là **"chưa phân biệt được với 0"**, không 
 
 **Trần mất mát nhỏ.** Trong số âm tiết của sapo có mặt trong bài, trung bình chỉ
 **2,4%** nằm riêng ở phần bị cắt (p50 0%, p90 6,9%), và 63% số bài bị cắt không mất gì.
-Tin tức viết theo tháp ngược nên phần đuôi ít khi mang thông tin của sapo. Hệ quả cho
-tầng 4: lý do "cứu phần bị cắt" yếu hơn dự kiến; giá trị của nó, nếu có, phải đến từ
-chọn câu tốt hơn — khoảng 16 điểm còn cách Oracle-3.
+Tin tức viết theo tháp ngược nên phần đuôi ít khi mang thông tin của sapo. Nhưng đây
+chỉ là trần mất mát tính theo **chữ của sapo**; số đo trên `train_20k` ngay dưới cho
+thấy thiệt hại thật lớn hơn nhiều lần con số ấy.
 
 **Kiểm chứng.** Vị trí cắt script tính ra trùng từng token với cách tokenizer tự cắt
 (`truncation=True, max_length=1024`, đúng như `vit5.py`) trên cả 93 bài.
 
-**Lặp lại trên `train_10k`: ước lượng mất mát lớn lên, vẫn chưa đủ bằng chứng.**
+**Mô hình càng mạnh, cái giá của việc cắt càng lộ ra — và ở `train_20k` thì đo được.**
 
 | Mô hình | ViT5, không bị cắt | ViT5, bị cắt | Hiệu của hiệu |
 |---|---|---|---|
 | `train_5k` | 32,76 ±0,98 | 25,60 ±2,57 | −1,37 [−4,28, +1,58], p = 0,36 |
 | `train_10k` | 33,16 ±1,01 | 24,94 ±2,41 | −2,43 [−5,27, +0,44], p = 0,10 |
+| **`train_20k`** | **34,31 ±1,04** | **24,50 ±2,59** | **−4,02 [−6,84, −1,12], p = 0,007** |
 
-Thêm dữ liệu train nâng điểm ở nhóm bài không bị cắt nhưng không nâng ở nhóm bị cắt —
-đúng chiều sẽ thấy nếu việc cắt có giá thật: mô hình càng giỏi, phần nó không được
-nhìn thấy càng thành nút thắt. Nhưng các chênh lệch giữa hai mô hình ở từng nhóm đều
-nằm trong sai số, cả hai phép đo dùng chung 93 bài, và khoảng tin cậy vẫn chứa 0.
-Đây là tín hiệu cần kiểm lại trên `train_20k` và trên nhiều bài hơn, chưa phải kết luận;
-mất mát tới khoảng 5 điểm ROUGE-1 ở nhóm bị cắt vẫn chưa bị loại trừ.
+**Toàn bộ phần lợi của việc thêm dữ liệu rơi vào nhóm bài không bị cắt**: 32,76 → 33,16
+→ 34,31 ở nhóm vừa cửa sổ, trong khi nhóm bị cắt đứng yên (25,60 → 24,94 → 24,50). Mô
+hình càng giỏi thì phần nó không được đọc càng thành nút thắt — đúng chiều phải thấy
+nếu việc cắt có giá thật. Ba phép đo dùng chung 93 bài bị cắt ấy, nên chúng không độc
+lập với nhau; thứ đáng tin ở đây là **cả hướng lẫn độ lớn đều tăng đơn điệu** theo sức
+mạnh của mô hình, và đến `train_20k` thì khoảng tin cậy đã rời khỏi 0.
+
+**Trả lời câu hỏi 2, trên mô hình tốt nhất hiện có:** cắt bài ở 1.024 token lấy đi
+khoảng **4 điểm ROUGE-1 [1,1; 6,8] ở 9,3% số bài** — tính ra toàn tập là khoảng 0,37
+điểm. Nhỏ so với 5,95 điểm mà ViT5 hơn Lead-3, nhưng không còn là nhiễu, và nó sẽ lớn
+dần nếu mô hình còn mạnh lên.
+
+**Một nghịch lý cần giải thích trong báo cáo:** chỉ 2,4% chữ của sapo nằm riêng ở phần
+bị cắt, mà thiệt hại đo được lại tới 4 điểm. Vậy thứ mất đi chủ yếu **không** phải chữ
+của sapo nằm ở đuôi bài, mà nhiều khả năng là ngữ cảnh giúp mô hình chọn ý và diễn đạt.
+Đây là giả thuyết, chưa kiểm; cách kiểm rẻ nhất là cho tầng 4 lọc câu trước rồi so.
 
 Chạy lại cho mô hình khác bằng `--system <tag>`. Thêm dữ liệu train không làm hẹp
-khoảng tin cậy — vẫn là 93 bài bị cắt ấy; muốn hẹp hơn phải chấm trên nhiều bài hơn.
+khoảng tin cậy — vẫn là 93 bài bị cắt ấy; muốn hẹp hơn phải chấm trên nhiều bài hơn,
+ví dụ gộp `tune` vào hoặc chấm trên `test` ở lần chấm cuối.
 
 ## Cấu trúc
 
@@ -577,8 +606,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT dời sang tuần 4, cần torch)
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
-  (đã có: `train_5k`, `train_10k` trên Kaggle, câu hỏi 2 sơ bộ; còn: `train_20k`,
-  dò tham số sinh trên `tune`, đối chứng BARTpho, LexRank bản PhoBERT)
+  (đã có: đường cong học đủ ba điểm `train_5k`/`train_10k`/`train_20k`, câu hỏi 2 sơ
+  bộ; còn: dò tham số sinh trên `tune`, đối chứng BARTpho, LexRank bản PhoBERT)
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
