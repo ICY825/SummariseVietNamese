@@ -417,6 +417,29 @@ Notebook clone repo từ GitHub, nên phải `git push` trước khi chạy.
 6. Xong thì tải `ket_qua_<mô hình>_<tập>.zip` ở tab *Output*, giải nén tại thư mục gốc
    repo — file tự vào đúng `results/tables/` và `results/predictions/`.
 
+**Đẩy từ máy bằng Kaggle CLI** — không cần mở trình duyệt. Cài CLI vào môi trường
+riêng (`python -m venv ~/.venvs/kaggle` rồi `pip install kaggle`), lưu token tạo ở
+Kaggle → Settings → API vào `~/.kaggle/access_token`, rồi:
+
+```bash
+~/.venvs/kaggle/Scripts/python.exe notebooks/kaggle_push.py train_20k --dry   # xem trước
+~/.venvs/kaggle/Scripts/python.exe notebooks/kaggle_push.py train_20k         # CHẠY NGAY, trừ quota
+~/.venvs/kaggle/Scripts/kaggle.exe kernels status minh12605/dl-summarisevn-vit5
+~/.venvs/kaggle/Scripts/kaggle.exe kernels logs -f minh12605/dl-summarisevn-vit5   # log trực tiếp
+~/.venvs/kaggle/Scripts/kaggle.exe kernels output minh12605/dl-summarisevn-vit5 -p out --file-pattern "ket_qua_.*\.zip$"
+```
+
+`kaggle_push.py` chép notebook sang thư mục tạm và chỉ đổi `TRAIN_SPLIT`/`MODEL` ở đó;
+bản trong repo giữ nguyên. Cấu hình máy (T4, Internet, riêng tư) nằm ở
+`notebooks/kernel-metadata.json`. Ba điều đã gặp thật:
+
+- Tài khoản chỉ được **2 phiên GPU chạy ngầm cùng lúc**; quá thì push bị từ chối với
+  `Maximum batch GPU session count of 2 reached` — tính cả notebook của dự án khác.
+- `kernels logs` **không có `-f`** chỉ trả log của phiên đã xong; phiên đang chạy trả rỗng.
+- `kernels output` **bỏ qua số version**: `.../dl-summarisevn-vit5/1` vẫn tải output của
+  version mới nhất. Tải file zip ngay khi mỗi lần chạy xong; checkpoint của version cũ
+  chỉ còn lấy được qua giao diện web hoặc gắn version đó làm input.
+
 Lệnh `!python ...` bị lỗi **không** làm dừng notebook, nên một bản Commit hỏng vẫn báo
 thành công mà không có kết quả nào. Mọi lệnh trong notebook đều kiểm tra `_exit_code`
 ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
@@ -554,6 +577,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT dời sang tuần 4, cần torch)
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
+  (đã có: `train_5k`, `train_10k` trên Kaggle, câu hỏi 2 sơ bộ; còn: `train_20k`,
+  dò tham số sinh trên `tune`, đối chứng BARTpho, LexRank bản PhoBERT)
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập

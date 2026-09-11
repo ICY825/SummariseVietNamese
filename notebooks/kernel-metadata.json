@@ -1,0 +1,15 @@
+{
+  "id": "minh12605/dl-summarisevn-vit5",
+  "title": "DL-SummariseVN ViT5",
+  "code_file": "kaggle_train_vit5.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
