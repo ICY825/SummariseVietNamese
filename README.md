@@ -358,7 +358,8 @@ data/processed/    đã chuẩn hoá và khử tách từ
 data/splits/       file ID cố định của train/val/test
 notebooks/         notebook trình bày
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
-                   make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra)
+                   make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra),
+                   browse.py (duyệt dữ liệu trên trình duyệt)
 src/models/        extractive.py (tầng 0-1), vit5.py (tầng 3, cần GPU),
                    run_baselines.py (chạy + chấm), measure_tokens.py (đo
                    độ dài cắt), selftest.py (tự kiểm tra)
@@ -384,7 +385,13 @@ python -m venv .venv
 .venv/Scripts/python.exe src/data/make_splits.py        # đóng băng tập con (chạy MỘT lần)
 .venv/Scripts/python.exe src/models/run_baselines.py    # baseline tầng 0-1 trên test
 .venv/Scripts/python.exe src/models/measure_tokens.py   # đo độ dài cắt (cần transformers)
+.venv/Scripts/python.exe src/data/browse.py             # duyệt dữ liệu: http://127.0.0.1:8009
 ```
+
+`browse.py` đọc thẳng file parquet trong cache Hugging Face và phục vụ một trang có phân
+trang và tìm kiếm, không xuất file trung gian. Mỗi bài hiện nhãn tập con đã đóng băng
+chứa nó (`test`, `train_5k`, …). Khi tìm, dấu cách và gạch dưới được coi là một, nên gõ
+"Triều Tiên" vẫn khớp với văn bản đã tách từ `Triều_Tiên`.
 
 Tự kiểm tra, chạy lại sau mỗi lần sửa module tương ứng — cả hai đều không cần mạng và
 xong trong vài giây:
