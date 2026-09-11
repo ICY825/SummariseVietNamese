@@ -299,6 +299,33 @@ học — số mới có thể lệch nhẹ vì khác phiên bản thư viện, 
 việc của khảo sát tham số sinh ở tuần 5 (`length_penalty`, `min_length`), làm trên
 tập `tune`.
 
+### Chạy lại trên Kaggle — điểm `train_5k` của đường cong học
+
+Đúng cấu hình trên, chạy bằng `notebooks/kaggle_train_vit5.ipynb`: Kaggle T4 ghim còn
+một GPU, `transformers` 5.0.0, 55,9 phút huấn luyện. Chấm trên `val`.
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|
+| Lead-3 (mốc) | 27,45 ±0,60 | 14,68 ±0,58 | 19,20 ±0,55 | 102 | 0,0% |
+| ViT5, `train_5k` — Colab, tuần 4 (mất file) | 31,62 ±0,93 | 17,63 ±0,81 | 25,05 ±0,85 | 30 | 10,7% |
+| **ViT5, `train_5k` — Kaggle** | **32,09 ±0,94** | **17,99 ±0,84** | **25,24 ±0,86** | 31 | 10,0% |
+
+**Tái lập được.** Lần chạy mới hơn Lead-3 **+4,64 [+3,77, +5,49], p < 0,0001**. Nó lệch
+lần Colab +0,47 ROUGE-1, nhỏ hơn nửa khoảng tin cậy, và `eval_loss` lặp lại đúng hình
+dạng cũ: 1,805 → **1,789** → 1,798 (Colab: 1,802 → 1,790 → 1,796). `load_best_model_at_end`
+chọn `checkpoint-626`, tức cuối epoch 2 — chốt chặn thêm sau tuần 4 đã làm đúng việc
+của nó. Từ đây **số của lần chạy Kaggle là số chính**, vì chỉ nó còn đủ file.
+
+**Kiểm chứng trước khi nhận số.** Chấm lại từ `results/predictions/` bằng `eval.report`
+trên máy cho ra đúng bốn chỉ số trong bảng (lệch 0); 1.000 `guid` khớp `data/splits/val.json`
+và 1.000 tham chiếu khớp dữ liệu nạp lại trên máy; phép so với Lead-3 tính lại từ
+`baselines_val.json` cho cùng con số.
+
+**Tokenizer đi đường lui.** Với `transformers` 5.0.0, `AutoTokenizer` của ViT5 báo
+`KeyError` nên `load_tokenizer()` nạp thẳng `tokenizer.json`. Soát 1.000 bản tóm tắt:
+không bản nào rỗng, không có token lạ (`<...>`, `extra_id`, `▁`, U+FFFD), không lặp
+3-gram, không có hai bản trùng nhau. Đường lui không làm hỏng đầu ra.
+
 ### Hồ sơ mỗi lần chạy
 
 Một bảng chỉ số trả lời "được bao nhiêu điểm" nhưng không trả lời "điểm đó sinh ra
