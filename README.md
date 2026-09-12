@@ -609,11 +609,13 @@ rằng dư địa không nằm ở khâu sinh, mà ở việc chọn nội dung 
 
 Chấm bằng `src/eval/run_bertscore.py` trên **chính các file dự đoán đã lưu**, không
 chạy lại mô hình nào. Bộ mã hoá `xlm-roberta-base` (đọc thẳng âm tiết; lý do không dùng
-PhoBERT nằm ở đầu `src/eval/bertscore.py`). Tập `val`, 1.000 bài, 8 phút trên CPU.
+PhoBERT nằm ở đầu `src/eval/bertscore.py`). Tám hệ thống, tập `val`, 1.000 bài, 9 phút
+trên CPU.
 
 | Hệ thống | BERTScore | ROUGE-1 |
 |---|---|---|
 | Oracle-3 | 89,02 | 48,09 |
+| **BARTpho `train_20k`** | **87,31** | **35,23** |
 | **ViT5 `train_20k`** | **87,09** | **33,40** |
 | Lead-1 | 85,57 | 27,70 |
 | Lead-3 | 85,55 | 27,45 |
@@ -622,8 +624,18 @@ PhoBERT nằm ở đầu `src/eval/bertscore.py`). Tập `val`, 1.000 bài, 8 ph
 | Random-3 | 84,80 | 23,63 |
 
 **Kết luận chính của đề tài được thước đo thứ hai xác nhận.** ViT5 hơn Lead-3
-**+1,54 [+1,37, +1,72] điểm BERTScore, p < 0,0001** — cùng chiều và cùng mức ý nghĩa
-với ROUGE. Lead-1 ngang Lead-3 (+0,02, p = 0,78), đúng như ROUGE đã nói ở tầng 0.
+**+1,54 [+1,37, +1,72] điểm BERTScore, p < 0,0001** và BARTpho hơn Lead-3
+**+1,76 [+1,57, +1,95]** — cùng chiều và cùng mức ý nghĩa với ROUGE. Lead-1 ngang
+Lead-3 (+0,02, p = 0,78), đúng như ROUGE đã nói ở tầng 0.
+
+**BARTpho hơn ViT5 theo cả hai thước đo, nhưng biên rất khác nhau.** BERTScore cho
+**+0,22 [+0,03, +0,41], p = 0,025**, trong khi ROUGE-1 cho +1,83 [+0,79, +2,86],
+p = 0,0002. Cùng kết luận, nhưng ở BERTScore khoảng tin cậy chỉ vừa đủ rời khỏi 0 —
+đúng như dải điểm hẹp của nó báo trước. Trên từng bài, hai thước đo đồng ý ở **85,7%**
+khi hỏi "bài này BARTpho hay ViT5 tốt hơn", và chỗ bất đồng chia gần đều hai phía
+(59 bài nghiêng về BARTpho theo BERTScore, 67 bài theo ROUGE) — tức không có dấu hiệu
+thước đo nào thiên vị một mô hình. Tương quan từng bài giữa hai thước đo cao nhất ở
+BARTpho: **+0,938**.
 
 **Nhưng BERTScore tương phản kém hơn nhiều.** Toàn bộ khoảng cách từ Random-3 lên
 Oracle-3 chỉ **4,22 điểm** BERTScore, trong khi ROUGE-1 trải **24,85 điểm** — rộng gấp
@@ -651,7 +663,8 @@ tự động này bỏ sót cái gì.
 
 ```bash
 ~/.venvs/torch/Scripts/python.exe src/eval/run_bertscore.py \
-    baselines_val vit5-base-train_20k_val_e3_lr3e-05_bs16_in1024
+    baselines_val vit5-base-train_20k_val_e3_lr3e-05_bs16_in1024 \
+    bartpho-syllable-train_20k_val_e3_lr3e-05_bs16_in1024
 ```
 
 Truyền nhiều file thì các hệ thống được gộp lại, nhưng `guid` của chúng phải trùng khớp
