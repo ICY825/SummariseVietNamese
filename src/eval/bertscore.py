@@ -6,8 +6,10 @@ tách từ lại đầu ra của ViT5 bằng `underthesea` — khác công cụ 
 tham chiếu, và sai khác công cụ đó chỉ giáng lên phía abstractive, đúng thứ thiên lệch
 mà cả dự án đang tránh. Nên mặc định dùng một mô hình đọc thẳng âm tiết.
 
-Module này CHƯA chạy thử được: `torch` và `bert-score` chưa có trong môi trường (xem
-`requirements.txt`). Chạy lần đầu trên Colab hãy đối chiếu vài bài bằng tay.
+Đã chạy thật trên `val` — 1.000 bài, 8 hệ thống, 9 phút CPU; kết quả và cách đọc nằm ở
+mục "BERTScore" của README. `torch` và `bert-score` **không** nằm trong `.venv` của dự
+án (xem `requirements.txt`), nên gọi qua `src/eval/run_bertscore.py` bằng môi trường
+riêng `~/.venvs/torch`, trên chính các file dự đoán đã lưu chứ không sinh lại gì.
 """
 
 DEFAULT_MODEL = "xlm-roberta-base"  # doc thang am tiet, khong can tach tu

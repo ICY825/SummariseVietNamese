@@ -5,8 +5,18 @@ pandas==3.0.5
 pyarrow==25.0.1
 requests==2.34.2
 
-# Tuan 4 tro di (cai tren Colab, chua co trong .venv o may nay):
-# torch          -- chon ban khop CUDA cua Colab
-# transformers   -- ViT5, BARTpho, PhoBERT
-# bert-score     -- eval/bertscore.py
-# underthesea    -- CHI dung o demo Gradio de tach tu input nguoi dung
+# Day la moi truong CHINH (.venv) va co y giu no KHONG co torch: nho vay
+# run_baselines.py, make_splits.py va hai selftest chay duoc tren mot may sach.
+#
+# Ba moi truong rieng, tach ra de khong lam lech cac ban da ghim o tren:
+#
+#   ~/.venvs/phan-tich   requirements.txt + transformers==5.0.0
+#                        -> measure_tokens.py, truncation.py (dem token, khong can GPU).
+#                        Ghim 5.0.0 cho trung ban Kaggle da huan luyen, de so token
+#                        dem duoc dung la thu mo hinh da doc.
+#   ~/.venvs/torch       requirements.txt + torch (ban CPU) + transformers + bert-score
+#                        -> run_bertscore.py va LexRank ban nhung PhoBERT.
+#   ~/.venvs/kaggle      kaggle CLI -> notebooks/kaggle_push.py, tai ket qua ve.
+#
+# Huan luyen tang 3 chay tren Kaggle (xem notebooks/), khong chay tren may nay.
+# underthesea -- CHI dung o demo Gradio (tuan 7) de tach tu input nguoi dung.
