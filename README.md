@@ -463,6 +463,31 @@ thành công mà không có kết quả nào. Mọi lệnh trong notebook đều
 ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
 Internet thay vì huấn luyện trên CPU hàng giờ.
 
+### Dò tham số sinh trên `tune` — chưa có kết quả
+
+`notebooks/sweep/` là notebook thứ hai, **không huấn luyện gì**: nạp checkpoint
+`train_20k` rồi sinh lại 500 bản tóm tắt của `tune` với sáu bộ tham số sinh
+(`length_penalty` ∈ {1,0; 1,5; 2,0} × `min_length` ∈ {0; 20}), mỗi bộ một lần chấm.
+Lý do dò về phía sinh dài hơn: bản tóm tắt hiện dài 30–31 âm tiết trong khi sapo thật
+dài 35, tức đang hụt recall.
+
+```bash
+~/.venvs/kaggle/Scripts/python.exe notebooks/kaggle_push.py --dir notebooks/sweep
+```
+
+Ba điều được cài để khâu này không tự lừa mình:
+
+- **Dò trên `tune`, không trên `val`.** `val` đã bị nhìn suốt quá trình huấn luyện; chọn
+  tham số trên đó là để khâu chọn học thuộc tập theo dõi. `tune` đóng băng từ tuần 2,
+  rời hẳn `val` và `test`. Cấu hình thắng mới được đem sang `val`/`test`.
+- **Tách notebook.** Kaggle chạy toàn bộ ô khi Save & Run All; nhét khâu này vào
+  notebook huấn luyện thì mỗi lần dò lại tốn bốn giờ huấn luyện lại `train_20k`.
+  Checkpoint sang notebook mới qua `kernel_sources` trong `kernel-metadata.json`.
+- **Tên file phân biệt được cấu hình.** `vit5.py --no-train` bỏ `epochs`/`lr`/`batch`
+  khỏi tên (chúng không được dùng) và thêm `lp`/`min`, nên sáu cấu hình cho sáu tên
+  khác nhau, không lần nào đè lần nào. Dùng `--name` để bảng kết quả mang tên mô hình
+  chứ không phải tên thư mục checkpoint (`final`).
+
 ## Câu hỏi 2 — cắt bài ở 1.024 token mất bao nhiêu
 
 `src/eval/truncation.py` trên ViT5 `train_5k`, tập `val`. Không cần GPU và không chạy
@@ -531,7 +556,8 @@ ví dụ gộp `tune` vào hoặc chấm trên `test` ở lần chấm cuối.
 data/raw/          dữ liệu tải về, không chỉnh sửa
 data/processed/    đã chuẩn hoá và khử tách từ
 data/splits/       file ID cố định của train/val/test
-notebooks/         notebook trình bày
+notebooks/         kaggle_train_vit5.ipynb (huấn luyện tầng 3), sweep/ (dò tham
+                   số sinh), kaggle_push.py (đẩy lên Kaggle), kernel-metadata.json
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra),
                    browse.py (duyệt dữ liệu trên trình duyệt)

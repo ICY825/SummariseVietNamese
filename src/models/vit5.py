@@ -290,15 +290,24 @@ def main():
     # sinh khac — nen phai chuyen thiet bi ngay tu day.
     model.to("cuda" if torch.cuda.is_available() else "cpu")
 
-    print(f"Nạp {args.train_split} và {args.eval_split} ...")
-    train_rows = list(load_split(args.train_split, add_raw=True))
+    # Luong `--no-train` khong dung toi tap train. Nap 20.000 bai roi khu tach tu
+    # chung chi de vut di la vai phut GPU nam khong cho MOI cau hinh cua khao sat
+    # tham so sinh o tuan 5.
+    print(f"Nạp {args.eval_split}{'' if args.no_train else ' và ' + args.train_split} ...")
+    train_rows = [] if args.no_train else list(load_split(args.train_split, add_raw=True))
     eval_rows = list(load_split(args.eval_split, add_raw=True))
     if args.eval_limit:
         eval_rows = eval_rows[: args.eval_limit]
         print(f"  CHẠY THỬ: chỉ sinh {len(eval_rows)} bài — số liệu KHÔNG dùng báo cáo.")
     print(f"  train {len(train_rows)} bài, eval {len(eval_rows)} bài.\n")
 
-    out_dir = Path(args.out) / f"{args.model.replace('/', '_')}_{args.train_split}"
+    # Luong `--no-train` khong sinh checkpoint nao, va `--model` cua no thuong la mot
+    # duong dan dai tren dia — ghep vao ten thu muc se ra thu khong doc noi. Cac lan
+    # chay chung thu muc nay khong de len nhau vi ten FILE da mang tham so sinh.
+    out_dir = Path(args.out) / (
+        "sinh_lai" if args.no_train
+        else f"{args.model.replace('/', '_')}_{args.train_split}"
+    )
     out_dir.mkdir(parents=True, exist_ok=True)
     train_info = None   # con None khi chay --no-train
 
@@ -443,7 +452,10 @@ def main():
         "args": vars(args),
         "generation": gen,
         "data": {
-            "train_split": args.train_split,
+            # `--no-train` khong dung tap train nao. Ghi ten mac dinh (`train_2k`) vao
+            # day se khien ho so lan chay KHAI SAI rang mo hinh duoc train tren 2.000
+            # bai, trong khi no chi nap lai mot checkpoint co san.
+            "train_split": None if args.no_train else args.train_split,
             "n_train": len(train_rows),
             "eval_split": args.eval_split,
             "n_eval": len(eval_rows),
