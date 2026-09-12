@@ -503,6 +503,40 @@ thành công mà không có kết quả nào. Mọi lệnh trong notebook đều
 ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
 Internet thay vì huấn luyện trên CPU hàng giờ.
 
+### Đối chứng BARTpho — mô hình đối chứng THẮNG mô hình chính
+
+Cùng cấu hình hệt ViT5: `train_20k`, 3 epoch, `lr=3e-5`, batch hiệu dụng 16, đầu vào
+1.024, `seed=13`, Kaggle T4. Chấm trên `val`.
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới | Huấn luyện |
+|---|---|---|---|---|---|---|
+| Lead-3 (mốc) | 27,45 ±0,60 | 14,68 ±0,58 | 19,20 ±0,55 | 102 | 0,0% | — |
+| ViT5 `train_20k` | 33,40 ±0,99 | 19,15 ±0,91 | 26,59 ±0,92 | 30 | 11,1% | 232,4 phút |
+| **BARTpho `train_20k`** | **35,23 ±1,06** | **20,48 ±0,98** | **27,93 ±0,98** | **34** | 11,3% | 156,8 phút |
+| Oracle-3 (trần extractive) | 48,09 ±0,90 | 31,60 ±1,07 | 35,90 ±1,05 | 50 | 1,0% | — |
+
+**BARTpho hơn ViT5 +1,83 [+0,79, +2,86] ROUGE-1, p = 0,0002** (ROUGE-2 +1,33 [+0,41,
++2,24], p = 0,004). Hơn Lead-3 **+7,78 [+6,79, +8,77]**, so với +5,95 của ViT5. Nó còn
+**nhanh hơn**: 156,8 phút so với 232,4 phút, dù tham số nhiều hơn — vì tokenizer của nó
+cắt bài thành chuỗi ngắn hơn ở cùng ngưỡng 1.024 token.
+
+**Độ dài sinh ra là 34 âm tiết, gần sapo thật (35) nhất trong mọi hệ thống của đề tài**
+— ViT5 sinh 30. Đây có thể là một phần lý do nó thắng, và nó cũng khép lại khảo sát
+tham số sinh ở trên: thứ ViT5 thiếu không lấy lại được bằng `length_penalty`, nhưng một
+mô hình khác thì tự có.
+
+**`eval_loss` KHÔNG so được giữa hai mô hình.** BARTpho đạt 1,424 còn ViT5 1,707, nhưng
+hai mô hình có tokenizer và từ vựng khác nhau nên cross-entropy của chúng không cùng
+thang đo — con số thấp hơn ở đây **không** chứng minh điều gì. Chỉ ROUGE, chấm trên
+cùng 1.000 bài qua cùng một đường chấm điểm, mới so được. `eval_loss` của BARTpho qua
+ba epoch: 1,441 → **1,424** → 1,424, tức vẫn bão hoà ở epoch 2 y như ViT5.
+
+**Hệ quả cho báo cáo.** Kế hoạch ban đầu coi BARTpho là "đối chứng" cho ViT5, nhưng số
+liệu nói ngược lại: ở cùng ngân sách, BARTpho-syllable là lựa chọn tốt hơn cho bài toán
+này. Mọi kết luận chung của đề tài không đổi (abstractive vượt extractive, còn xa trần
+Oracle-3), nhưng phần "chọn mô hình" phải được viết lại theo hướng này, và tầng 4 nên
+xây trên BARTpho chứ không phải ViT5.
+
 ### Dò tham số sinh trên `tune` — không tham số nào thắng được mặc định
 
 `notebooks/sweep/` là notebook thứ hai, **không huấn luyện gì**: nạp checkpoint
@@ -664,6 +698,7 @@ thấy thiệt hại thật lớn hơn nhiều lần con số ấy.
 | `train_5k` | 32,76 ±0,98 | 25,60 ±2,57 | −1,37 [−4,28, +1,58], p = 0,36 |
 | `train_10k` | 33,16 ±1,01 | 24,94 ±2,41 | −2,43 [−5,27, +0,44], p = 0,10 |
 | **`train_20k`** | **34,31 ±1,04** | **24,50 ±2,59** | **−4,02 [−6,84, −1,12], p = 0,007** |
+| **BARTpho `train_20k`** | **36,19 ±1,09** | **26,80 ±2,95** | **−4,04 [−7,33, −0,79], p = 0,017** |
 
 **Toàn bộ phần lợi của việc thêm dữ liệu rơi vào nhóm bài không bị cắt**: 32,76 → 33,16
 → 34,31 ở nhóm vừa cửa sổ, trong khi nhóm bị cắt đứng yên (25,60 → 24,94 → 24,50). Mô
@@ -770,10 +805,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT hoãn vì thiếu `torch`,
   đã làm xong ở tuần 5: thua cả bản TF-IDF)
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
-- [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
-  (đã có: đường cong học đủ ba điểm `train_5k`/`train_10k`/`train_20k`, dò tham số
-  sinh trên `tune`, câu hỏi 2, LexRank bản PhoBERT, BERTScore trên `val`;
-  còn: đối chứng BARTpho)
+- [x] Tuần 5 — Đường cong học ba điểm, dò tham số sinh trên `tune`, câu hỏi 2,
+  LexRank bản PhoBERT, BERTScore, đối chứng BARTpho (BARTpho thắng ViT5)
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
