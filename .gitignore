@@ -19,6 +19,11 @@ results/predictions/*
 # File du doan cua baseline van bi bo qua: chay lai `run_baselines.py` tren CPU la co.
 !results/predictions/vit5-*.json
 !results/predictions/bartpho-*.json
+# LexRank ban nhung PhoBERT cung duoc giu, vi hai ly do: tuan 7 cham blind can ban
+# tom tat CO DINH, va sinh lai khong chac ra dung nhu cu — no phu thuoc trong so
+# PhoBERT tren Hub cung phien ban transformers, chu khong tat dinh nhu TF-IDF.
+# Sinh lai cung ton 18 phut CPU cho 2.000 bai.
+!results/predictions/*lexrank_emb*.json
 
 # Cache va checkpoint
 .cache/
