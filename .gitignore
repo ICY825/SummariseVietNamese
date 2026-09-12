@@ -13,6 +13,12 @@ data/processed/*
 # Ket qua: giu cau truc, khong commit file du doan / bang chi so nang
 results/predictions/*
 !results/predictions/.gitkeep
+# NGOAI LE: ban tom tat do mo hinh sinh ra thi KHONG tai tao duoc neu khong co GPU,
+# va output cua cac version cu tren Kaggle thi CLI khong tai lai duoc. Tuan 7 (cham
+# blind, phan tich loi) can dung chinh nhung file nay. Moi file ~0,4 MB.
+# File du doan cua baseline van bi bo qua: chay lai `run_baselines.py` tren CPU la co.
+!results/predictions/vit5-*.json
+!results/predictions/bartpho-*.json
 
 # Cache va checkpoint
 .cache/
