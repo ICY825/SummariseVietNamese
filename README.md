@@ -253,10 +253,50 @@ chấm blind và một bản tóm tắt lặp nguyên một câu thì người c
 Random-k cố ý giữ nguyên câu lặp — định nghĩa của chúng là "k câu đầu" và "k câu rút
 ngẫu nhiên", sửa đi thì không còn là mốc ngây thơ nữa.
 
-**Còn thiếu ở tầng 1:** LexRank bản nhúng PhoBERT cần `torch` và `transformers`, chưa
-có trong `.venv` trên máy này (xem `requirements.txt`) nên dời sang tuần 4, chạy cùng
-lúc dựng môi trường GPU. Phần xếp hạng đã viết chung ở `pagerank()` nên chỉ cần thay
-cách dựng ma trận tương đồng.
+**LexRank bản nhúng PhoBERT: thua cả bản TF-IDF.** Thay ma trận tương đồng TF-IDF bằng
+cosin giữa các vector câu PhoBERT (mean-pooling, chuẩn hoá L2), giữ nguyên `pagerank()`
+và bộ chọn câu, nên khác biệt nằm đúng ở phép đo tương đồng. Chấm trên `test`:
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|
+| Lead-3 | 27,22 ±0,44 | 14,73 ±0,43 | 19,17 ±0,41 | 102 | 0,0% |
+| LexRank (TF-IDF) | 24,81 ±0,40 | 12,52 ±0,38 | 17,26 ±0,35 | 112 | 1,6% |
+| **LexRank-PhoBERT** | **23,87 ±0,38** | **11,97 ±0,37** | **16,42 ±0,35** | 125 | 1,4% |
+
+Thua bản TF-IDF **−0,93 [−1,25, −0,60] ROUGE-1, p < 0,0001** (ROUGE-2 −0,55 [−0,85,
+−0,25]), và thua Lead-3 **−3,35 [−3,76, −2,95]**. Hai cách giải thích, đều nhất quán
+với số liệu:
+
+- **Cosin PhoBERT nén vào dải hẹp.** Hai câu bất kỳ trong cùng một bài thường đạt cosin
+  0,7-0,95, nên đồ thị gần như đầy đủ và độ trung tâm mất sức phân biệt. Vì thế mặc
+  định là `threshold=None` chứ không phải 0,1 như bài báo gốc: ngưỡng ấy ở đây giữ lại
+  gần hết cạnh, biến PageRank thành phép đếm bậc.
+- **Độ trung tâm ngữ nghĩa chuộng câu khái quát và dài.** Bản PhoBERT sinh ra bản tóm
+  tắt dài nhất trong ba (125 âm tiết, so với sapo thật 35), tức càng xa mục tiêu.
+
+**Cả ba biến thể đồ thị đều thua lead**, dù đo tương đồng bằng từ chung, bằng TF-IDF,
+hay bằng embedding. Đây là đặc trưng thể loại chứ không phải lỗi cài đặt: tin tức viết
+theo tháp ngược nên câu quan trọng nhất nằm ngay đầu bài, còn "trung tâm của đồ thị
+tương đồng" không phải là "đáng tóm tắt".
+
+**Chi phí:** 1.093 giây trên CPU cho 2.000 bài (0,75 giây/bài), so với 1 giây của bản
+TF-IDF — đắt hơn hơn nghìn lần để cho kết quả kém hơn. Không cần GPU.
+
+**Kiểm chứng chéo:** trong cùng lần chạy, `Lead-3` và `LexRank` cho điểm **trùng khít**
+bảng tuần 3b, lệch 0,0 trên từng bài và `guid` trùng khớp — đường chấm điểm không xê
+dịch sau mọi thay đổi của tuần 5.
+
+Hệ thống này **không** nằm trong danh sách mặc định của `run_baselines.py` vì nó cần
+`torch` và `transformers`, hai gói không có trong `.venv` của dự án; để nó ở mặc định
+thì lệnh baseline trong README sẽ chết trên một máy sạch. Chạy bằng:
+
+```bash
+~/.venvs/torch/Scripts/python.exe src/models/run_baselines.py --split test \
+    --systems leadk lexrank lexrank_emb
+```
+
+Danh sách hệ thống khác mặc định thì tên file kết quả cũng khác, nên lần chạy này không
+đè bảng sáu hệ thống ở trên.
 
 ## Kết quả tầng 3 — fine-tune ViT5 lần đầu
 
@@ -673,7 +713,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 1 — Dựng khung dự án, xác minh dữ liệu
 - [x] Tuần 2 — Cố định split, ba phép biến đổi văn bản dùng chung, chốt dạng chấm điểm
 - [x] Tuần 3a — Khung đánh giá: ROUGE, bootstrap, bảng kết quả
-- [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT dời sang tuần 4, cần torch)
+- [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT hoãn vì thiếu `torch`,
+  đã làm xong ở tuần 5: thua cả bản TF-IDF)
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
   (đã có: đường cong học đủ ba điểm `train_5k`/`train_10k`/`train_20k`, dò tham số

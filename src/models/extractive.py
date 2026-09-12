@@ -310,6 +310,89 @@ def lexrank_indices(article, k=K, threshold=0.1):
     return _pick(sents, pagerank(sim), min(k, n))
 
 
+_PHOBERT = {}
+
+
+def _phobert(name="vinai/phobert-base"):
+    """Nạp PhoBERT một lần rồi giữ lại trong tiến trình.
+
+    Nạp LƯỜI, bên trong hàm: `torch` không có trong `.venv` của dự án, mà `selftest.py`
+    của tầng 0-1 phải chạy được ở đó. Import ở đầu file là làm hỏng điều đó.
+    """
+    if name not in _PHOBERT:
+        import torch
+        from transformers import AutoModel, AutoTokenizer
+
+        tok = AutoTokenizer.from_pretrained(name)
+        model = AutoModel.from_pretrained(name).eval()
+        _PHOBERT[name] = (tok, model, torch)
+    return _PHOBERT[name]
+
+
+def _phobert_vectors(sents, name="vinai/phobert-base", batch=32):
+    """Vector câu từ PhoBERT: mean-pooling có mặt nạ, chuẩn hoá L2.
+
+    **Đưa vào dạng TÁCH TỪ, không phải dạng thô.** PhoBERT được pretrain trên văn bản
+    đã tách từ bằng VnCoreNLP — đúng dạng mà `sentences()` trả về cho bộ dữ liệu này.
+    Khử gạch dưới trước khi mã hoá là tự đưa chuỗi ngoài phân phối huấn luyện vào, và
+    đó cũng là lý do `bertscore.py` KHÔNG dùng PhoBERT: ở đó đầu vào là văn bản thô.
+
+    Mean-pooling chứ không lấy `[CLS]`: `[CLS]` của một mô hình chỉ pretrain MLM không
+    hề được huấn luyện để làm vector câu, còn trung bình các token thì ổn định hơn hẳn
+    cho phép đo cosin.
+
+    Cắt ở 256 token vì đó là giới hạn vị trí của PhoBERT; câu dài hơn thế trong bộ này
+    là ngoại lệ.
+    """
+    tok, model, torch = _phobert(name)
+    out = []
+    for i in range(0, len(sents), batch):
+        enc = tok(
+            sents[i : i + batch],
+            padding=True,
+            truncation=True,
+            max_length=256,
+            return_tensors="pt",
+        )
+        with torch.no_grad():
+            h = model(**enc).last_hidden_state
+        m = enc["attention_mask"].unsqueeze(-1).float()
+        out.append(((h * m).sum(1) / m.sum(1).clamp(min=1e-9)).numpy())
+    if not out:
+        return np.zeros((0, 1))
+    x = np.vstack(out)
+    return x / np.maximum(np.linalg.norm(x, axis=1, keepdims=True), 1e-12)
+
+
+def lexrank_emb_indices(article, k=K, threshold=None, model="vinai/phobert-base"):
+    """LexRank nhưng tương đồng đo bằng cosin giữa hai vector câu PhoBERT.
+
+    Dùng chung `pagerank()` và `_pick()` với bản TF-IDF, nên khác biệt giữa hai bản nằm
+    ĐÚNG ở phép đo tương đồng chứ không lẫn vào chi tiết cài đặt bộ xếp hạng — đó là
+    điều kiện để so sánh chúng trong báo cáo có nghĩa.
+
+    `threshold=None` (bản liên tục) là mặc định, **khác** bản TF-IDF vốn dùng 0,1 theo
+    bài báo gốc. Cosin giữa hai câu bất kỳ trong cùng một bài, đo bằng vector PhoBERT,
+    thường nằm khoảng 0,7-0,95 chứ không rải quanh 0 như cosin TF-IDF. Đặt ngưỡng 0,1 ở
+    đây sẽ giữ lại gần như mọi cạnh, biến đồ thị thành đồ thị đầy đủ, và PageRank khi ấy
+    chỉ còn phản ánh bậc của đỉnh — tức không còn đo được độ trung tâm nữa. Muốn cắt
+    thưa thì ngưỡng phải đặt theo phân phối cosin thật của chính bộ mã hoá này, và đó
+    là một khảo sát riêng chứ không phải hằng số mượn từ bài báo khác.
+    """
+    sents = sentences(article)
+    n = len(sents)
+    if n == 0:
+        return []
+    x = _phobert_vectors(sents, model)
+    sim = x @ x.T
+    np.fill_diagonal(sim, 0.0)
+    sim[sim < 0] = 0.0
+    if threshold is not None:
+        sim = (sim >= threshold).astype(float)
+        np.fill_diagonal(sim, 0.0)
+    return _pick(sents, pagerank(sim), min(k, n))
+
+
 def textrank(article, k=K):
     """Bản tóm tắt của `textrank_indices()`."""
     return join(sentences(article), textrank_indices(article, k))
@@ -318,3 +401,8 @@ def textrank(article, k=K):
 def lexrank(article, k=K, threshold=0.1):
     """Bản tóm tắt của `lexrank_indices()`."""
     return join(sentences(article), lexrank_indices(article, k, threshold))
+
+
+def lexrank_emb(article, k=K, threshold=None, model="vinai/phobert-base"):
+    """Bản tóm tắt của `lexrank_emb_indices()`. Cần `torch` và `transformers`."""
+    return join(sentences(article), lexrank_emb_indices(article, k, threshold, model))

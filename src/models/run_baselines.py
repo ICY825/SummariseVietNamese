@@ -36,17 +36,26 @@ import sys
 import time
 from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+# Phai dat ca stderr, khong chi stdout: thong bao chan ten he thong sai di ra bang
+# SystemExit, tuc qua stderr — console Windows mac dinh cp1252 se bam nat tieng Viet
+# va bien mot loi ro rang thanh mot dong ky tu vo nghia.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from data.splits import load_split  # noqa: E402
 from eval.report import evaluate, compare, save, table  # noqa: E402
-from models.extractive import lead, lexrank, oracle, random_k, textrank  # noqa: E402
+from models.extractive import lead, lexrank, lexrank_emb, oracle, random_k, textrank  # noqa: E402
 
 RESULTS = Path(__file__).resolve().parents[2] / "results"
 
-SYSTEMS = ["random", "lead1", "leadk", "textrank", "lexrank", "oracle"]
+# `lexrank_emb` KHONG nam trong danh sach mac dinh: no can `torch` + `transformers`,
+# ma `.venv` cua du an khong co hai goi do (xem requirements.txt). De no o mac dinh thi
+# lenh `run_baselines.py` trong README se chet ngay tren may sach. Chay no bang:
+#   --systems leadk lexrank lexrank_emb
+DEFAULT_SYSTEMS = ["random", "lead1", "leadk", "textrank", "lexrank", "oracle"]
+ALL_SYSTEMS = DEFAULT_SYSTEMS + ["lexrank_emb"]
 BASELINE = "leadk"  # moc de so cap doi, vi day la baseline manh cua tin tuc
 
 
@@ -64,6 +73,7 @@ def label(key, k):
         "leadk": f"Lead-{k}",
         "textrank": "TextRank",
         "lexrank": "LexRank",
+        "lexrank_emb": "LexRank-PhoBERT",
         "oracle": f"Oracle-{k}",
     }[key]
 
@@ -82,6 +92,8 @@ def build(key, rows, k):
         return [textrank(r["article"], k) for r in rows]
     if key == "lexrank":
         return [lexrank(r["article"], k) for r in rows]
+    if key == "lexrank_emb":
+        return [lexrank_emb(r["article"], k) for r in rows]
     if key == "oracle":
         return [oracle(r["article"], r["abstract"], k) for r in rows]
     raise ValueError(f"Không biết hệ thống {key!r}.")
@@ -92,8 +104,17 @@ def main():
     ap.add_argument("--split", default="test", help="tên tập con đã đóng băng")
     ap.add_argument("--k", type=int, default=3, help="số câu mỗi bản tóm tắt")
     ap.add_argument("--limit", type=int, default=0, help="chỉ lấy N bài đầu (chạy thử)")
+    ap.add_argument(
+        "--systems", nargs="+", default=DEFAULT_SYSTEMS, metavar="TÊN",
+        help=f"hệ thống cần chạy, chọn trong {ALL_SYSTEMS}; mặc định là sáu hệ thống "
+             "không cần torch",
+    )
     ap.add_argument("--n-boot", type=int, default=10_000, help="số lần lấy lại mẫu")
     args = ap.parse_args()
+
+    la = [s for s in args.systems if s not in ALL_SYSTEMS]
+    if la:
+        raise SystemExit(f"Không biết hệ thống {la}. Chọn trong: {ALL_SYSTEMS}")
 
     print(f"Nạp tập {args.split} ...")
     ds = load_split(args.split, add_raw=False)
@@ -107,7 +128,7 @@ def main():
     print(f"  {len(rows)} bài.\n")
 
     results, preds = [], {}
-    for key in SYSTEMS:
+    for key in args.systems:
         name = label(key, args.k)
         t0 = time.time()
         p = build(key, rows, args.k)
@@ -128,17 +149,26 @@ def main():
     print("\n" + md)
 
     base_name = label(BASELINE, args.k)
-    print(f"\nSo cặp đôi với {base_name} (bootstrap ghép cặp, seed=13):")
-    base = next(r for r in results if r["name"] == base_name)
-    for r in results:
-        if r["name"] != base_name:
-            print("  " + compare(r, base, "rouge1", n_boot=args.n_boot))
+    if BASELINE not in args.systems:
+        # Khong tu nap moc tu file cu: bang Lead-3 cu do MOT LAN CHAY KHAC ghi ra, va
+        # ghep cap voi no chi hop le khi hai ben cham tren dung cung nhung bai do.
+        print(f"\nBỏ qua so cặp: {base_name} không nằm trong --systems lần này.")
+    else:
+        print(f"\nSo cặp đôi với {base_name} (bootstrap ghép cặp, seed=13):")
+        base = next(r for r in results if r["name"] == base_name)
+        for r in results:
+            if r["name"] != base_name:
+                print("  " + compare(r, base, "rouge1", n_boot=args.n_boot))
 
     # k phai nam trong ten file khi khac mac dinh, neu khong mot lan chay --k 5 se
     # ghi de im lang len bang ket qua k=3 dang duoc trich trong README.
     tag = args.split
     if args.k != 3:
         tag += f"_k{args.k}"
+    # Danh sach he thong khac mac dinh thi tag phai khac, neu khong mot lan chay
+    # `--systems lexrank_emb` se ghi de bang sau he thong dang duoc trich trong README.
+    if list(args.systems) != DEFAULT_SYSTEMS:
+        tag += "_" + "-".join(args.systems)
     if args.limit:
         tag += f"_thu{args.limit}"
     path = save(results, f"baselines_{tag}.json")
