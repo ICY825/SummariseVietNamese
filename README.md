@@ -463,7 +463,7 @@ thành công mà không có kết quả nào. Mọi lệnh trong notebook đều
 ngay sau đó và dừng tại chỗ nếu lỗi; ô đầu tiên cũng dừng ngay khi thiếu GPU hay
 Internet thay vì huấn luyện trên CPU hàng giờ.
 
-### Dò tham số sinh trên `tune` — chưa có kết quả
+### Dò tham số sinh trên `tune` — không tham số nào thắng được mặc định
 
 `notebooks/sweep/` là notebook thứ hai, **không huấn luyện gì**: nạp checkpoint
 `train_20k` rồi sinh lại 500 bản tóm tắt của `tune` với sáu bộ tham số sinh
@@ -482,11 +482,54 @@ Ba điều được cài để khâu này không tự lừa mình:
   rời hẳn `val` và `test`. Cấu hình thắng mới được đem sang `val`/`test`.
 - **Tách notebook.** Kaggle chạy toàn bộ ô khi Save & Run All; nhét khâu này vào
   notebook huấn luyện thì mỗi lần dò lại tốn bốn giờ huấn luyện lại `train_20k`.
-  Checkpoint sang notebook mới qua `kernel_sources` trong `kernel-metadata.json`.
+  Checkpoint sang notebook mới qua `kernel_sources` trong `kernel-metadata.json`:
+  Kaggle gắn output **của version mới nhất** vào
+  `/kaggle/input/notebooks/<chủ>/<notebook>/`, giữ nguyên cây thư mục, nên checkpoint
+  nằm ở `.../runs/VietAI_vit5-base_train_20k/final`. Notebook không ghim cứng đường dẫn
+  đó mà dò bằng `glob`, và dừng kèm thông báo rõ nếu không thấy — quên gắn input là lỗi
+  hay gặp nhất ở đây.
 - **Tên file phân biệt được cấu hình.** `vit5.py --no-train` bỏ `epochs`/`lr`/`batch`
   khỏi tên (chúng không được dùng) và thêm `lp`/`min`, nên sáu cấu hình cho sáu tên
   khác nhau, không lần nào đè lần nào. Dùng `--name` để bảng kết quả mang tên mô hình
   chứ không phải tên thư mục checkpoint (`final`).
+
+**Kết quả** — 500 bài `tune`, 25 phút GPU, số liệu ở
+`results/tables/vit5-base-train_20k_tune_in1024*.json`:
+
+| Cấu hình | rouge1 | rouge2 | rougeL | Độ dài |
+|---|---|---|---|---|
+| **mặc định** (`lp` 1,0) | 33,60 ±1,36 | 19,58 ±1,30 | 27,01 ±1,31 | 30 |
+| `lp` 1,5 | 33,65 ±1,37 | 19,44 ±1,30 | 26,80 ±1,28 | 32 |
+| `lp` 1,5 + `min` 20 | 33,70 ±1,37 | 19,47 ±1,29 | 26,82 ±1,28 | 32 |
+| `lp` 2,0 | 33,58 ±1,35 | 19,31 ±1,27 | 26,70 ±1,28 | 32 |
+| `lp` 2,0 + `min` 20 | 33,67 ±1,34 | 19,35 ±1,26 | 26,75 ±1,28 | 32 |
+| `min` 20 | 33,62 ±1,36 | 19,58 ±1,29 | 27,01 ±1,31 | 30 |
+
+**Không cấu hình nào hơn mặc định.** So cặp từng cấu hình với mặc định trên cùng 500
+bài: ROUGE-1 chênh từ −0,02 đến +0,10, mọi p ≥ 0,47. ROUGE-2 thì mọi cấu hình có
+`length_penalty` đều **âm** (−0,11 đến −0,27), tuy cũng chưa đủ bằng chứng. Cấu hình
+cao nhất so với thấp nhất chỉ là +0,12 [−0,12, +0,41], p = 0,40.
+
+**`min_length = 20` không ràng buộc gì.** Đo bằng chính tokenizer ViT5: bản tóm tắt mặc
+định dài trung bình 36 token, p5 là 24, và **chỉ 3 / 500 bản ngắn hơn 20 token**. Nên
+`min20` trùng 495 / 500 bản với mặc định — ngưỡng đặt ra chưa chạm tới phân phối thật.
+
+**`length_penalty` là đòn bẩy yếu ở đây.** `lp` 2,0 chỉ kéo độ dài từ 30 lên 32 âm tiết
+(36 → 38 token), vẫn dưới 34,3 âm tiết của sapo thật, trong khi ROUGE-2 hơi giảm: dài
+thêm mà không thêm đúng chữ thì chỉ mất precision. Giả thuyết "đang hụt recall vì sinh
+ngắn" của tuần 4 vì vậy **không được số liệu ủng hộ**.
+
+**Một cặp báo "có ý nghĩa", và vì sao không nên tin nó.** `lp2_min20` hơn `lp2` +0,09
+[+0,02, +0,19], p = 0,008, ổn định qua bốn hạt giống bootstrap. Nhưng hai cấu hình chỉ
+khác nhau ở **9 / 500 bản tóm tắt**, 491 bản còn lại giống hệt, nên bootstrap ghép cặp
+gần như không thấy phương sai và p nhỏ đi vì lý do kỹ thuật chứ không phải vì khác biệt
+lớn. Thêm nữa đây là 1 trong 15 cặp được so: ở mức 5%, kỳ vọng đã có khoảng 0,75 cặp
+báo nhầm. Chênh 0,09 điểm cũng nhỏ hơn mọi khoảng cách đáng quan tâm của đề tài.
+
+**Quyết định: giữ tham số mặc định** (`num_beams=4`, `no_repeat_ngram_size=3`,
+`length_penalty=1.0`) cho `val` và `test`. Kết quả âm này vẫn là một kết quả: nó nói
+rằng dư địa không nằm ở khâu sinh, mà ở việc chọn nội dung — khoảng cách tới Oracle-3
+(48,1) là việc của tầng 2 và tầng 4.
 
 ## Câu hỏi 2 — cắt bài ở 1.024 token mất bao nhiêu
 
@@ -633,8 +676,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 3b — Baseline tầng 0–1 (LexRank bản nhúng PhoBERT dời sang tuần 4, cần torch)
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
-  (đã có: đường cong học đủ ba điểm `train_5k`/`train_10k`/`train_20k`, câu hỏi 2 sơ
-  bộ; còn: dò tham số sinh trên `tune`, đối chứng BARTpho, LexRank bản PhoBERT)
+  (đã có: đường cong học đủ ba điểm `train_5k`/`train_10k`/`train_20k`, dò tham số
+  sinh trên `tune`, câu hỏi 2; còn: đối chứng BARTpho, LexRank bản PhoBERT)
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập

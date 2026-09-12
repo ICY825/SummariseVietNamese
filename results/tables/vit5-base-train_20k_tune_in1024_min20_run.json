@@ -1,0 +1,95 @@
+{
+ "tag": "vit5-base-train_20k_tune_in1024_min20",
+ "name": "vit5-base-train_20k",
+ "finished_at": "2026-09-12 03:05:59",
+ "args": {
+  "model": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/VietAI_vit5-base_train_20k/final",
+  "name": "vit5-base-train_20k",
+  "train_split": "train_2k",
+  "eval_split": "tune",
+  "epochs": 3.0,
+  "lr": 3e-05,
+  "batch": 2,
+  "grad_accum": 8,
+  "gen_batch": 16,
+  "beams": 4,
+  "no_repeat_ngram": 3,
+  "length_penalty": 1.0,
+  "min_length": 20,
+  "max_input": 1024,
+  "max_target": 80,
+  "prefix": "",
+  "eval_limit": 0,
+  "logging_steps": 25,
+  "max_steps": 0,
+  "fp16": "auto",
+  "out": "/kaggle/working/sweep",
+  "resume": false,
+  "no_train": true
+ },
+ "generation": {
+  "num_beams": 4,
+  "no_repeat_ngram_size": 3,
+  "length_penalty": 1.0,
+  "min_length": 20,
+  "early_stopping": true
+ },
+ "data": {
+  "train_split": null,
+  "n_train": 0,
+  "eval_split": "tune",
+  "n_eval": 500,
+  "max_input": 1024,
+  "max_target": 80,
+  "seed": 13
+ },
+ "env": {
+  "gpu": "Tesla T4",
+  "fp16": true,
+  "torch": "2.10.0+cu128",
+  "transformers": "5.0.0",
+  "python": "3.12.13"
+ },
+ "train": null,
+ "scores": {
+  "corpus": {
+   "rouge1": {
+    "mean": 33.62268336575509,
+    "lo": 32.278070456839856,
+    "hi": 35.007403072406994
+   },
+   "rouge2": {
+    "mean": 19.58447062751736,
+    "lo": 18.30260070765455,
+    "hi": 20.89040806127947
+   },
+   "rougeL": {
+    "mean": 27.010484417146003,
+    "lo": 25.7111656447038,
+    "hi": 28.324442007736426
+   },
+   "rougeLsum": {
+    "mean": 27.568735411036766,
+    "lo": 26.25937981074041,
+    "hi": 28.87596636784106
+   }
+  },
+  "length": {
+   "mean_syllables": 30.24,
+   "min": 17,
+   "max": 58,
+   "empty": 0
+  },
+  "novel": {
+   "1gram": 1.4714699708564667,
+   "2gram": 11.155467434727761,
+   "4gram": 29.57953017740003
+  }
+ },
+ "versus_lead3": null,
+ "files": {
+  "table": "/kaggle/working/BTL_DL/results/tables/vit5-base-train_20k_tune_in1024_min20.json",
+  "predictions": "/kaggle/working/BTL_DL/results/predictions/vit5-base-train_20k_tune_in1024_min20.json",
+  "checkpoint": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/VietAI_vit5-base_train_20k/final"
+ }
+}
