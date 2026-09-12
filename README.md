@@ -571,6 +571,59 @@ báo nhầm. Chênh 0,09 điểm cũng nhỏ hơn mọi khoảng cách đáng qu
 rằng dư địa không nằm ở khâu sinh, mà ở việc chọn nội dung — khoảng cách tới Oracle-3
 (48,1) là việc của tầng 2 và tầng 4.
 
+## BERTScore — thước đo thứ hai, và nó nói gì về ROUGE
+
+Chấm bằng `src/eval/run_bertscore.py` trên **chính các file dự đoán đã lưu**, không
+chạy lại mô hình nào. Bộ mã hoá `xlm-roberta-base` (đọc thẳng âm tiết; lý do không dùng
+PhoBERT nằm ở đầu `src/eval/bertscore.py`). Tập `val`, 1.000 bài, 8 phút trên CPU.
+
+| Hệ thống | BERTScore | ROUGE-1 |
+|---|---|---|
+| Oracle-3 | 89,02 | 48,09 |
+| **ViT5 `train_20k`** | **87,09** | **33,40** |
+| Lead-1 | 85,57 | 27,70 |
+| Lead-3 | 85,55 | 27,45 |
+| LexRank | 85,30 | 24,94 |
+| TextRank | 85,02 | 23,24 |
+| Random-3 | 84,80 | 23,63 |
+
+**Kết luận chính của đề tài được thước đo thứ hai xác nhận.** ViT5 hơn Lead-3
+**+1,54 [+1,37, +1,72] điểm BERTScore, p < 0,0001** — cùng chiều và cùng mức ý nghĩa
+với ROUGE. Lead-1 ngang Lead-3 (+0,02, p = 0,78), đúng như ROUGE đã nói ở tầng 0.
+
+**Nhưng BERTScore tương phản kém hơn nhiều.** Toàn bộ khoảng cách từ Random-3 lên
+Oracle-3 chỉ **4,22 điểm** BERTScore, trong khi ROUGE-1 trải **24,85 điểm** — rộng gấp
+5,9 lần. Năm hệ thống extractive nằm gọn trong 0,8 điểm BERTScore. Với 50 bài đầu tiên
+tôi đã tưởng nó "không phân biệt được gì"; đủ 1.000 bài thì khoảng tin cậy hẹp lại và
+mọi khác biệt đều có ý nghĩa, trừ cặp Lead-1/Lead-3. Bài học: dải điểm hẹp không đồng
+nghĩa với không phân biệt được, nhưng nó khiến mọi kết luận phụ thuộc nặng vào cỡ mẫu.
+
+**Một chỗ hai thước đo đảo thứ hạng.** ROUGE-1 xếp Random-3 (23,63) **trên** TextRank
+(23,24), còn BERTScore xếp ngược lại (84,80 so với 85,02). Random-3 ghép ba câu rút
+ngẫu nhiên nên bản tóm tắt đứt mạch; ROUGE chỉ đếm n-gram trùng nên không thấy điều đó,
+còn bộ mã hoá ngữ cảnh thì có. Đây là bằng chứng cụ thể cho câu hỏi nghiên cứu số 3:
+ROUGE bỏ sót thứ mà người đọc chắc chắn nhận ra.
+
+**Trên từng bài, hai thước đo đồng thuận nhưng không trùng khít.** Tương quan Pearson
+giữa ROUGE-1 và BERTScore của cùng một hệ thống là +0,87 (Lead-3) đến +0,92 (ViT5,
+Oracle-3). Khi hỏi "bài này ViT5 hay Lead-3 tốt hơn", hai thước đo **đồng ý ở 83,8%**
+số bài; trong 162 bài còn lại, BERTScore nghiêng về ViT5 ở 122 bài còn ROUGE nghiêng về
+ViT5 ở 40 bài — tức chỗ bất đồng cũng lệch về phía ViT5.
+
+**Giới hạn phải nêu trong báo cáo.** BERTScore cũng chỉ là một phép xấp xỉ bằng mô hình,
+không phải người đọc; nó được dùng ở đây để *đối chiếu* với ROUGE chứ không thay thế.
+Khâu chấm blind ở tuần 7 mới là phép đo có người thật, và chính nó sẽ nói hai thước đo
+tự động này bỏ sót cái gì.
+
+```bash
+~/.venvs/torch/Scripts/python.exe src/eval/run_bertscore.py \
+    baselines_val vit5-base-train_20k_val_e3_lr3e-05_bs16_in1024
+```
+
+Truyền nhiều file thì các hệ thống được gộp lại, nhưng `guid` của chúng phải trùng khớp
+mới cho ghép — cùng chốt chặn mà `report.same_articles()` dựng cho ROUGE, vì ViT5 và
+Lead-3 nằm ở hai file dự đoán do hai lần chạy khác nhau ghi ra.
+
 ## Câu hỏi 2 — cắt bài ở 1.024 token mất bao nhiêu
 
 `src/eval/truncation.py` trên ViT5 `train_5k`, tập `val`. Không cần GPU và không chạy
@@ -649,7 +702,8 @@ src/models/        extractive.py (tầng 0-1), vit5.py (tầng 3, cần GPU),
                    độ dài cắt), selftest.py (tự kiểm tra)
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py,
-                   truncation.py (câu hỏi 2, cần transformers)
+                   truncation.py (câu hỏi 2, cần transformers),
+                   run_bertscore.py (chấm BERTScore, cần torch)
 app/               demo Gradio
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
@@ -718,7 +772,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [ ] Tuần 5 — Huấn luyện đầy đủ, khảo sát tham số sinh văn bản
   (đã có: đường cong học đủ ba điểm `train_5k`/`train_10k`/`train_20k`, dò tham số
-  sinh trên `tune`, câu hỏi 2; còn: đối chứng BARTpho, LexRank bản PhoBERT)
+  sinh trên `tune`, câu hỏi 2, LexRank bản PhoBERT, BERTScore trên `val`;
+  còn: đối chứng BARTpho)
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
