@@ -4,6 +4,13 @@
     python src/models/vit5.py --train-split train_10k --epochs 3
     python src/models/vit5.py --model vinai/bartpho-syllable --train-split train_10k
 
+Tuần 5 dò tham số sinh: nạp checkpoint đã có rồi chỉ sinh lại trên `tune`, không train.
+`--name` để bảng kết quả mang tên mô hình chứ không phải tên thư mục checkpoint:
+
+    python src/models/vit5.py --no-train --eval-split tune \
+        --model runs/VietAI_vit5-base_train_20k/final --name vit5-base-train_20k \
+        --length-penalty 2.0 --min-length 20
+
 Phải chạy trên GPU. Trên Colab free (T4) nhớ cho `--out` trỏ vào Google Drive, vì
 phiên bị ngắt bất chợt và checkpoint nằm trong `/content` sẽ mất sạch.
 
@@ -128,8 +135,12 @@ def run_tag(args, name):
     cong học với nhiều cấu hình trên cùng một split nên chắc chắn dính. Nhét cấu
     hình vào tên là cách rẻ nhất để một file kết quả tự khai nó là của lần chạy nào.
     """
-    bits = [name, args.eval_split, f"e{args.epochs:g}", f"lr{args.lr:g}",
-            f"bs{args.batch * args.grad_accum}", f"in{args.max_input}"]
+    bits = [name, args.eval_split, f"in{args.max_input}"]
+    # Luong `--no-train` khong dung epochs/lr/batch, nen nhet chung vao ten la ghi
+    # vao file mot cau hinh chua he chay — doc bang ket qua tuan 5 se tuong lan chay
+    # do co train. Nhung mieng phan biet cac lan do tham so sinh nam o duoi.
+    if not getattr(args, "no_train", False):
+        bits[2:2] = [f"e{args.epochs:g}", f"lr{args.lr:g}", f"bs{args.batch * args.grad_accum}"]
     if args.beams != 4:
         bits.append(f"beam{args.beams}")
     if args.length_penalty != 1.0:
@@ -206,6 +217,11 @@ def generate(model, tok, rows, max_input, max_target, batch=16, prefix="", gen=N
 def main():
     ap = argparse.ArgumentParser(description="Fine-tune tầng 3.")
     ap.add_argument("--model", default="VietAI/vit5-base")
+    ap.add_argument(
+        "--name", default="",
+        help="tên hệ thống trong bảng kết quả; mặc định suy từ --model và --train-split. "
+             "Cần khi --model là đường dẫn checkpoint, vì khi đó tên suy ra là `final`",
+    )
     ap.add_argument("--train-split", default="train_2k")
     ap.add_argument("--eval-split", default="val", help="KHÔNG dùng test ở tuần 4-5")
     ap.add_argument("--epochs", type=float, default=3.0)
@@ -375,7 +391,7 @@ def main():
         batch=args.gen_batch, prefix=args.prefix, gen=gen,
     )
 
-    name = f"{args.model.split('/')[-1]}-{args.train_split}"
+    name = args.name or f"{args.model.split('/')[-1]}-{args.train_split}"
     refs = [r["abstract_raw"] for r in eval_rows]
     arts = [r["article_raw"] for r in eval_rows]
     guids = [str(r["guid"]) for r in eval_rows]

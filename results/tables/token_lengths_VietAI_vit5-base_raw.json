@@ -1,0 +1,71 @@
+{
+ "model": "VietAI/vit5-base",
+ "form": "raw",
+ "split": "train_20k",
+ "sample": 2000,
+ "seed": 13,
+ "article": {
+  "token": {
+   "n": 2000,
+   "mean": 586.227,
+   "p50": 509.0,
+   "p90": 1034.2000000000003,
+   "p95": 1159.3499999999997,
+   "p99": 1434.02,
+   "max": 2346.0
+  },
+  "syllable": {
+   "n": 2000,
+   "mean": 498.5625,
+   "p50": 430.0,
+   "p90": 875.1000000000001,
+   "p95": 1003.0999999999999,
+   "p99": 1214.03,
+   "max": 1935.0
+  }
+ },
+ "abstract": {
+  "token": {
+   "n": 2000,
+   "mean": 40.311,
+   "p50": 38.0,
+   "p90": 55.0,
+   "p95": 62.0,
+   "p99": 74.01999999999998,
+   "max": 144.0
+  },
+  "syllable": {
+   "n": 2000,
+   "mean": 34.301,
+   "p50": 32.0,
+   "p90": 46.0,
+   "p95": 50.0,
+   "p99": 65.0,
+   "max": 112.0
+  }
+ },
+ "expansion_token_per_syllable": 1.1796710939695532,
+ "truncation_percent": {
+  "512": {
+   "token": 49.3,
+   "syllable": 37.5
+  },
+  "768": {
+   "token": 24.6,
+   "syllable": 16.5
+  },
+  "1024": {
+   "token": 10.2,
+   "syllable": 4.25
+  },
+  "1536": {
+   "token": 0.4,
+   "syllable": 0.15
+  }
+ },
+ "suggested": {
+  "max_input_length": 1536,
+  "max_target_length": 80,
+  "coverage_rule_percent": 90.0
+ }
+}

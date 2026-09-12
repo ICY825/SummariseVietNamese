@@ -36,7 +36,8 @@ bài **ngẫu nhiên với `seed=13`** — bộ này xếp theo nguồn/chuyên 
 
 Con số quyết định `max_input_length` phải đo bằng **chính tokenizer của mô hình**, và
 trên văn bản thô đã khử gạch dưới — đó là thứ ViT5 và BARTpho-syllable thực sự đọc.
-Đo bằng `src/models/measure_tokens.py` trên 2.000 bài của `train_20k` (`seed=13`):
+Đo bằng `src/models/measure_tokens.py` trên 2.000 bài của `train_20k` (`seed=13`); số
+liệu đầy đủ nằm ở `results/tables/token_lengths_<mô hình>_raw.json`:
 
 | Ngưỡng | 512 | 768 | 1.024 | 1.536 |
 |---|---|---|---|---|

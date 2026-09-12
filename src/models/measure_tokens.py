@@ -31,7 +31,13 @@ import json
 import sys
 from pathlib import Path
 
-import numpy as np
+# Console Windows mac dinh cp1252 -> chet ngay dong in tieng Viet dau tien khi dau ra
+# bi chuyen huong (qua ong lenh hoac ghi ra file). Ep UTF-8 nhu vit5.py va truncation.py.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
+import numpy as np  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from data.splits import load_split  # noqa: E402
