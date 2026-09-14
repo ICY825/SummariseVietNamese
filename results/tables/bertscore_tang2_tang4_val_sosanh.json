@@ -1,0 +1,90 @@
+{
+ "n": 1000,
+ "n_loc": 102,
+ "means": {
+  "Random-3": 84.802,
+  "Lead-1": 85.566,
+  "Lead-3": 85.547,
+  "TextRank": 85.02,
+  "LexRank": 85.303,
+  "Oracle-3": 89.019,
+  "vit5-base-train_20k": 87.089,
+  "bartpho-syllable-train_20k": 87.307,
+  "phobert-sent": 85.943,
+  "bartpho-loc-lexrank": 87.308,
+  "bartpho-loc-lead_lexrank": 87.306
+ },
+ "pairs": {
+  "phobert-sent - Lead-3": {
+   "diff": 0.3959,
+   "lo": 0.2939,
+   "hi": 0.4961,
+   "p": 0.0,
+   "significant": true
+  },
+  "phobert-sent - Lead-1": {
+   "diff": 0.3767,
+   "lo": 0.2177,
+   "hi": 0.5389,
+   "p": 0.0,
+   "significant": true
+  },
+  "phobert-sent - LexRank": {
+   "diff": 0.6401,
+   "lo": 0.5155,
+   "hi": 0.7629,
+   "p": 0.0,
+   "significant": true
+  },
+  "phobert-sent - bartpho-syllable-train_20k": {
+   "diff": -1.3643,
+   "lo": -1.5508,
+   "hi": -1.1827,
+   "p": 0.0,
+   "significant": true
+  },
+  "loc-lexrank - bartpho": {
+   "diff": 0.0006,
+   "lo": -0.0524,
+   "hi": 0.0546,
+   "p": 0.9966,
+   "significant": false
+  },
+  "loc-lead_lexrank - bartpho": {
+   "diff": -0.0007,
+   "lo": -0.0539,
+   "hi": 0.0523,
+   "p": 0.9686,
+   "significant": false
+  },
+  "[loc] loc-lexrank - bartpho": {
+   "diff": 0.0784,
+   "lo": -0.3147,
+   "hi": 0.4889,
+   "p": 0.6956,
+   "significant": false
+  },
+  "[loc] loc-lead_lexrank - bartpho": {
+   "diff": 0.0658,
+   "lo": -0.3067,
+   "hi": 0.4674,
+   "p": 0.7418,
+   "significant": false
+  },
+  "[loc] loc-lead_lexrank - loc-lexrank": {
+   "diff": -0.0126,
+   "lo": -0.2747,
+   "hi": 0.2301,
+   "p": 0.969,
+   "significant": false
+  },
+  "[khong loc] loc-lead_lexrank - bartpho": {
+   "diff": -0.0083,
+   "lo": -0.0458,
+   "hi": 0.0292,
+   "p": 0.6758,
+   "significant": false
+  }
+ },
+ "khong_loc_trung_diem": 783
+}

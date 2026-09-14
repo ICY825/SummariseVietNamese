@@ -1,0 +1,17 @@
+{
+  "id": "minh12605/dl-summarisevn-tang2-score",
+  "title": "DL-SummariseVN tang2 score",
+  "code_file": "kaggle_tang2_score.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [
+    "minh12605/dl-summarisevn-tang2"
+  ],
+  "model_sources": []
+}

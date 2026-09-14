@@ -37,7 +37,7 @@ for _stream in (sys.stdout, sys.stderr):
 HERE = Path(__file__).resolve().parent
 SPLITS = HERE.parent / "data" / "splits"
 KEYS = ("MODEL", "TRAIN_SPLIT", "EPOCHS", "LR", "DRY_RUN", "RESUME",
-        "EVAL_SPLIT", "NAME", "CKPT_GLOB")
+        "EVAL_SPLIT", "NAME", "CKPT_GLOB", "FILTER", "GRID")
 
 
 def set_config(text, split, model):
@@ -47,6 +47,11 @@ def set_config(text, split, model):
     trong repo đúng hai dòng — `diff` giữa hai bản là bằng chứng không có gì khác lọt vào.
     """
     for key, value in (("TRAIN_SPLIT", split), ("MODEL", model)):
+        # Khong truyen --model thi giu nguyen MODEL cua notebook. Truoc day mac dinh la
+        # ViT5 va bi ghi de vao MOI notebook co dong MODEL — notebook BARTpho day len ma
+        # quen --model se am tham huan luyen ViT5.
+        if value is None:
+            continue
         pat = re.compile(rf'("{key} = \\")[^"\\]*(\\")')
         text, n = pat.subn(rf"\g<1>{value}\g<2>", text)
         if n != 1:
@@ -58,7 +63,7 @@ def main():
     ap = argparse.ArgumentParser(description="Đẩy notebook lên Kaggle.")
     ap.add_argument("split", nargs="?", help="tập train, ví dụ train_20k (notebook huấn luyện)")
     ap.add_argument("--dir", default=str(HERE), help="thư mục chứa kernel-metadata.json")
-    ap.add_argument("--model", default="VietAI/vit5-base")
+    ap.add_argument("--model", default=None, help="mặc định giữ MODEL đang ghi trong notebook")
     ap.add_argument("--dry", action="store_true", help="chỉ dựng và in cấu hình, không đẩy")
     args = ap.parse_args()
 
@@ -98,7 +103,12 @@ def main():
         config = next(c for c in cells if c["cell_type"] == "code")
         print(f"Notebook: {notebook.name} -> {json.loads(meta_path.read_text(encoding='utf-8'))['id']}")
         print("Cấu hình sẽ đẩy:")
-        for line in config["source"]:
+        # nbformat cho `source` la danh sach dong HOAC mot chuoi; lap tren chuoi la lap
+        # tung ky tu va phan xem truoc im lang khong in gi.
+        lines = config["source"]
+        if isinstance(lines, str):
+            lines = lines.splitlines(keepends=True)
+        for line in lines:
             if re.match(rf"({'|'.join(KEYS)}) = ", line):
                 print("  " + line.rstrip())
         if args.dry:

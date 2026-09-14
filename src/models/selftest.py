@@ -297,5 +297,23 @@ D2 = ["a .", "b .", "a ."]
 check_true("không chọn hai bản sao", pick_indices([0.9, 0.1, 0.95], D2, 2) == [1, 2])
 check_true("hoà điểm -> câu đứng trước thắng", pick_indices([0.5, 0.5, 0.5], MS, 1) == [0])
 
+print("\n11. Tầng 2 — chọn số câu linh hoạt")
+# `k3` phai trung HET `pick_indices(k=3)`: no la bang chung rang quy tac moi doc cung
+# bo diem voi tang 2 da bao cao, nen so voi nhau la so dung quy tac.
+from models.phobert_select import RULES, pick_rule  # noqa: E402
+
+N6 = ["a .", "b .", "c .", "d .", "b .", "e ."]
+for diem in ([0.3, 2.0, -1.0, 1.5, 2.0, 0.0], [0.0] * 6, [5, 4, 3, 2, 1, 0]):
+    check_true(f"k3 trùng pick_indices với điểm {diem}",
+               pick_rule(diem, N6, "k3") == pick_indices(diem, N6, 3))
+check_true("k1 lấy đúng một câu", pick_rule([0.1, 3.0, 2.0], MS, "k1") == [1])
+# logit 2,0 -> xac suat 0,88; 0,0 -> 0,5; -3,0 -> 0,047
+check_true("pT giữ các câu trên ngưỡng", pick_rule([2.0, 0.0, 2.1], MS, "p0.6") == [0, 2])
+check_true("pT không vượt 3 câu", len(pick_rule([5, 5, 5, 5, 5, 5], N6, "p0.3")) == 3)
+check_true("pT luôn giữ ít nhất câu điểm cao nhất",
+           pick_rule([-3.0, -2.0, -4.0], MS, "p0.9") == [1])
+check_true("pT không chọn hai bản sao", pick_rule([0, 9, 0, 0, 9, 0], N6, "p0.9") == [1])
+check_true("mọi quy tắc trong lưới đều chạy", all(pick_rule([1.0, 0.0, 2.0], MS, r) for r in RULES))
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

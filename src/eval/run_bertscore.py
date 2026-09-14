@@ -57,7 +57,12 @@ def main():
     # tren DUNG cung nhung bai do, cung thu tu — cung chot chan ma `report.same_articles()`
     # dung cho ROUGE, khong duoc bo qua chi vi o day tien tay.
     data, guids, refs, systems = {}, None, None, []
-    for tag in args.tag:
+    # `TAG:TEN` doi ten he thong duy nhat trong file. Can cho tang 4: hai file loc cau va
+    # ban BARTpho goc cung mang ten `bartpho-syllable-train_20k`, nen khong doi ten thi
+    # chot chan trung ten ben duoi chan dung, va khong chay chung mot lan duoc.
+    specs = [s.partition(":") for s in args.tag]
+    args.tag = [t for t, _, _ in specs]
+    for (tag, _, alias) in specs:
         path = RESULTS / "predictions" / f"{tag}.json"
         if not path.exists():
             có = sorted(p.stem for p in (RESULTS / "predictions").glob("*.json"))
@@ -72,6 +77,12 @@ def main():
                 f"{tag} chấm trên tập bài KHÁC với {args.tag[0]} ({lệch} vị trí lệch guid) "
                 "— không được ghép. Chấm lại cả hai trên cùng tập đã đóng băng."
             )
+        ten_he = [k for k in d if k not in ("guid", "reference")]
+        if alias:
+            if len(ten_he) != 1:
+                raise SystemExit(f"{tag}:{alias} — chỉ đổi tên được file có đúng một hệ thống, "
+                                 f"file này có {len(ten_he)}: {ten_he}")
+            d = {"guid": d["guid"], "reference": d["reference"], alias: d[ten_he[0]]}
         for k, v in d.items():
             if k in ("guid", "reference"):
                 continue

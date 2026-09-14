@@ -132,7 +132,15 @@ def _build_model(name, device):
             v = (h.unsqueeze(1) * w).sum(2) / w.sum(2).clamp(min=1e-9)
             return self.head(self.drop(v)).squeeze(-1)
 
-    return SentenceScorer(name).to(device)
+    model = SentenceScorer(name)
+    # Checkpoint da huan luyen gom HAI phan: `enc` luu bang `save_pretrained`, con lop
+    # cho diem luu rieng o `head.pt`. `from_pretrained` chi nap phan dau; khong nap
+    # `head.pt` thi lop cho diem la trong so khoi tao NGAU NHIEN va `--no-train` sinh ra
+    # ban tom tat vo nghia ma khong bao loi gi.
+    head = Path(name) / "head.pt"
+    if head.exists():
+        model.head.load_state_dict(torch.load(head, map_location="cpu"))
+    return model.to(device)
 
 
 def _collate(batch, pad_id, device):
@@ -176,6 +184,31 @@ def encode_rows(rows, tok, with_labels=True, k=K, max_len=MAX_LEN):
     return out
 
 
+def score_examples(model, examples, pad_id, device, batch=8):
+    """Logit của từng câu nhìn thấy được, mỗi bài một danh sách; bài không có câu nào -> None.
+
+    Tách khỏi `main()` để `phobert_select.py` dùng lại đúng đường tính điểm này: mọi
+    quy tắc chọn câu phải đọc cùng một bộ điểm thì so với nhau mới có nghĩa.
+    """
+    import torch
+
+    model.eval()
+    out = []
+    with torch.no_grad():
+        for i in range(0, len(examples), batch):
+            chunk = examples[i : i + batch]
+            thuc = [e for e in chunk if e]
+            if thuc:
+                ii, am, sm, _, _ = _collate(thuc, pad_id, device)
+                logits = model(ii, am, sm).float().cpu().numpy()
+            it = iter(range(len(thuc)))
+            for e in chunk:
+                out.append(logits[next(it), : e["n_visible"]].tolist() if e else None)
+            print(f"\r  {min(i + batch, len(examples))}/{len(examples)}", end="", flush=True)
+    print()
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description="Tầng 2: PhoBERT phân loại câu.")
     ap.add_argument("--model", default="vinai/phobert-base")
@@ -195,6 +228,10 @@ def main():
     ap.add_argument("--out", default="runs")
     ap.add_argument("--n-boot", type=int, default=10_000)
     args = ap.parse_args()
+    if args.no_train and not (Path(args.model) / "head.pt").exists():
+        raise SystemExit(
+            f"--no-train cần thư mục checkpoint có head.pt, mà {args.model} không có. "
+            "Thiếu nó thì lớp cho điểm là trọng số ngẫu nhiên.")
 
     import torch
     from transformers import AutoTokenizer
@@ -276,26 +313,12 @@ def main():
         print(f"Đã lưu {out_dir / 'final'}")
 
     print("\nSinh bản tóm tắt trên", args.eval_split, "...")
-    model.eval()
-    preds = []
-    with torch.no_grad():
-        for i in range(0, len(eval_ex), args.batch):
-            chunk = eval_ex[i : i + args.batch]
-            thuc = [e for e in chunk if e]
-            if thuc:
-                ii, am, sm, _, ym = _collate(thuc, tok.pad_token_id, device)
-                logits = model(ii, am, sm).cpu().numpy()
-            it = iter(range(len(thuc)))
-            for e in chunk:
-                if not e:
-                    preds.append("")
-                    continue
-                j = next(it)
-                s = logits[j, : e["n_visible"]]
-                idx = pick_indices(s, e["sents"][: e["n_visible"]], args.k)
-                preds.append(join(e["sents"], idx))
-            print(f"\r  {min(i + args.batch, len(eval_ex))}/{len(eval_ex)}", end="", flush=True)
-    print()
+    scores = score_examples(model, eval_ex, tok.pad_token_id, device, args.batch)
+    preds = [
+        "" if s is None
+        else join(e["sents"], pick_indices(s, e["sents"][: e["n_visible"]], args.k))
+        for e, s in zip(eval_ex, scores)
+    ]
 
     refs = [r["abstract"] for r in eval_rows]
     arts = [r["article"] for r in eval_rows]
@@ -324,6 +347,10 @@ def main():
     tag = f"{args.name}-{args.train_split}_{args.eval_split}_len{args.max_len}"
     if args.eval_limit or args.train_limit:
         tag += f"_thu{args.eval_limit or args.train_limit}"
+    # `--no-train` cho ra dung ten cua lan chay da huan luyen; khong co dong nay thi no
+    # de im lang len bang ket qua that. Trung ten thi them hau to, khong bao gio de.
+    from models.vit5 import free_tag
+    tag = free_tag(tag, (RESULTS / "tables", RESULTS / "predictions"))
     path = save([res], f"{tag}.json")
     (RESULTS / "predictions").mkdir(parents=True, exist_ok=True)
     (RESULTS / "predictions" / f"{tag}.json").write_text(

@@ -1046,6 +1046,31 @@ Chọn số câu linh hoạt thay vì cố định k = 3 là hướng cải thi�
 `data/splits/val.json`; không bản tóm tắt nào rỗng. Loss huấn luyện (trung bình mỗi 50
 bước) giảm từ 1,20 xuống khoảng 0,8 và phẳng dần ở epoch cuối.
 
+**Thước đo thứ hai đồng ý, và ở đây biên còn rõ hơn ROUGE.** BERTScore trên cùng 1.000
+bài (`xlm-roberta-base`, chấm từ file dự đoán đã lưu): tầng 2 đạt **85,94**, hơn Lead-3
+**+0,40 [+0,29, +0,50]**, hơn Lead-1 **+0,38 [+0,22, +0,54]**, hơn LexRank +0,64
+[+0,52, +0,76], mọi p < 0,0001; thua BARTpho −1,36 [−1,55, −1,18]. Với ROUGE-1, biên so
+với Lead-1 chỉ vừa đủ (p = 0,026); với BERTScore khoảng tin cậy rời hẳn khỏi 0. Tầng 2
+đứng đầu mọi hệ thống extractive ở cả hai thước đo, trừ Oracle-3. Số liệu ghép cặp:
+`results/tables/bertscore_tang2_tang4_val_sosanh.json`.
+
+**Một lỗi đã sửa trước khi dùng lại checkpoint.** Checkpoint tầng 2 gồm hai phần —
+PhoBERT lưu bằng `save_pretrained`, lớp cho điểm lưu riêng ở `head.pt` — nhưng
+`_build_model()` chỉ nạp phần đầu. Lần chạy trên Kaggle **không** dính lỗi này vì nó
+huấn luyện rồi sinh trong cùng một tiến trình; nhưng mọi lần `--no-train` về sau sẽ cho
+điểm bằng một lớp khởi tạo ngẫu nhiên mà không báo gì. Giờ `head.pt` được nạp, và
+`--no-train` từ chối chạy khi thiếu nó. Đã kiểm trên một mô hình RoBERTa tí hon: trọng số
+lớp cho điểm nạp đúng, hai lần nạp cho cùng điểm, thiếu `head.pt` thì lớp khác đi.
+Checkpoint thật vẫn còn ở output của kernel `dl-summarisevn-tang2` (`tang2/phobert_sent/final`).
+
+**Chọn số câu linh hoạt — công cụ đã sẵn, chưa có số liệu.** `src/models/phobert_select.py`
+tách làm hai bước: `score` chạy PhoBERT một lần cho mỗi split và ghi điểm từng câu ra
+`results/predictions/phobert-sent-train_20k_<split>_len256_scores.json`; `select` dò 10
+quy tắc trên `tune` (`k1`–`k3`, và `pT` = mọi câu có xác suất ≥ T, tối đa 3, ít nhất 1)
+rồi chỉ đem quy tắc thắng sang `val`. Trước khi tin quy tắc mới, `select` kiểm rằng `k3`
+dựng lại **từng chữ** file dự đoán của lần chạy Kaggle. `selftest.py` mục 11 kiểm `k3`
+trùng `pick_indices()` và hành vi của ngưỡng.
+
 ## Tầng 4 — lọc câu trước, abstractive viết lại
 
 Câu hỏi 2 để lại một giả thuyết: cắt bài lấy đi khoảng 4 điểm ROUGE-1 ở 10,2% số bài,
@@ -1097,6 +1122,28 @@ Nguyên nhân còn lại là **đường chạy**: bản gốc sinh ngay sau hu�
 `final` từ đĩa với `--no-train`. Nó không đổi điểm, nhưng một đối chứng sạch tuyệt đối
 cần thêm một lần chạy `--no-train` **không lọc** trên `val` (~15 phút GPU).
 
+**BERTScore cũng không thấy gì.** Trong 102 bài bị lọc, so với cắt thô: `lexrank`
++0,08 [−0,31, +0,49], `lead_lexrank` +0,07 [−0,31, +0,47]; hai chiến lược với nhau −0,01.
+Toàn tập, cả ba bản đều 87,31. Chiều ở đây **ngược** với ROUGE-1 (−0,83 và −0,13) nhưng cả
+hai thước đo đều nằm gọn trong nhiễu, nên kết luận không đổi: lọc lúc suy luận không
+lấy lại được gì đo được. Trên 898 bài không bị lọc, 783 bài trùng điểm và chênh lệch là
+−0,01 [−0,05, +0,03]. Nhóm 102 bài được dựng lại bằng tokenizer BARTpho theo đúng tiêu
+chí của `apply_filter()` (quá 1.022 token) và kiểm bằng ROUGE-1 của nhóm — ra đúng 26,80 /
+25,98 / 26,67 như bảng trên. Chạy chung ba file bằng cú pháp đổi tên mới của
+`run_bertscore.py` (`TAG:TÊN`), vì cả ba cùng mang tên hệ thống `bartpho-syllable-train_20k`.
+
+**Vòng 2 và đối chứng — đã chuẩn bị, chưa chạy.**
+
+- `notebooks/tang4/` giờ chỉ chạy **đối chứng không lọc** (`GRID = [{"filter": "none"}]`),
+  cùng đường `--no-train` với hai bản lọc; ô đóng gói chỉ lấy file mới sinh ra.
+- `notebooks/tang4_train/` huấn luyện BARTpho `train_20k` với `--filter lead_lexrank` áp
+  lên cả train lẫn `val`, cấu hình còn lại y hệt bản gốc. Nó là **kernel riêng**
+  (`dl-summarisevn-tang4-train`): đẩy lên kernel `dl-summarisevn-vit5` sẽ khiến
+  checkpoint BARTpho gốc không còn là "version mới nhất" mà `notebooks/tang4/` và lần chấm
+  `test` đang dựa vào. Chỉ một chiến lược vì mỗi lần là ~2,7 giờ GPU; `lead_lexrank` được
+  chọn nhờ vòng 1 trên `val`, nên kết quả vòng 2 trên `val` không hoàn toàn độc lập với
+  phép chọn ấy.
+
 ## Cấu trúc
 
 ```
@@ -1104,12 +1151,14 @@ data/raw/          dữ liệu tải về, không chỉnh sửa
 data/processed/    đã chuẩn hoá và khử tách từ
 data/splits/       file ID cố định của train/val/test
 notebooks/         kaggle_train_vit5.ipynb (huấn luyện tầng 3), sweep/ và
-                   sweep_bartpho/ (dò tham số sinh), tang4/ (lọc câu), tang2/
-                   (PhoBERT chọn câu), kaggle_push.py (đẩy lên Kaggle)
+                   sweep_bartpho/ (dò tham số sinh), tang4/ (lọc câu lúc suy luận),
+                   tang4_train/ (huấn luyện trên đầu vào đã lọc), tang2/ (PhoBERT
+                   chọn câu), kaggle_push.py (đẩy lên Kaggle)
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra),
                    browse.py (duyệt dữ liệu trên trình duyệt)
 src/models/        extractive.py (tầng 0-1), phobert_sent.py (tầng 2, cần GPU),
+                   phobert_select.py (tầng 2 chọn số câu linh hoạt),
                    vit5.py (tầng 3, cần GPU), hybrid.py (tầng 4), run_baselines.py
                    (chạy + chấm), measure_tokens.py (đo độ dài cắt), selftest.py
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
@@ -1186,9 +1235,12 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
   LexRank bản PhoBERT, BERTScore, đối chứng BARTpho (BARTpho thắng ViT5)
 - [x] Rà soát tuần 5 — lấp các chỗ hở phát hiện khi review (xem dưới)
 - [x] Tuần 6 — Tầng 2 và tầng 4. Tầng 2: hệ thống extractive đầu tiên vượt Lead-3
-  (+1,24). Tầng 4 vòng 1: lọc lúc suy luận không lấy lại được thiệt hại do cắt. Còn để
-  ngỏ: tầng 4 vòng 2 — huấn luyện lại trên đầu vào đã lọc (~2,6 giờ GPU); đối chứng
-  `--no-train` không lọc (~15 phút GPU); tầng 2 chọn số câu linh hoạt.
+  (+1,24). Tầng 4 vòng 1: lọc lúc suy luận không lấy lại được thiệt hại do cắt.
+  BERTScore xác nhận cả hai kết luận.
+- [ ] Phần còn lại của tuần 6 — công cụ đã sẵn, chờ chạy:
+  - [ ] đối chứng `--no-train` không lọc — `notebooks/tang4/`, ~15 phút GPU
+  - [ ] tầng 4 vòng 2, huấn luyện lại trên đầu vào đã lọc — `notebooks/tang4_train/`, ~2,8 giờ GPU
+  - [ ] tầng 2 chọn số câu linh hoạt — `phobert_select.py`, cần tải checkpoint tầng 2 (540 MB)
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
 
