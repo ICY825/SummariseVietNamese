@@ -1,0 +1,17 @@
+{
+  "id": "minh12605/dl-summarisevn-sweep-bartpho",
+  "title": "DL-SummariseVN sweep BARTpho",
+  "code_file": "kaggle_sweep_gen_bartpho.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [
+    "minh12605/dl-summarisevn-vit5"
+  ],
+  "model_sources": []
+}

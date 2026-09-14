@@ -146,5 +146,58 @@ check_true(
     len(sentences(lead(E, 3))) == 3 and len(set(sentences(lead(E, 3)))) == 2,
 )
 
+print("\n8. LexRank bản nhúng — kiểm phần KHÔNG cần torch")
+# `lexrank_emb_indices()` chi khac ban TF-IDF o dung mot cho: ma tran tuong dong lay
+# tu PhoBERT thay vi tu TF-IDF. Phan con lai — pagerank(), _pick(), khu cau trung, giu
+# thu tu cau — dung chung code voi ban TF-IDF. Do la phan kiem duoc o day: thay
+# `_phobert_vectors` bang mot bo sinh vector tu che roi doi chieu voi ket qua tinh tay.
+#
+# Vi sao phai gia lap: PhoBERT can `torch` + `transformers`, ma `.venv` cua du an co y
+# khong co hai goi do de lenh baseline chay duoc tren mot may sach. Neu doi den khi co
+# torch moi kiem thi he thong nay mai mai khong co phep kiem tu dong nao — trong khi no
+# lai la he thong DUY NHAT cua du an ma ban tom tat sinh lai khong chac ra dung nhu cu
+# (phu thuoc trong so PhoBERT tren Hub va phien ban `transformers`).
+import models.extractive as ex  # noqa: E402
+
+_goc = ex._phobert_vectors
+try:
+    # Ba cau, vector da chuan hoa L2 san: cau 0 va 1 gan nhau (cosin 0,995), cau 2
+    # truc giao voi ca hai (cosin 0). Bo xep hang phai bo dung cau 2.
+    ex._phobert_vectors = lambda sents, *a, **k: np.array(
+        [[1.0, 0.0], [0.995, 0.0998], [0.0, 1.0]]
+    )[: len(sents)]
+    F = "cảnh_sát bắt nghi_phạm . cảnh_sát khám nhà . giá vàng tăng ."
+    check_true("bỏ câu lạc đề (vector tự chế)", ex.lexrank_emb_indices(F, 2) == [0, 1])
+    check_true("giữ nguyên thứ tự câu", ex.lexrank_emb_indices(F, 3) == [0, 1, 2])
+    check_true(
+        "tất định: chạy lại ra đúng kết quả cũ",
+        ex.lexrank_emb_indices(F, 2) == ex.lexrank_emb_indices(F, 2),
+    )
+    check_true("đầu ra giữ dạng tách từ", "_" in ex.lexrank_emb(F, 1))
+    check_true("k lớn hơn số câu -> lấy hết", len(ex.lexrank_emb_indices(F, 9)) == 3)
+
+    # Khu cau trung noi dung phai co y nhu ban TF-IDF: hai ban sao cua cung mot cau co
+    # vector bang het nhau nen bo xep hang se vo ca hai neu khong khu.
+    ex._phobert_vectors = lambda sents, *a, **k: np.array(
+        [[1.0, 0.0], [0.0, 1.0], [1.0, 0.0]]
+    )[: len(sents)]
+    G = "cảnh_sát bắt nghi_phạm . giá vàng tăng mạnh . cảnh_sát bắt nghi_phạm ."
+    check_true("không chọn hai bản sao", len(ex.lexrank_emb_indices(G, 3)) == 2)
+    check_true(
+        "đầu ra không lặp câu",
+        len(sentences(ex.lexrank_emb(G, 3))) == len(set(sentences(ex.lexrank_emb(G, 3)))),
+    )
+
+    # Bai rong phai ve som, KHONG duoc goi toi bo ma hoa: nap PhoBERT cho mot bai rong
+    # la tra gia hang giay cho viec khong lam gi.
+    def _no(*a, **k):
+        raise AssertionError("bài rỗng không được gọi tới PhoBERT")
+
+    ex._phobert_vectors = _no
+    check_true("bài rỗng: không vỡ và không gọi PhoBERT", ex.lexrank_emb_indices("", 3) == [])
+finally:
+    ex._phobert_vectors = _goc
+check_true("đã trả `_phobert_vectors` về bản thật", ex._phobert_vectors is _goc)
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

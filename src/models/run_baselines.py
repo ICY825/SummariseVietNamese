@@ -32,8 +32,10 @@ do tồn tại của tầng 3.
 
 import argparse
 import json
+import platform
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 # Phai dat ca stderr, khong chi stdout: thong bao chan ten he thong sai di ra bang
@@ -99,6 +101,30 @@ def build(key, rows, k):
     raise ValueError(f"Không biết hệ thống {key!r}.")
 
 
+def versions(systems):
+    """Phiên bản thư viện thực sự tham gia lần chạy này.
+
+    `torch`/`transformers` chỉ được hỏi khi `lexrank_emb` có mặt: chúng không nằm
+    trong `.venv` của dự án, nên import vô điều kiện sẽ làm chết lệnh baseline mặc
+    định trên một máy sạch — đúng thứ mà việc để `lexrank_emb` ngoài danh sách mặc
+    định đang tránh.
+    """
+    out = {"python": platform.python_version(), "platform": platform.platform()}
+    import datasets
+    import numpy
+
+    out["datasets"] = datasets.__version__
+    out["numpy"] = numpy.__version__
+    if "lexrank_emb" in systems:
+        import torch
+        import transformers
+
+        out["torch"] = torch.__version__
+        out["transformers"] = transformers.__version__
+        out["phobert"] = "vinai/phobert-base"
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description="Baseline extractive tầng 0-1.")
     ap.add_argument("--split", default="test", help="tên tập con đã đóng băng")
@@ -149,6 +175,7 @@ def main():
     print("\n" + md)
 
     base_name = label(BASELINE, args.k)
+    versus = {}
     if BASELINE not in args.systems:
         # Khong tu nap moc tu file cu: bang Lead-3 cu do MOT LAN CHAY KHAC ghi ra, va
         # ghep cap voi no chi hop le khi hai ben cham tren dung cung nhung bai do.
@@ -158,7 +185,8 @@ def main():
         base = next(r for r in results if r["name"] == base_name)
         for r in results:
             if r["name"] != base_name:
-                print("  " + compare(r, base, "rouge1", n_boot=args.n_boot))
+                versus[r["name"]] = compare(r, base, "rouge1", n_boot=args.n_boot)
+                print("  " + versus[r["name"]])
 
     # k phai nam trong ten file khi khac mac dinh, neu khong mot lan chay --k 5 se
     # ghi de im lang len bang ket qua k=3 dang duoc trich trong README.
@@ -185,7 +213,46 @@ def main():
         ),
         encoding="utf-8",
     )
-    print(f"\nĐã ghi:\n  {path}\n  {md_path}\n  {pred_path}")
+    # Ho so lan chay, mot file canh bang chi so — giong het `vit5.py`. Mot bang chi so
+    # tra loi "duoc bao nhieu diem" nhung khong tra loi "diem do sinh ra bang gi". Voi
+    # Lead/Random/Oracle thi khong quan trong: chay lai tren CPU mat vai giay va hoan
+    # toan tat dinh. Voi `lexrank_emb` thi quan trong — no mat 18 phut, phu thuoc trong
+    # so PhoBERT tren Hub VA phien ban `transformers`, nen sinh lai khong chac ra dung
+    # nhu cu (xem `.gitignore`).
+    run = {
+        "tag": f"baselines_{tag}",
+        "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "args": vars(args),
+        "data": {
+            "split": args.split,
+            "n": len(rows),
+            "k": args.k,
+            "seed": 13,
+            "guid_first": guids[0],
+            "guid_last": guids[-1],
+        },
+        "env": versions(args.systems),
+        "systems": [
+            {
+                "name": r["name"],
+                "corpus": r["corpus"],
+                "length": r["length"],
+                "novel": r["novel"],
+                "seconds": r["seconds"],
+            }
+            for r in results
+        ],
+        "versus_baseline": versus,
+        "files": {
+            "table": str(path),
+            "markdown": str(md_path),
+            "predictions": str(pred_path),
+        },
+    }
+    run_path = RESULTS / "tables" / f"baselines_{tag}_run.json"
+    run_path.write_text(json.dumps(run, ensure_ascii=False, indent=1), encoding="utf-8")
+
+    print(f"\nĐã ghi:\n  {path}\n  {md_path}\n  {pred_path}\n  {run_path}")
 
 
 if __name__ == "__main__":
