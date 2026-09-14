@@ -1,0 +1,95 @@
+{
+ "tag": "bartpho-syllable-train_20k_tune_in1024",
+ "name": "bartpho-syllable-train_20k",
+ "finished_at": "2026-09-14 05:41:34",
+ "args": {
+  "model": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/vinai_bartpho-syllable_train_20k/final",
+  "name": "bartpho-syllable-train_20k",
+  "train_split": "train_2k",
+  "eval_split": "tune",
+  "epochs": 3.0,
+  "lr": 3e-05,
+  "batch": 2,
+  "grad_accum": 8,
+  "gen_batch": 16,
+  "beams": 4,
+  "no_repeat_ngram": 3,
+  "length_penalty": 1.0,
+  "min_length": 0,
+  "max_input": 1024,
+  "max_target": 80,
+  "prefix": "",
+  "eval_limit": 0,
+  "logging_steps": 25,
+  "max_steps": 0,
+  "fp16": "auto",
+  "out": "/kaggle/working/sweep",
+  "resume": false,
+  "no_train": true
+ },
+ "generation": {
+  "num_beams": 4,
+  "no_repeat_ngram_size": 3,
+  "length_penalty": 1.0,
+  "min_length": 0,
+  "early_stopping": true
+ },
+ "data": {
+  "train_split": null,
+  "n_train": 0,
+  "eval_split": "tune",
+  "n_eval": 500,
+  "max_input": 1024,
+  "max_target": 80,
+  "seed": 13
+ },
+ "env": {
+  "gpu": "Tesla T4",
+  "fp16": true,
+  "torch": "2.10.0+cu128",
+  "transformers": "5.0.0",
+  "python": "3.12.13"
+ },
+ "train": null,
+ "scores": {
+  "corpus": {
+   "rouge1": {
+    "mean": 35.350229179838564,
+    "lo": 33.90748801280974,
+    "hi": 36.81558665944594
+   },
+   "rouge2": {
+    "mean": 20.501970481587996,
+    "lo": 19.148129538293755,
+    "hi": 21.88119964293246
+   },
+   "rougeL": {
+    "mean": 27.99772106145291,
+    "lo": 26.622506490333063,
+    "hi": 29.407747403703286
+   },
+   "rougeLsum": {
+    "mean": 28.68082734341981,
+    "lo": 27.309340515939606,
+    "hi": 30.095899937782484
+   }
+  },
+  "length": {
+   "mean_syllables": 33.736,
+   "min": 15,
+   "max": 66,
+   "empty": 0
+  },
+  "novel": {
+   "1gram": 2.243453205229268,
+   "2gram": 11.76539765566816,
+   "4gram": 26.220768186236015
+  }
+ },
+ "versus_lead3": null,
+ "files": {
+  "table": "/kaggle/working/BTL_DL/results/tables/bartpho-syllable-train_20k_tune_in1024.json",
+  "predictions": "/kaggle/working/BTL_DL/results/predictions/bartpho-syllable-train_20k_tune_in1024.json",
+  "checkpoint": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/vinai_bartpho-syllable_train_20k/final"
+ }
+}

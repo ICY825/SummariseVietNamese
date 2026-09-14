@@ -791,6 +791,54 @@ báo nhầm. Chênh 0,09 điểm cũng nhỏ hơn mọi khoảng cách đáng qu
 rằng dư địa không nằm ở khâu sinh, mà ở việc chọn nội dung — khoảng cách tới Oracle-3
 (48,1) là việc của tầng 2 và tầng 4.
 
+### Dò lại trên BARTpho — mặc định nằm trên một vùng phẳng
+
+Khảo sát ở trên chạy trên ViT5, nên kết luận của nó chỉ đúng cho ViT5. BARTpho là mô
+hình tốt nhất nên được dò lại bằng `notebooks/sweep_bartpho/`: cùng tập `tune`, cùng
+checkpoint `train_20k`, 7 cấu hình, 52,9 phút GPU Kaggle.
+
+**Lưới đối xứng, không phải lưới một phía.** ViT5 sinh 30 âm tiết nên chỉ cần dò về
+phía dài hơn; BARTpho sinh 34, sát sapo thật (35), nên câu hỏi đổi thành "mặc định đã
+nằm ở điểm tốt nhất chưa" — và câu đó phải dò cả hai phía. `length_penalty` chạy từ
+0,6 tới 2,0; `min_length` chỉ giữ một cấu hình để xác nhận nó không ràng buộc.
+
+| Cấu hình | rouge1 | rouge2 | rougeL | Độ dài | Trùng mặc định |
+|---|---|---|---|---|---|
+| `lp` 0,6 | 35,18 ±1,48 | 20,49 ±1,39 | 28,09 ±1,41 | 32,3 | 410/500 |
+| `lp` 0,8 | 35,41 ±1,48 | 20,58 ±1,38 | 28,14 ±1,40 | 33,1 | 453/500 |
+| **mặc định** (`lp` 1,0) | **35,35 ±1,45** | **20,50 ±1,37** | **28,00 ±1,39** | 33,7 | — |
+| `lp` 1,2 | 35,39 ±1,43 | 20,44 ±1,32 | 27,97 ±1,34 | 34,3 | 460/500 |
+| `lp` 1,5 | 35,40 ±1,44 | 20,41 ±1,32 | 27,84 ±1,35 | 34,8 | 419/500 |
+| `lp` 2,0 | 35,57 ±1,44 | 20,51 ±1,32 | 27,87 ±1,34 | 35,6 | 364/500 |
+| `lp` 1,0 + `min` 20 | 35,34 ±1,46 | 20,49 ±1,37 | 27,98 ±1,39 | 33,8 | 498/500 |
+
+**Không cấu hình nào khác mặc định một cách đo được.** So cặp với mặc định trên cùng
+500 bài: ROUGE-1 chênh từ −0,17 đến +0,22, ROUGE-2 từ −0,09 đến +0,08, mọi p ≥ 0,27.
+Cao nhất là `lp` 2,0 với +0,22 [−0,27, +0,72], p = 0,39.
+
+**Nhưng phải đọc cho đúng: đây là vùng phẳng, không phải đỉnh.** Nếu mặc định là điểm
+tối ưu thì hai phía phải cùng tụt điểm; thực tế cả hai phía đều đi ngang.
+`length_penalty` vẫn điều khiển độ dài rất đều — 32,3 → 33,1 → 33,7 → 34,3 → 34,8 →
+35,6 âm tiết — nhưng đổi độ dài trong khoảng ấy không đổi được điểm. Kết luận đúng là
+**"không có đỉnh nào để leo"**, chứ không phải "mặc định là tốt nhất".
+
+**`min_length = 20` lại không ràng buộc gì:** trùng mặc định 498/500 bản, đúng như dự
+đoán từ ViT5 (495/500) — BARTpho còn sinh dài hơn nên ngưỡng ấy càng xa phân phối thật.
+
+**Hai mô hình cho cùng một câu trả lời, và giờ nó là phép đo chứ không phải suy diễn.**
+Giữ tham số mặc định cho cả ViT5 lẫn BARTpho ở `val` và `test`.
+
+**Kiểm chứng.** Chấm lại cả 7 cấu hình từ file dự đoán ra đúng bảng (lệch 0); `guid`
+khớp `data/splits/tune.json`; mọi `run.json` ghi `--model` là
+`vinai_bartpho-syllable_train_20k/final` gắn qua `kernel_sources`. Dòng
+`Checkpoint: .../sweep/sinh_lai/final` trong log Kaggle là thư mục đầu ra mà `vit5.py`
+in ở cuối mỗi lần chạy, không phải mô hình được nạp.
+
+**Kết quả phụ: BARTpho hơn ViT5 lặp lại trên `tune`.** Cùng 500 bài, cùng tham số mặc
+định: ROUGE-1 **+1,75 [+0,40, +3,11], p = 0,011**, so với +1,83 trên `val`. ROUGE-2
+(+0,92, p = 0,15) và ROUGE-L (+0,98, p = 0,14) cùng chiều nhưng chưa đủ bằng chứng ở
+500 bài. Độ dài 33,7 so với 30,2 âm tiết.
+
 ## BERTScore — thước đo thứ hai, và nó nói gì về ROUGE
 
 Chấm bằng `src/eval/run_bertscore.py` trên **chính các file dự đoán đã lưu**, không
@@ -1051,19 +1099,16 @@ Nhưng một lượt rà soát tìm ra sáu chỗ hở, phần lớn sinh ra t�
   `vit5.py`. Chính nó phát hiện khoảng chênh 3,7 lần về tốc độ giữa hai máy.
 - [x] **Phép kiểm tự động cho LexRank bản nhúng** — `selftest.py` mục 8, chạy được
   không cần `torch`. Trước đó đây là hệ thống duy nhất của dự án không có phép kiểm.
-- [x] **Notebook dò tham số sinh cho BARTpho** — `notebooks/sweep_bartpho/`, kernel
-  id mới nên đẩy nó không làm mất checkpoint BARTpho. **Chưa chạy** (cần GPU Kaggle).
+- [x] **Dò tham số sinh cho BARTpho** — `notebooks/sweep_bartpho/`, 7 cấu hình, 52,9
+  phút GPU. Không cấu hình nào khác mặc định; `length_penalty` là vùng phẳng hai phía.
 
-Còn nợ, theo thứ tự bắt buộc:
+Còn nợ:
 
-- [ ] **Chạy `notebooks/sweep_bartpho/`** (~30 phút GPU). Kết luận "không tham số nào
-  thắng được mặc định" hiện chỉ được chứng minh cho ViT5, trong khi BARTpho mới là mô
-  hình tốt nhất. **Phải chạy TRƯỚC** mọi lần huấn luyện mới: đẩy bất cứ thứ gì lên
-  kernel `dl-summarisevn-vit5` sẽ khiến checkpoint BARTpho không còn lấy được qua
-  `kernel_sources`, đúng như đã xảy ra với checkpoint ViT5.
 - [ ] **ViT5 `train_2k`** (~22 phút GPU) — tập con này đã đóng băng từ tuần 2 nhưng
   chưa bao giờ dùng; đường cong học vì thế có 3 điểm chứ không phải 4. Điểm 2k nằm ở
   chỗ đường cong dốc nhất, trong khi bước 5k → 10k hiện không đo được.
+  **Làm sau tầng 4:** nó đẩy lên kernel `dl-summarisevn-vit5` và sẽ khiến checkpoint
+  BARTpho — thứ tầng 4 cần — không còn lấy được qua `kernel_sources`.
 - [ ] **Đường cong học cho BARTpho** (~2 giờ GPU) — hiện chỉ có một điểm `train_20k`.
   Không bắt buộc: có thể trình bày đường cong như một khảo sát *trên ViT5*, nói rõ vậy.
 - [ ] **Chấm mọi tầng trên `test`** — việc của tuần 8, đúng thiết kế. Hiện tầng 0–1
