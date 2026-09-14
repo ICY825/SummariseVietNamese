@@ -333,9 +333,17 @@ def _phobert_vectors(sents, name="vinai/phobert-base", batch=32):
     """Vector câu từ PhoBERT: mean-pooling có mặt nạ, chuẩn hoá L2.
 
     **Đưa vào dạng TÁCH TỪ, không phải dạng thô.** PhoBERT được pretrain trên văn bản
-    đã tách từ bằng VnCoreNLP — đúng dạng mà `sentences()` trả về cho bộ dữ liệu này.
-    Khử gạch dưới trước khi mã hoá là tự đưa chuỗi ngoài phân phối huấn luyện vào, và
-    đó cũng là lý do `bertscore.py` KHÔNG dùng PhoBERT: ở đó đầu vào là văn bản thô.
+    đã tách từ, đúng họ với dạng mà `sentences()` trả về cho bộ dữ liệu này. Khử gạch
+    dưới trước khi mã hoá là tự đưa chuỗi ngoài phân phối huấn luyện vào, và đó cũng là
+    lý do `bertscore.py` KHÔNG dùng PhoBERT: ở đó đầu vào là văn bản thô.
+
+    Có một sai lệch công cụ ở đây, và nó nhỏ: PhoBERT tách bằng VnCoreNLP còn bộ dữ
+    liệu này tách bằng `vitk`, nên hai bên không chia từ ghép giống hệt nhau. Đo trên
+    2.000 bài `train`: trong 4.000 từ ghép phổ biến nhất, PhoBERT giữ nguyên **85,7%**
+    thành một mảnh BPE, còn cao hơn tỷ lệ của từ đơn (84,3%); độ vụn trung bình 1,19
+    mảnh so với 1,28 của từ đơn. Những từ bị bẻ vụn gần hết là tên riêng nước ngoài,
+    thứ sẽ vụn dưới bất kỳ cách tách nào. Nên **đừng** viện sai lệch này để giải thích
+    việc LexRank bản nhúng thua bản TF-IDF — số liệu không ủng hộ.
 
     Mean-pooling chứ không lấy `[CLS]`: `[CLS]` của một mô hình chỉ pretrain MLM không
     hề được huấn luyện để làm vector câu, còn trung bình các token thì ổn định hơn hẳn

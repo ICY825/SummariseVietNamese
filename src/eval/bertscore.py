@@ -2,7 +2,7 @@
 
 **Vì sao không dùng PhoBERT làm bộ mã hoá.** PhoBERT chỉ nhận văn bản đã tách từ,
 trong khi dạng chấm điểm chuẩn của dự án là văn bản thô. Muốn dùng PhoBERT thì phải
-tách từ lại đầu ra của ViT5 bằng `underthesea` — khác công cụ với VnCoreNLP đã tách
+tách từ lại đầu ra của ViT5 bằng `underthesea` — khác công cụ với `vitk` đã tách
 tham chiếu, và sai khác công cụ đó chỉ giáng lên phía abstractive, đúng thứ thiên lệch
 mà cả dự án đang tránh. Nên mặc định dùng một mô hình đọc thẳng âm tiết.
 

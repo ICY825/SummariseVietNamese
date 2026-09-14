@@ -7,7 +7,7 @@ Script trả lời đúng 5 câu hỏi, mỗi câu là một cái bẫy đã nê
   4. Có rò rỉ giữa các split không?  <-- nguy hiểm nhất
   5. Sapo (abstract) có phải là câu đầu bài chép lại không?
 
-Văn bản của bộ này ĐÃ ĐƯỢC TÁCH TỪ sẵn bằng VnCoreNLP (`Khởi_tố`, `ma_tuý`) và
+Văn bản của bộ này ĐÃ ĐƯỢC TÁCH TỪ sẵn bằng `vitk` (`Khởi_tố`, `ma_tuý`) và
 dấu câu cũng đã tách rời thành token độc lập. Hai hệ quả chi phối toàn bộ script:
 
   - Đếm độ dài phải phân biệt *token đã ghép* (PhoBERT ăn dạng này) với *âm tiết*

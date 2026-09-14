@@ -1,6 +1,6 @@
 r"""Ba phép biến đổi văn bản dùng chung cho TOÀN BỘ dự án.
 
-Bộ VietNews lưu văn bản đã tách từ sẵn bằng VnCoreNLP: các âm tiết của một từ ghép
+Bộ VietNews lưu văn bản đã tách từ sẵn bằng `vitk`: các âm tiết của một từ ghép
 nối bằng dấu gạch dưới (`Khởi_tố`) và dấu câu đứng rời thành token riêng (`hoa ,`).
 Ba tầng mô hình lại cần ba dạng khác nhau, nên mọi chỗ trong dự án phải gọi chung
 các hàm ở đây thay vì tự viết lại — nếu mỗi tầng cắt câu hoặc khử tách từ theo một
@@ -23,7 +23,7 @@ Chấm ROUGE trực tiếp hai thứ đó với nhau là so sánh vô nghĩa: `h
 đơn vị còn `học sinh` đếm hai, và riêng việc đổi dạng đã dịch ROUGE-2 của Lead-3
 đi 4 điểm. Chuẩn chính của dự án là **dạng thô**, vì khử tách từ là chiều tất định
 mà hệ thống nào cũng làm được; chiều ngược lại phải nhờ `underthesea`, khác công cụ
-với VnCoreNLP đã tách tham chiếu, và sai khác đó chỉ giáng lên phía abstractive.
+với `vitk` đã tách tham chiếu, và sai khác đó chỉ giáng lên phía abstractive.
 Mọi bản tóm tắt — của mọi tầng, kể cả tham chiếu — phải đi qua hàm này trước khi
 chấm điểm.
 """

@@ -17,10 +17,57 @@ Toàn bộ thiết kế chạy được trong giới hạn của Google Colab b�
 Nguồn chính: [`nam194/vietnews`](https://huggingface.co/datasets/nam194/vietnews) —
 143.816 bài, các cột `guid`, `title`, `abstract`, `article`.
 
+### Bộ dữ liệu này từ đâu ra
+
+Đây là bộ **VNDS**, công bố kèm bài báo *VNDS: A Vietnamese Dataset for Summarization*
+(Nguyen và cộng sự, NAFOSTED NICS 2019, IEEE 9023886), phát hành tại
+[`ThanhChinhBK/vietnews`](https://github.com/ThanhChinhBK/vietnews). Bài viết gồm tin
+2016–2019 thuộc bốn mục (thế giới, tin tức, pháp luật, kinh doanh) của `tuoitre.vn`,
+`vnexpress.net` và `nguoiduatin.vn`; sapo (`abstract`) là tóm tắt do người viết bài
+đặt, và chính nó là tham chiếu vàng.
+
+Bản `nam194/vietnews` là bản chuyển đổi của repo GitHub đó: mỗi `guid N` ứng với đúng
+file `N.txt.seg` (tiêu đề / sapo / thân bài ngăn bằng dòng trống). Đã đối chiếu 5 bài
+bất kỳ — trùng khớp từng ký tự, khác biệt duy nhất là dấu ngoặc kép cong `“ ”` bị đổi
+thành thẳng `" "`.
+
+**Nhưng bản HuggingFace thiếu 4,6% so với bộ gốc.** `guid` lớn nhất mỗi split trùng
+khít con số trong Bảng II của bài báo, nhưng số dòng thì ít hơn — tức đánh số vẫn là
+1..N của bài báo, chỉ là có lỗ hổng rải rác:
+
+| Split | Bài báo | Bản đang dùng | `guid` lớn nhất | Thiếu |
+|---|---|---|---|---|
+| train | 105.418 | 99.134 | 105.418 | 6.284 |
+| val | 22.642 | 22.184 | 22.642 | 458 |
+| test | 22.644 | 22.498 | 22.644 | 146 |
+| **Tổng** | **150.704** | **143.816** | | **6.888** |
+
+Lấy 5 `guid` bị thiếu đầu tiên (460, 516, 730, 790, 1688) kiểm tra trên GitHub thì
+**cả 5 đều có thật** — nên chúng mất ở khâu chuyển đổi, không phải bị tác giả loại.
+Việc này **không** ảnh hưởng kết quả của đề tài: mọi so sánh ở đây là so sánh nội bộ
+trên cùng một tập bài đã đóng băng, và đề tài chỉ dùng tối đa 20.000 bài train cùng
+2.000 bài test. Điều chưa kiểm được là 6.888 bài mất đi có ngẫu nhiên hay không; nếu
+không thì bản này sạch hơn bộ gốc một chút, và đó là giới hạn của mọi phát biểu dạng
+"kết quả này đúng cho VNDS".
+
+**Không so bảng ROUGE của đề tài với bảng của bài báo.** Bài báo chọn **2 câu** (đề
+tài này chọn 3) và chấm bằng `ROUGE 1.5.5` qua `pyrouge` với tham số `-a -c 95 -m -n 2
+-w 1.2` — trong đó `-m` bật Porter stemmer, một bộ rút gọn từ **tiếng Anh**. Phần chữ
+nói dùng F-score nhưng công thức (2) in trong bài lại là công thức recall. Kết quả là
+bảng của họ không tự nhất quán với thang đo ở đây: Sumbasic của họ đạt 52,65 ROUGE-1
+trong khi **Oracle-3 đo được ở đây chỉ 48,14** — mà Oracle-3 là trần tuyệt đối của mọi
+hệ thống chọn 3 câu, còn họ chỉ chọn 2.
+
+Ngược lại, đề tài này **mâu thuẫn có bằng chứng** với một kết luận của bài báo. Họ viết
+*"the Lead-m method does not obtain high ROUGE-scores... the content first sentences are
+quite different from the abstract"* (Lead-2 = 5,86). Đo lại trên chính bộ dữ liệu ấy thì
+ngược hẳn: Lead-1 = 27,03 và Lead-3 = 27,22, ngang nhau (p = 0,50), và cả ba phương pháp
+đồ thị đều **thua** lead — đúng như cấu trúc tháp ngược của tin tức dự đoán.
+
 Kết quả kiểm tra dữ liệu (`src/data/inspect_vietnews.py`, chạy lại ngày 09/09/2026).
-Các kiểm tra toàn bộ split chạy trên cả 143.816 bài; các kiểm tra lấy mẫu dùng 4.000
-bài **ngẫu nhiên với `seed=13`** — bộ này xếp theo nguồn/chuyên mục nên lấy 4.000 bài
-đầu sẽ cho số liệu lệch.
+Các kiểm tra toàn bộ split chạy trên cả 143.816 bài của bản HuggingFace; các kiểm tra
+lấy mẫu dùng 4.000 bài **ngẫu nhiên với `seed=13`** — bộ này xếp theo nguồn/chuyên mục
+nên lấy 4.000 bài đầu sẽ cho số liệu lệch.
 
 | Kiểm tra | Kết quả | Hệ quả |
 |---|---|---|
@@ -62,7 +109,7 @@ Mức 10,2% đủ lớn để đo được tác động, đủ nhỏ để khôn
 `max_target_length = 80` vì sapo có p99 là 74 token (ViT5) và 78 (BARTpho); 80 che
 được 99% và là bội của 8, thuận cho fp16. Bài dài nhất 144 token là ngoại lệ.
 
-**Lưu ý quan trọng:** văn bản trong bộ này **đã được tách từ sẵn** bằng VnCoreNLP
+**Lưu ý quan trọng:** văn bản trong bộ này **đã được tách từ sẵn** bằng `vitk`
 (`Khởi_tố`, `ma_tuý`) và dấu câu cũng đã tách rời. PhoBERT và phép tính ROUGE dùng
 được trực tiếp; ViT5 và BARTpho-syllable thì **không** — phải khử dấu gạch dưới để
 lấy lại văn bản thô trước. Bản thô được lưu làm bản chuẩn, bản tách từ sinh lại bằng
@@ -153,7 +200,7 @@ ROUGE-2 của Lead-3 từ 10,19 lên 14,21 — lớn hơn khoảng cách kỳ v�
 Chuẩn chính là **dạng thô**, và mọi bản tóm tắt của mọi tầng — kể cả tham chiếu — phải
 đi qua `data.text.for_scoring()` trước khi chấm. Lý do chọn dạng thô chứ không phải
 dạng tách từ: khử tách từ là chiều **tất định** mà hệ thống nào cũng làm được, còn
-chiều ngược lại phải nhờ `underthesea`, khác công cụ với VnCoreNLP đã tách tham chiếu,
+chiều ngược lại phải nhờ `underthesea`, khác công cụ với `vitk` đã tách tham chiếu,
 và sai khác công cụ đó chỉ giáng lên phía abstractive. Có thể báo cáo thêm ROUGE trên
 dạng tách từ để đối chiếu với các bài báo trước, kèm ghi chú về bất lợi này.
 
@@ -281,6 +328,12 @@ với số liệu:
   gần hết cạnh, biến PageRank thành phép đếm bậc.
 - **Độ trung tâm ngữ nghĩa chuộng câu khái quát và dài.** Bản PhoBERT sinh ra bản tóm
   tắt dài nhất trong ba (125 âm tiết, so với sapo thật 35), tức càng xa mục tiêu.
+
+Một cách giải thích thứ ba đã được **kiểm và loại**: PhoBERT pretrain trên văn bản tách
+bằng VnCoreNLP còn bộ này tách bằng `vitk`, nên có thể ngờ rằng từ ghép bị BPE bẻ vụn.
+Đo trên 2.000 bài `train`: trong 4.000 từ ghép phổ biến nhất, PhoBERT giữ nguyên 85,7%
+thành một mảnh — còn cao hơn tỷ lệ của từ đơn (84,3%) — và độ vụn trung bình là 1,19
+mảnh so với 1,28. Sai lệch công cụ là có thật nhưng quá nhỏ để giải thích 0,93 điểm.
 
 **Cả ba biến thể đồ thị đều thua lead**, dù đo tương đồng bằng từ chung, bằng TF-IDF,
 hay bằng embedding. Đây là đặc trưng thể loại chứ không phải lỗi cài đặt: tin tức viết
