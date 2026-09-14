@@ -391,8 +391,24 @@ và bộ chọn câu, nên khác biệt nằm đúng ở phép đo tương đồ
 | **LexRank-PhoBERT** | **23,87 ±0,38** | **11,97 ±0,37** | **16,42 ±0,35** | 125 | 1,4% |
 
 Thua bản TF-IDF **−0,93 [−1,25, −0,60] ROUGE-1, p < 0,0001** (ROUGE-2 −0,55 [−0,85,
-−0,25]), và thua Lead-3 **−3,35 [−3,76, −2,95]**. Hai cách giải thích, đều nhất quán
-với số liệu:
+−0,25]), và thua Lead-3 **−3,35 [−3,76, −2,95]**.
+
+**Chạy lại trên `val`: kết luận lặp lại trên một split độc lập.** Tuần 5 chỉ đo hệ
+thống này trên `test`, nên nó đứng ngoài mọi bảng dùng `val` — kể cả bảng BERTScore.
+Chạy bổ sung trên `val` (1.000 bài, 34 phút CPU):
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|
+| Lead-3 | 27,45 ±0,60 | 14,68 ±0,58 | 19,20 ±0,55 | 102 | 0,0% |
+| LexRank (TF-IDF) | 24,94 ±0,55 | 12,75 ±0,52 | 17,45 ±0,48 | 112 | 1,7% |
+| **LexRank-PhoBERT** | **23,76 ±0,51** | **12,08 ±0,50** | **16,48 ±0,47** | 126 | 1,4% |
+
+Thua bản TF-IDF **−1,19 [−1,63, −0,74], p < 0,0001** (trên `test` là −0,93), và thua
+Lead-3 **−3,69 [−4,30, −3,10]**. Hai split cho cùng một kết luận với độ lớn tương
+đương — **23,76 trên `val` so với 23,87 trên `test`** — nên đây không phải hiện tượng
+của riêng một tập bài.
+
+Hai cách giải thích, đều nhất quán với số liệu:
 
 - **Cosin PhoBERT nén vào dải hẹp.** Hai câu bất kỳ trong cùng một bài thường đạt cosin
   0,7-0,95, nên đồ thị gần như đầy đủ và độ trung tâm mất sức phân biệt. Vì thế mặc
@@ -412,12 +428,29 @@ hay bằng embedding. Đây là đặc trưng thể loại chứ không phải l
 theo tháp ngược nên câu quan trọng nhất nằm ngay đầu bài, còn "trung tâm của đồ thị
 tương đồng" không phải là "đáng tóm tắt".
 
-**Chi phí:** 1.092,8 giây trên CPU cho 2.000 bài (0,55 giây/bài), so với 1,06 giây của
-bản TF-IDF — đắt hơn **1.030 lần** để cho kết quả kém hơn. Không cần GPU.
+**Chi phí: đắt hơn bản TF-IDF khoảng nghìn lần, và con số tuyệt đối phụ thuộc máy.**
+Trên `test`, 1.092,8 giây cho 2.000 bài (0,55 giây/bài) so với 1,06 giây của bản
+TF-IDF. Nhưng lần chạy `val` trên một máy khác mất **2.031,9 giây cho 1.000 bài, tức
+2,03 giây/bài** — chậm gấp 3,7 lần với cùng code và cùng mô hình. Không truy được
+nguyên nhân, vì lần chạy `test` diễn ra **trước khi `run_baselines.py` biết ghi hồ sơ**
+nên không còn gì để đối chiếu; đó đúng là lỗ hổng mà hồ sơ lần chạy sinh ra để bịt.
+Điều giữ nguyên qua cả hai máy là **tỷ lệ**: khoảng nghìn lần đắt hơn bản TF-IDF, để
+cho kết quả kém hơn. Không cần GPU.
 
-**Kiểm chứng chéo:** trong cùng lần chạy, `Lead-3` và `LexRank` cho điểm **trùng khít**
-bảng tuần 3b, lệch 0,0 trên từng bài và `guid` trùng khớp — đường chấm điểm không xê
-dịch sau mọi thay đổi của tuần 5.
+**Kiểm chứng chéo, hai lần.** Lần chạy trên `test` cho `Lead-3` và `LexRank` trùng
+khít bảng tuần 3b (lệch 0,0 trên từng bài, `guid` trùng khớp). Lần chạy bổ sung trên
+`val` cũng vậy so với bảng `baselines_val`. Đường chấm điểm không xê dịch sau mọi thay
+đổi của tuần 5 — và đây là phép đối chứng gần như miễn phí, vì `Lead-3` mất 0,1 giây
+cho 1.000 bài.
+
+**Mỗi lần chạy baseline cũng để lại hồ sơ.** `run_baselines.py` ghi
+`results/tables/baselines_<tag>_run.json` cạnh bảng chỉ số, cùng khuôn với `vit5.py`:
+tham số dòng lệnh, split/cỡ/`k`/`seed`, `guid` đầu và cuối, phiên bản thư viện, thời
+gian sinh và chấm của **từng** hệ thống, điểm tóm lược và kết quả so cặp với Lead-3.
+Với Lead/Random/Oracle thì hồ sơ gần như thừa — chạy lại mất vài giây và hoàn toàn tất
+định. Với `lexrank_emb` thì không: nó phụ thuộc trọng số PhoBERT trên Hub *và* phiên
+bản `transformers`, nên hồ sơ ghi kèm `torch`, `transformers` và tên mô hình. Chính nhờ
+hồ sơ này mà khoảng chênh 3,7 lần về thời gian ở trên mới nhìn thấy được.
 
 Hệ thống này **không** nằm trong danh sách mặc định của `run_baselines.py` vì nó cần
 `torch` và `transformers`, hai gói không có trong `.venv` của dự án; để nó ở mặc định
@@ -426,10 +459,19 @@ thì lệnh baseline trong README sẽ chết trên một máy sạch. Chạy b�
 ```bash
 ~/.venvs/torch/Scripts/python.exe src/models/run_baselines.py --split test \
     --systems leadk lexrank lexrank_emb
+~/.venvs/torch/Scripts/python.exe src/models/run_baselines.py --split val \
+    --systems leadk lexrank lexrank_emb
 ```
 
 Danh sách hệ thống khác mặc định thì tên file kết quả cũng khác, nên lần chạy này không
 đè bảng sáu hệ thống ở trên.
+
+**Phép kiểm tự động.** `src/models/selftest.py` mục 8 kiểm hệ thống này **mà không cần
+`torch`**: thay `_phobert_vectors` bằng một bộ sinh vector tự chế rồi kiểm đúng phần
+dùng chung với bản TF-IDF — `pagerank()`, bộ chọn câu, khử câu trùng, giữ thứ tự câu.
+Chỉ phép tính vector là bị thay, và đó cũng là phần duy nhất `torch` đảm nhiệm. Nếu
+đợi đến khi có `torch` mới kiểm thì hệ thống này mãi mãi không có phép kiểm nào — trong
+khi nó lại chính là hệ thống mà bản tóm tắt sinh lại không chắc ra đúng như cũ.
 
 ## Kết quả tầng 3 — fine-tune ViT5 lần đầu
 
@@ -753,8 +795,7 @@ rằng dư địa không nằm ở khâu sinh, mà ở việc chọn nội dung 
 
 Chấm bằng `src/eval/run_bertscore.py` trên **chính các file dự đoán đã lưu**, không
 chạy lại mô hình nào. Bộ mã hoá `xlm-roberta-base` (đọc thẳng âm tiết; lý do không dùng
-PhoBERT nằm ở đầu `src/eval/bertscore.py`). Tám hệ thống, tập `val`, 1.000 bài, 9 phút
-trên CPU.
+PhoBERT nằm ở đầu `src/eval/bertscore.py`). Chín hệ thống, tập `val`, 1.000 bài.
 
 | Hệ thống | BERTScore | ROUGE-1 |
 |---|---|---|
@@ -764,8 +805,16 @@ trên CPU.
 | Lead-1 | 85,57 | 27,70 |
 | Lead-3 | 85,55 | 27,45 |
 | LexRank | 85,30 | 24,94 |
+| LexRank-PhoBERT | 85,05 | 23,76 |
 | TextRank | 85,02 | 23,24 |
 | Random-3 | 84,80 | 23,63 |
+
+Tám hệ thống đầu chấm trong một lần (9 phút CPU); `LexRank-PhoBERT` chấm sau, ở một
+lần riêng, vì bản tóm tắt của nó trên `val` sinh sau. Không gộp được vào một file:
+`run_bertscore.py` từ chối khi một tên hệ thống xuất hiện ở hai file dự đoán, đúng như
+thiết kế. Nhờ vậy `Lead-3` và `LexRank` được chấm **hai lần độc lập** và cho kết quả
+lệch nhau nhiều nhất **1,8 × 10⁻⁵ điểm** trên từng bài — sai số dấu phẩy động do hai
+lần chia lô khác nhau, không phải khác biệt thật.
 
 **Kết luận chính của đề tài được thước đo thứ hai xác nhận.** ViT5 hơn Lead-3
 **+1,54 [+1,37, +1,72] điểm BERTScore, p < 0,0001** và BARTpho hơn Lead-3
@@ -799,6 +848,17 @@ giữa ROUGE-1 và BERTScore của cùng một hệ thống là +0,87 (Lead-3) �
 Oracle-3). Khi hỏi "bài này ViT5 hay Lead-3 tốt hơn", hai thước đo **đồng ý ở 83,8%**
 số bài; trong 162 bài còn lại, BERTScore nghiêng về ViT5 ở 122 bài còn ROUGE nghiêng về
 ViT5 ở 40 bài — tức chỗ bất đồng cũng lệch về phía ViT5.
+
+**LexRank-PhoBERT thua cả ở thước đo thứ hai.** 85,05 so với 85,30 của bản TF-IDF —
+**−0,25 [−0,35, −0,15], p < 0,0001**, cùng chiều với ROUGE (−1,19). Điều này đáng nói
+vì BERTScore chấm bằng một bộ mã hoá ngữ cảnh, tức là *sân nhà* của cách tiếp cận
+nhúng: nếu việc thay TF-IDF bằng vector PhoBERT có bắt được thứ gì mà ROUGE bỏ sót thì
+đây là chỗ nó phải lộ ra. Nó không lộ ra. Kết luận "độ trung tâm ngữ nghĩa không phải
+là đáng tóm tắt" vì thế không phải là hiện tượng của riêng phép đếm n-gram.
+
+Cũng lưu ý một chỗ hai thước đo bất đồng về biên độ: ROUGE-1 xếp LexRank-PhoBERT trên
+TextRank khá rõ (23,76 so với 23,24) trong khi BERTScore coi hai hệ thống gần như ngang
+nhau (85,05 so với 85,02).
 
 **Giới hạn phải nêu trong báo cáo.** BERTScore cũng chỉ là một phép xấp xỉ bằng mô hình,
 không phải người đọc; nó được dùng ở đây để *đối chiếu* với ROUGE chứ không thay thế.
@@ -970,6 +1030,42 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 4 — Fine-tune ViT5 lần đầu (đối chứng BARTpho dời sang tuần 5)
 - [x] Tuần 5 — Đường cong học ba điểm, dò tham số sinh trên `tune`, câu hỏi 2,
   LexRank bản PhoBERT, BERTScore, đối chứng BARTpho (BARTpho thắng ViT5)
+- [x] Rà soát tuần 5 — lấp các chỗ hở phát hiện khi review (xem dưới)
 - [ ] Tuần 6 — Tầng 2 và tầng 4
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
+
+### Rà soát tuần 5 — đã lấp và còn nợ
+
+Sáu hạng mục tuyên bố của tuần 5 đều có đủ hiện vật và tái lập được từ file đã lưu.
+Nhưng một lượt rà soát tìm ra sáu chỗ hở, phần lớn sinh ra từ đúng một sự kiện:
+**BARTpho thắng ViT5 ở cuối tuần 5**, sau khi mọi khảo sát đã làm xong trên ViT5.
+
+Đã lấp:
+
+- [x] **LexRank-PhoBERT trên `val`** — trước chỉ có trên `test` nên đứng ngoài mọi
+  bảng dùng `val`. Kết luận lặp lại trên split độc lập: 23,76 so với 23,87.
+- [x] **BERTScore cho LexRank-PhoBERT** — bảng BERTScore giờ đủ chín hệ thống. Nó
+  thua bản TF-IDF ở cả thước đo thứ hai, tức không phải hiện tượng của riêng ROUGE.
+- [x] **Hồ sơ lần chạy cho baseline** — `run_baselines.py` ghi `_run.json` như
+  `vit5.py`. Chính nó phát hiện khoảng chênh 3,7 lần về tốc độ giữa hai máy.
+- [x] **Phép kiểm tự động cho LexRank bản nhúng** — `selftest.py` mục 8, chạy được
+  không cần `torch`. Trước đó đây là hệ thống duy nhất của dự án không có phép kiểm.
+- [x] **Notebook dò tham số sinh cho BARTpho** — `notebooks/sweep_bartpho/`, kernel
+  id mới nên đẩy nó không làm mất checkpoint BARTpho. **Chưa chạy** (cần GPU Kaggle).
+
+Còn nợ, theo thứ tự bắt buộc:
+
+- [ ] **Chạy `notebooks/sweep_bartpho/`** (~30 phút GPU). Kết luận "không tham số nào
+  thắng được mặc định" hiện chỉ được chứng minh cho ViT5, trong khi BARTpho mới là mô
+  hình tốt nhất. **Phải chạy TRƯỚC** mọi lần huấn luyện mới: đẩy bất cứ thứ gì lên
+  kernel `dl-summarisevn-vit5` sẽ khiến checkpoint BARTpho không còn lấy được qua
+  `kernel_sources`, đúng như đã xảy ra với checkpoint ViT5.
+- [ ] **ViT5 `train_2k`** (~22 phút GPU) — tập con này đã đóng băng từ tuần 2 nhưng
+  chưa bao giờ dùng; đường cong học vì thế có 3 điểm chứ không phải 4. Điểm 2k nằm ở
+  chỗ đường cong dốc nhất, trong khi bước 5k → 10k hiện không đo được.
+- [ ] **Đường cong học cho BARTpho** (~2 giờ GPU) — hiện chỉ có một điểm `train_20k`.
+  Không bắt buộc: có thể trình bày đường cong như một khảo sát *trên ViT5*, nói rõ vậy.
+- [ ] **Chấm mọi tầng trên `test`** — việc của tuần 8, đúng thiết kế. Hiện tầng 0–1
+  chấm trên `test` còn tầng 3 chấm trên `val`, nên chưa có bảng nào đặt được mọi tầng
+  cạnh nhau trên cùng một split.

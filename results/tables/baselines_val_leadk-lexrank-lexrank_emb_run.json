@@ -1,0 +1,163 @@
+{
+ "tag": "baselines_val_leadk-lexrank-lexrank_emb",
+ "finished_at": "2026-09-14 11:29:21",
+ "args": {
+  "split": "val",
+  "k": 3,
+  "limit": 0,
+  "systems": [
+   "leadk",
+   "lexrank",
+   "lexrank_emb"
+  ],
+  "n_boot": 10000
+ },
+ "data": {
+  "split": "val",
+  "n": 1000,
+  "k": 3,
+  "seed": 13,
+  "guid_first": "2",
+  "guid_last": "22641"
+ },
+ "env": {
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "datasets": "5.0.1",
+  "numpy": "2.4.6",
+  "torch": "2.14.0+cpu",
+  "transformers": "5.0.0",
+  "phobert": "vinai/phobert-base"
+ },
+ "systems": [
+  {
+   "name": "Lead-3",
+   "corpus": {
+    "rouge1": {
+     "mean": 27.451366710943706,
+     "lo": 26.848969460587284,
+     "hi": 28.05876682065089
+    },
+    "rouge2": {
+     "mean": 14.680261450486917,
+     "lo": 14.109675404007561,
+     "hi": 15.270821085159474
+    },
+    "rougeL": {
+     "mean": 19.20044387482684,
+     "lo": 18.663641020284288,
+     "hi": 19.755804116705367
+    },
+    "rougeLsum": {
+     "mean": 22.326190516327728,
+     "lo": 21.767454877080276,
+     "hi": 22.903041855656706
+    }
+   },
+   "length": {
+    "mean_syllables": 102.373,
+    "min": 15,
+    "max": 406,
+    "empty": 0
+   },
+   "novel": {
+    "1gram": 0.0,
+    "2gram": 0.0,
+    "4gram": 0.0
+   },
+   "seconds": {
+    "generate": 0.10403585433959961,
+    "evaluate": 10.396812200546265
+   }
+  },
+  {
+   "name": "LexRank",
+   "corpus": {
+    "rouge1": {
+     "mean": 24.943480731629418,
+     "lo": 24.40531310999463,
+     "hi": 25.50244883758536
+    },
+    "rouge2": {
+     "mean": 12.74687130687898,
+     "lo": 12.237871099963998,
+     "hi": 13.27258119567057
+    },
+    "rougeL": {
+     "mean": 17.45444714200961,
+     "lo": 16.97801347939667,
+     "hi": 17.945483753277642
+    },
+    "rougeLsum": {
+     "mean": 20.175650898723905,
+     "lo": 19.66899924360729,
+     "hi": 20.707477019577397
+    }
+   },
+   "length": {
+    "mean_syllables": 111.598,
+    "min": 13,
+    "max": 314,
+    "empty": 0
+   },
+   "novel": {
+    "1gram": 0.0,
+    "2gram": 1.6515641207125904,
+    "4gram": 4.899647021268799
+   },
+   "seconds": {
+    "generate": 1.7776858806610107,
+    "evaluate": 9.856958389282227
+   }
+  },
+  {
+   "name": "LexRank-PhoBERT",
+   "corpus": {
+    "rouge1": {
+     "mean": 23.757539176443462,
+     "lo": 23.24189580687397,
+     "hi": 24.258123090569466
+    },
+    "rouge2": {
+     "mean": 12.075510217607498,
+     "lo": 11.57660764339449,
+     "hi": 12.572679445112604
+    },
+    "rougeL": {
+     "mean": 16.477553675362774,
+     "lo": 16.009361927856393,
+     "hi": 16.947817361948243
+    },
+    "rougeLsum": {
+     "mean": 19.15517144281295,
+     "lo": 18.67124680090215,
+     "hi": 19.646323472939148
+    }
+   },
+   "length": {
+    "mean_syllables": 125.943,
+    "min": 38,
+    "max": 338,
+    "empty": 0
+   },
+   "novel": {
+    "1gram": 0.0,
+    "2gram": 1.3730367745787218,
+    "4gram": 4.050308184085693
+   },
+   "seconds": {
+    "generate": 2031.9484400749207,
+    "evaluate": 16.049434661865234
+   }
+  }
+ ],
+ "versus_baseline": {
+  "LexRank": "LexRank − Lead-3 (rouge1): -2.51 [-3.09, -1.91] p=0.0000 → CÓ ý nghĩa",
+  "LexRank-PhoBERT": "LexRank-PhoBERT − Lead-3 (rouge1): -3.69 [-4.30, -3.10] p=0.0000 → CÓ ý nghĩa"
+ },
+ "files": {
+  "table": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\tables\\baselines_val_leadk-lexrank-lexrank_emb.json",
+  "markdown": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\tables\\baselines_val_leadk-lexrank-lexrank_emb.md",
+  "predictions": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\predictions\\baselines_val_leadk-lexrank-lexrank_emb.json"
+ }
+}
