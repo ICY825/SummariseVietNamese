@@ -1,0 +1,107 @@
+{
+ "tag": "bartpho-syllable-train_20k_val_in1024_loc-lead_lexrank",
+ "name": "bartpho-syllable-train_20k",
+ "finished_at": "2026-09-14 08:12:41",
+ "args": {
+  "model": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/vinai_bartpho-syllable_train_20k/final",
+  "name": "bartpho-syllable-train_20k",
+  "train_split": "train_2k",
+  "eval_split": "val",
+  "epochs": 3.0,
+  "lr": 3e-05,
+  "batch": 2,
+  "grad_accum": 8,
+  "gen_batch": 16,
+  "beams": 4,
+  "no_repeat_ngram": 3,
+  "length_penalty": 1.0,
+  "min_length": 0,
+  "max_input": 1024,
+  "max_target": 80,
+  "prefix": "",
+  "eval_limit": 0,
+  "logging_steps": 25,
+  "max_steps": 0,
+  "fp16": "auto",
+  "out": "/kaggle/working/tang4",
+  "resume": false,
+  "no_train": true,
+  "filter": "lead_lexrank"
+ },
+ "generation": {
+  "num_beams": 4,
+  "no_repeat_ngram_size": 3,
+  "length_penalty": 1.0,
+  "min_length": 0,
+  "early_stopping": true
+ },
+ "filter": {
+  "eval": {
+   "strategy": "lead_lexrank",
+   "budget": 1022,
+   "n": 1000,
+   "n_loc": 102,
+   "phan_tram_loc": 10.2,
+   "cau_giu_tb": 25.73,
+   "cau_bo_tb": 5.32
+  }
+ },
+ "data": {
+  "train_split": null,
+  "n_train": 0,
+  "eval_split": "val",
+  "n_eval": 1000,
+  "max_input": 1024,
+  "max_target": 80,
+  "seed": 13
+ },
+ "env": {
+  "gpu": "Tesla T4",
+  "fp16": true,
+  "torch": "2.10.0+cu128",
+  "transformers": "5.0.0",
+  "python": "3.12.13"
+ },
+ "train": null,
+ "scores": {
+  "corpus": {
+   "rouge1": {
+    "mean": 35.1999335456235,
+    "lo": 34.16591750564527,
+    "hi": 36.25272814067763
+   },
+   "rouge2": {
+    "mean": 20.45995752718744,
+    "lo": 19.494396423948356,
+    "hi": 21.440122735309476
+   },
+   "rougeL": {
+    "mean": 27.888592013195623,
+    "lo": 26.916833175421083,
+    "hi": 28.89105280259017
+   },
+   "rougeLsum": {
+    "mean": 28.33416099004195,
+    "lo": 27.363392376570246,
+    "hi": 29.335518397298454
+   }
+  },
+  "length": {
+   "mean_syllables": 33.845,
+   "min": 15,
+   "max": 69,
+   "empty": 0
+  },
+  "novel": {
+   "1gram": 2.41902860457198,
+   "2gram": 11.221100485912597,
+   "4gram": 25.14784146053146
+  }
+ },
+ "versus_lead3": "bartpho-syllable-train_20k − Lead-3 (rouge1): +7.75 [+6.75, +8.74] p=0.0000 → CÓ ý nghĩa",
+ "files": {
+  "table": "/kaggle/working/BTL_DL/results/tables/bartpho-syllable-train_20k_val_in1024_loc-lead_lexrank.json",
+  "predictions": "/kaggle/working/BTL_DL/results/predictions/bartpho-syllable-train_20k_val_in1024_loc-lead_lexrank.json",
+  "checkpoint": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/vinai_bartpho-syllable_train_20k/final"
+ }
+}

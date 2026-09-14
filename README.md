@@ -986,11 +986,116 @@ hình cho cùng một độ lớn dù tokenizer khác nhau.
 phần bị cắt (2,4% với ViT5, 2,5% với BARTpho), mà thiệt hại đo được lại tới 4 điểm. Vậy
 thứ mất đi chủ yếu **không** phải chữ của sapo nằm ở đuôi bài, mà nhiều khả năng là ngữ
 cảnh giúp mô hình chọn ý và diễn đạt.
-Đây là giả thuyết, chưa kiểm; cách kiểm rẻ nhất là cho tầng 4 lọc câu trước rồi so.
+Đây là giả thuyết; tầng 4 đã kiểm nó bằng cách lọc câu lúc suy luận — xem mục Tầng 4.
 
 Chạy lại cho mô hình khác bằng `--system <tag>`. Thêm dữ liệu train không làm hẹp
 khoảng tin cậy — vẫn là 93 bài bị cắt ấy (102 với BARTpho); muốn hẹp hơn phải chấm trên
 nhiều bài hơn, ví dụ gộp `tune` vào hoặc chấm trên `test` ở lần chấm cuối.
+
+## Tầng 2 — PhoBERT chọn câu có giám sát
+
+Tầng 0–1 chọn câu mà không học gì; Oracle-3 cho thấy trần của việc chọn 3 câu là 48,09
+trong khi Lead-3 chỉ 27,45. Tầng 2 đo xem một bộ chọn **học được** lấy lại bao nhiêu
+trong khoảng cách ấy. Cài đặt ở `src/models/phobert_sent.py`, chạy bằng
+`notebooks/tang2/`: PhoBERT mã hoá cả bài một lần, mỗi câu lấy trung bình token của nó
+rồi qua một lớp tuyến tính để cho điểm, nhãn là bộ câu của `oracle_indices()`, và bản
+tóm tắt là 3 câu điểm cao nhất ghép theo thứ tự bài. Huấn luyện trên `train_20k`,
+3 epoch, `lr=2e-5`, batch 8, `pos_weight` 6,35 (nhãn dương 13,6%), 52,9 phút trên
+Kaggle T4; không có tập theo dõi trong lúc huấn luyện, dùng mô hình cuối epoch 3. Chấm
+trên `val`.
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|
+| Lead-3 | 27,45 ±0,60 | 14,68 ±0,58 | 19,20 ±0,55 | 102 | 0,0% |
+| **PhoBERT chọn câu** | **28,69 ±0,61** | **15,49 ±0,58** | **20,25 ±0,54** | 100 | 1,3% |
+| Oracle-3 trong cửa sổ 256 token | 43,94 ±0,89 | — | — | — | — |
+| Oracle-3 cả bài | 48,09 ±0,90 | 31,60 ±1,07 | 35,90 ±1,05 | 50 | 1,0% |
+
+**Hệ thống extractive tốt nhất của đề tài, nhưng biên nhỏ.** Hơn Lead-3
+**+1,24 [+0,78, +1,71], p < 0,0001** (ROUGE-2 +0,81 [+0,38, +1,23]), hơn LexRank +3,75,
+hơn LexRank-PhoBERT +4,94 và hơn TextRank +5,46 — hệ thống extractive đầu tiên của đề
+tài vượt được lead (không kể Oracle-3, vốn đọc sapo). Nhưng nó chỉ hơn Lead-1
+**+0,99 [+0,12, +1,87], p = 0,026**, và vẫn thua cả hai mô hình sinh: ViT5 −4,70,
+BARTpho −6,54.
+
+**Lấy lại rất ít khoảng cách tới trần.** Trong 20,64 điểm từ Lead-3 lên Oracle-3, tầng 2
+lấy lại 1,24 điểm, tức **6,0%**; tính theo trần mà nó thật sự với tới được (43,94, xem
+dưới) thì **7,5%**. Phần lớn khoảng cách mà "chọn câu khéo hơn" hứa hẹn vẫn chưa được bộ
+chọn này chạm tới.
+
+**Cái giá của cửa sổ 256 token: 4,14 điểm trần.** Đo trên đủ 1.000 bài `val` bằng chính
+tokenizer PhoBERT, một cửa sổ nhìn thấy trung bình **62,8%** số câu — trùng khít con số
+mà mô hình tự ghi vào `run.json` lúc chạy trên Kaggle — và Oracle-3 bị giới hạn trong cửa
+sổ ấy chỉ đạt **43,94**, so với 48,09 khi được đọc cả bài. Ước lượng trước đó trên 300
+bài là 44,4 và 60,6%.
+
+**Mô hình học một thiên lệch câu đầu mạnh hơn cả nhãn.** Tầng 2 giữ câu đầu tiên ở
+**71,8%** số bài, trong khi Oracle-3 giới hạn trong cùng cửa sổ chỉ chọn câu đầu ở
+39,6%. Phân bố vị trí chung thì gần nhau — 57,3% số câu được chọn nằm ở vị trí 0–2, so
+với 53,3% của oracle trong cửa sổ; vị trí trung bình 2,6 so với 2,8 — tức phần lớn độ
+"dồn về đầu bài" là do cửa sổ, còn phần thật sự do học là việc gần như luôn giữ câu đầu.
+12,6% bản tóm tắt trùng khít Lead-3.
+
+**Một bất lợi cấu trúc: luôn lấy đúng 3 câu.** 995/1.000 bản tóm tắt của tầng 2 có đủ 3
+câu, dài trung bình 100 âm tiết. Oracle-3 dừng sớm khi thêm câu không tăng điểm nên chỉ
+128/1.000 bản có đủ 3 câu, dài 50 âm tiết — gần sapo thật (35) hơn nhiều. Với F1, chữ
+thừa làm mất precision; đây cũng là lý do Lead-1 (36 âm tiết) ngang Lead-3 ở tầng 0.
+Chọn số câu linh hoạt thay vì cố định k = 3 là hướng cải thiện rẻ nhất, chưa làm.
+
+**Kiểm chứng.** Chấm lại từ file dự đoán ra đúng bảng (lệch 0); `guid` khớp
+`data/splits/val.json`; không bản tóm tắt nào rỗng. Loss huấn luyện (trung bình mỗi 50
+bước) giảm từ 1,20 xuống khoảng 0,8 và phẳng dần ở epoch cuối.
+
+## Tầng 4 — lọc câu trước, abstractive viết lại
+
+Câu hỏi 2 để lại một giả thuyết: cắt bài lấy đi khoảng 4 điểm ROUGE-1 ở 10,2% số bài,
+nhưng chỉ khoảng 2,5% chữ của sapo nằm riêng ở phần bị cắt — nên thứ mất đi có thể là
+ngữ cảnh chứ không phải chữ. Tầng 4 kiểm giả thuyết ấy theo cách rẻ nhất: với bài vượt
+ngân sách, thay vì đưa 1.024 token **đầu bài**, đưa 1.022 token **chọn lọc từ toàn
+bài** cho chính checkpoint BARTpho `train_20k`, không huấn luyện lại. Cài đặt ở
+`src/models/hybrid.py` và cờ `vit5.py --filter`; chạy bằng `notebooks/tang4/`, 30 phút
+GPU Kaggle, tập `val`.
+
+**Hai chiến lược.** `lexrank` xếp hạng mọi câu theo độ trung tâm LexRank rồi lấy dần
+cho tới khi đầy ngân sách; `lead_lexrank` bảo đảm 3 câu đầu trước rồi mới để LexRank lấp
+phần còn lại — vì tin tức viết theo tháp ngược, một bộ lọc thuần LexRank có thể vứt mất
+đúng câu đang có giá trị nhất. Cả hai giữ nguyên thứ tự câu và chỉ đụng tới đúng
+**102/1.000 bài** vượt ngân sách, khớp con số 10,2% của câu hỏi 2. Bài sau lọc dài
+trung bình 1.013 token, giữ khoảng 25,8 câu và bỏ khoảng 5,3 câu.
+
+| Nhóm 102 bài bị lọc | rouge1 | rouge2 | rougeL |
+|---|---|---|---|
+| BARTpho, cắt thô (mốc) | 26,80 ±2,95 | 13,59 ±2,80 | 20,24 ±2,59 |
+| + lọc `lexrank` | 25,98 ±2,69 | 12,92 ±2,58 | 20,08 ±2,52 |
+| + lọc `lead_lexrank` | 26,67 ±2,81 | 13,53 ±2,68 | 20,50 ±2,55 |
+| Lead-3 | 22,66 ±1,56 | — | — |
+
+**Lọc lúc suy luận không lấy lại được thiệt hại do cắt.** So cặp trong nhóm bị lọc:
+`lexrank` −0,83 [−3,00, +1,39], p = 0,47; `lead_lexrank` −0,13 [−2,21, +2,12], p = 0,91.
+Khoảng tin cậy rộng vì chỉ có 102 bài, nhưng cận trên của chiến lược tốt hơn là +2,12:
+nếu thiệt hại thật đúng cỡ 4 điểm như ước lượng ở câu hỏi 2 (−4,04 [−7,33, −0,79]) thì
+lọc lúc suy luận lấy lại được nhiều nhất khoảng một nửa. Toàn tập `val`: 35,13 và 35,20
+so với 35,23 của bản không lọc — không khác biệt.
+
+**Giữ câu đầu tốt hơn, nhưng chưa đủ bằng chứng.** `lead_lexrank` hơn `lexrank`
++0,70 [−0,73, +2,13], p = 0,33 — cùng chiều với cấu trúc tháp ngược, nhưng 102 bài
+chưa đủ để kết luận.
+
+**Chưa được kết luận giả thuyết "mất ngữ cảnh" là sai.** Mô hình được huấn luyện trên
+bài cắt thô, nay nhận văn bản đã lọc — tức lệch phân phối. Hai cách đọc đều nhất quán
+với số liệu: hoặc ngữ cảnh ở đuôi bài không phải thứ bị mất, hoặc mô hình chưa từng học
+cách dùng văn bản đã lọc. Tách được hai cách đọc này cần vòng 2: huấn luyện lại BARTpho
+trên đầu vào đã lọc (~2,6 giờ GPU).
+
+**Đối chứng nội tại, và một giả thuyết đã bị bác.** Trên 898 bài không bị lọc, 783 bản
+tóm tắt trùng khít bản gốc và ROUGE-1 chênh −0,02 [−0,22, +0,18], p = 0,85 — nhóm này
+không đổi điểm, đúng như phải thấy. 115 bản khác nhau cũng không phải nhiễu: hai lần chạy
+lọc trùng nhau **898/898** trên nhóm này và khác bản gốc ở đúng cùng 115 bài. Giả thuyết
+đầu tiên là lô bị đệm khác đi khi 102 bài đổi độ dài, nhưng tỷ lệ bản khác nhau ở lô có
+bài bị lọc (12,3%) và lô không có (14,4%) gần như bằng nhau, nên giả thuyết ấy bị bác.
+Nguyên nhân còn lại là **đường chạy**: bản gốc sinh ngay sau huấn luyện, bản lọc nạp
+`final` từ đĩa với `--no-train`. Nó không đổi điểm, nhưng một đối chứng sạch tuyệt đối
+cần thêm một lần chạy `--no-train` **không lọc** trên `val` (~15 phút GPU).
 
 ## Cấu trúc
 
@@ -998,14 +1103,15 @@ nhiều bài hơn, ví dụ gộp `tune` vào hoặc chấm trên `test` ở l�
 data/raw/          dữ liệu tải về, không chỉnh sửa
 data/processed/    đã chuẩn hoá và khử tách từ
 data/splits/       file ID cố định của train/val/test
-notebooks/         kaggle_train_vit5.ipynb (huấn luyện tầng 3), sweep/ (dò tham
-                   số sinh), kaggle_push.py (đẩy lên Kaggle), kernel-metadata.json
+notebooks/         kaggle_train_vit5.ipynb (huấn luyện tầng 3), sweep/ và
+                   sweep_bartpho/ (dò tham số sinh), tang4/ (lọc câu), tang2/
+                   (PhoBERT chọn câu), kaggle_push.py (đẩy lên Kaggle)
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra),
                    browse.py (duyệt dữ liệu trên trình duyệt)
-src/models/        extractive.py (tầng 0-1), vit5.py (tầng 3, cần GPU),
-                   run_baselines.py (chạy + chấm), measure_tokens.py (đo
-                   độ dài cắt), selftest.py (tự kiểm tra)
+src/models/        extractive.py (tầng 0-1), phobert_sent.py (tầng 2, cần GPU),
+                   vit5.py (tầng 3, cần GPU), hybrid.py (tầng 4), run_baselines.py
+                   (chạy + chấm), measure_tokens.py (đo độ dài cắt), selftest.py
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py,
                    truncation.py (câu hỏi 2, cần transformers),
@@ -1079,7 +1185,10 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 5 — Đường cong học ba điểm, dò tham số sinh trên `tune`, câu hỏi 2,
   LexRank bản PhoBERT, BERTScore, đối chứng BARTpho (BARTpho thắng ViT5)
 - [x] Rà soát tuần 5 — lấp các chỗ hở phát hiện khi review (xem dưới)
-- [ ] Tuần 6 — Tầng 2 và tầng 4
+- [x] Tuần 6 — Tầng 2 và tầng 4. Tầng 2: hệ thống extractive đầu tiên vượt Lead-3
+  (+1,24). Tầng 4 vòng 1: lọc lúc suy luận không lấy lại được thiệt hại do cắt. Còn để
+  ngỏ: tầng 4 vòng 2 — huấn luyện lại trên đầu vào đã lọc (~2,6 giờ GPU); đối chứng
+  `--no-train` không lọc (~15 phút GPU); tầng 2 chọn số câu linh hoạt.
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
 
@@ -1107,8 +1216,9 @@ Còn nợ:
 - [ ] **ViT5 `train_2k`** (~22 phút GPU) — tập con này đã đóng băng từ tuần 2 nhưng
   chưa bao giờ dùng; đường cong học vì thế có 3 điểm chứ không phải 4. Điểm 2k nằm ở
   chỗ đường cong dốc nhất, trong khi bước 5k → 10k hiện không đo được.
-  **Làm sau tầng 4:** nó đẩy lên kernel `dl-summarisevn-vit5` và sẽ khiến checkpoint
-  BARTpho — thứ tầng 4 cần — không còn lấy được qua `kernel_sources`.
+  **Còn ràng buộc thứ tự:** nó đẩy lên kernel `dl-summarisevn-vit5` và khiến checkpoint
+  BARTpho không còn lấy được qua `kernel_sources` — trong khi checkpoint ấy vẫn cần
+  cho lần chạy đối chứng `--no-train` không lọc và cho lần chấm `test` ở tuần 8.
 - [ ] **Đường cong học cho BARTpho** (~2 giờ GPU) — hiện chỉ có một điểm `train_20k`.
   Không bắt buộc: có thể trình bày đường cong như một khảo sát *trên ViT5*, nói rõ vậy.
 - [ ] **Chấm mọi tầng trên `test`** — việc của tuần 8, đúng thiết kế. Hiện tầng 0–1

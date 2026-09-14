@@ -24,6 +24,10 @@ results/predictions/*
 # PhoBERT tren Hub cung phien ban transformers, chu khong tat dinh nhu TF-IDF.
 # Sinh lai cung ton 18 phut CPU cho 2.000 bai.
 !results/predictions/*lexrank_emb*.json
+# Tang 2 (PhoBERT chon cau) cung giu, cung ly do voi ViT5/BARTpho: mo hinh da
+# huan luyen chi nam tren Kaggle, sinh lai can GPU, va tuan 7 cham blind can
+# chinh nhung ban tom tat nay.
+!results/predictions/phobert-sent-*.json
 
 # Cache va checkpoint
 .cache/
