@@ -259,5 +259,43 @@ check_true("thống kê đếm đúng số bài bị lọc", tk["n_loc"] == 1 an
 check_true("thống kê ghi lại chiến lược và ngân sách",
            tk["strategy"] == "lexrank" and tk["budget"] == 12)
 
+print("\n10. Tầng 2 — dựng ví dụ cho PhoBERT (phần KHÔNG cần torch)")
+# Bo ma hoa gia: moi tu mot token. Du de kiem logic cua so va can le span; tokenizer
+# that chi doi CON SO chu khong doi logic, nen khong keo `torch` vao `.venv` sach.
+from models.phobert_sent import build_spans, labels_for, pick_indices  # noqa: E402
+
+ma_hoa = lambda s: [0] * len(s.split())  # noqa: E731
+M = "cảnh_sát bắt nghi_phạm . giá vàng tăng mạnh . cảnh_sát khám nhà ."
+MS = sentences(M)
+
+ids, spans = build_spans(MS, ma_hoa, max_len=99)
+check_true("cửa sổ rộng -> mọi câu đều lọt", len(spans) == len(MS))
+check_true("span bắt đầu từ 1, chừa chỗ token mở đầu", spans[0][0] == 1)
+check_true("các span liền nhau, không chồng lấn",
+           all(spans[i][1] == spans[i + 1][0] for i in range(len(spans) - 1)))
+check_true("span cuối khớp độ dài chuỗi", spans[-1][1] == 1 + len(ids))
+check_true("độ dài span = số token của câu",
+           all(z - a == len(ma_hoa(s)) for (a, z), s in zip(spans, MS)))
+
+# Cua so hep: phai cat theo CAU chu khong cat giua cau.
+ids2, spans2 = build_spans(MS, ma_hoa, max_len=10)
+check_true("cửa sổ hẹp -> bỏ bớt câu, không cắt giữa câu", len(spans2) == 1)
+check_true("câu lọt vào vẫn nguyên vẹn", spans2[0][1] - spans2[0][0] == len(ma_hoa(MS[0])))
+check_true("không câu nào lọt -> không span nào", build_spans(MS, ma_hoa, max_len=3)[1] == [])
+check_true("bài rỗng không làm vỡ", build_spans([], ma_hoa, max_len=99) == ([], []))
+
+# Nhan lay tu oracle cua CA BAI, chi cat lay phan nhin thay duoc.
+nhan = labels_for(MS, "cảnh_sát bắt nghi_phạm .", len(MS), k=1)
+check_true("nhãn đúng số câu nhìn thấy", len(nhan) == len(MS))
+check_true("oracle k=1 chọn đúng câu khớp sapo", nhan == [1.0, 0.0, 0.0])
+check_true("cửa sổ hẹp thì nhãn cũng ngắn theo", len(labels_for(MS, MS[0], 1, k=1)) == 1)
+
+# Bo chon: cung quy uoc voi `extractive._pick()`.
+check_true("chọn theo điểm, trả về theo thứ tự bài", pick_indices([0.1, 0.9, 0.5], MS, 2) == [1, 2])
+check_true("k lớn hơn số câu -> lấy hết", len(pick_indices([0.1, 0.9, 0.5], MS, 9)) == 3)
+D2 = ["a .", "b .", "a ."]
+check_true("không chọn hai bản sao", pick_indices([0.9, 0.1, 0.95], D2, 2) == [1, 2])
+check_true("hoà điểm -> câu đứng trước thắng", pick_indices([0.5, 0.5, 0.5], MS, 1) == [0])
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)
