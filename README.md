@@ -160,6 +160,14 @@ dạng tách từ để đối chiếu với các bài báo trước, kèm ghi c
 Quy trình blind cũng dùng đúng dạng đó: nếu bản tóm tắt extractive còn nguyên gạch
 dưới còn bản của ViT5 thì không, người chấm nhận ra ngay đâu là hệ thống nào.
 
+**Việc phải làm ở tuần 7, đừng quên.** File trong `results/predictions/` **chưa** được
+chuẩn hoá: bản của tầng 0-2 còn nguyên gạch dưới (`Huỳnh_Ngọc_Bích`), bản của ViT5 và
+BARTpho thì không. Điểm số không hề bị ảnh hưởng — mọi hàm chấm điểm đều tự gọi
+`for_scoring()` trước — nhưng **phiếu chấm blind thì phải tự chạy `for_scoring()` lên
+từng bản tóm tắt trước khi in ra**, nếu không người chấm nhận diện được hệ thống chỉ qua
+dấu gạch dưới và toàn bộ khâu blind mất giá trị. Để file dự đoán ở dạng gốc là có chủ ý:
+chúng là đầu ra thô của từng lần chạy, việc đổi dạng thuộc về khâu dùng chúng.
+
 **Cài đặt.** `src/eval/` tự cài đặt ROUGE thay vì gọi thư viện ngoài, vì bộ tách token
 mặc định của `rouge_score` (Google) chỉ giữ `[a-z0-9]` nên **xoá sạch dấu tiếng Việt**.
 Bản cài đặt ở đây đã được đối chiếu với `rouge_score` (truyền tokenizer tiếng Việt)
@@ -279,8 +287,8 @@ hay bằng embedding. Đây là đặc trưng thể loại chứ không phải l
 theo tháp ngược nên câu quan trọng nhất nằm ngay đầu bài, còn "trung tâm của đồ thị
 tương đồng" không phải là "đáng tóm tắt".
 
-**Chi phí:** 1.093 giây trên CPU cho 2.000 bài (0,75 giây/bài), so với 1 giây của bản
-TF-IDF — đắt hơn hơn nghìn lần để cho kết quả kém hơn. Không cần GPU.
+**Chi phí:** 1.092,8 giây trên CPU cho 2.000 bài (0,55 giây/bài), so với 1,06 giây của
+bản TF-IDF — đắt hơn **1.030 lần** để cho kết quả kém hơn. Không cần GPU.
 
 **Kiểm chứng chéo:** trong cùng lần chạy, `Lead-3` và `LexRank` cho điểm **trùng khít**
 bảng tuần 3b, lệch 0,0 trên từng bài và `guid` trùng khớp — đường chấm điểm không xê
@@ -562,6 +570,17 @@ Ba điều được cài để khâu này không tự lừa mình:
   nằm ở `.../runs/VietAI_vit5-base_train_20k/final`. Notebook không ghim cứng đường dẫn
   đó mà dò bằng `glob`, và dừng kèm thông báo rõ nếu không thấy — quên gắn input là lỗi
   hay gặp nhất ở đây.
+
+  **Cơ chế "version mới nhất" này đã hết đúng kể từ lần chạy BARTpho.** Version mới nhất
+  của kernel `dl-summarisevn-vit5` bây giờ là BARTpho (12/09, sau sáu lần dò tham số),
+  nên `kernel_sources` gắn vào là checkpoint BARTpho, còn `CKPT_GLOB` trong ô cấu hình
+  vẫn trỏ `VietAI_vit5-base_train_20k/final`. Chạy lại notebook này y nguyên sẽ dừng ở ô
+  tìm checkpoint — đúng như thiết kế, nhưng nó **không** tự lấy được checkpoint ViT5
+  nữa. Muốn dùng lại checkpoint ViT5 `train_20k` phải gắn **đích danh version đó** qua
+  giao diện web (*Add data → Your Work → chọn version*), vì `kaggle kernels output` chỉ
+  tải version mới nhất. Máy này không giữ bản sao nào: thư mục `runs/` chỉ tồn tại trên
+  Kaggle. Tầng 4 của tuần 6 xây trên BARTpho nên sẽ dùng checkpoint mặc định — tiện,
+  nhưng phải sửa `CKPT_GLOB` thành `vinai_bartpho-syllable_train_20k/final`.
 - **Tên file phân biệt được cấu hình.** `vit5.py --no-train` bỏ `epochs`/`lr`/`batch`
   khỏi tên (chúng không được dùng) và thêm `lp`/`min`, nên sáu cấu hình cho sáu tên
   khác nhau, không lần nào đè lần nào. Dùng `--name` để bảng kết quả mang tên mô hình
@@ -633,9 +652,9 @@ Lead-3 (+0,02, p = 0,78), đúng như ROUGE đã nói ở tầng 0.
 p = 0,0002. Cùng kết luận, nhưng ở BERTScore khoảng tin cậy chỉ vừa đủ rời khỏi 0 —
 đúng như dải điểm hẹp của nó báo trước. Trên từng bài, hai thước đo đồng ý ở **85,7%**
 khi hỏi "bài này BARTpho hay ViT5 tốt hơn", và chỗ bất đồng chia gần đều hai phía
-(59 bài nghiêng về BARTpho theo BERTScore, 67 bài theo ROUGE) — tức không có dấu hiệu
-thước đo nào thiên vị một mô hình. Tương quan từng bài giữa hai thước đo cao nhất ở
-BARTpho: **+0,938**.
+(131 bài: 59 nghiêng về BARTpho theo BERTScore, 72 theo ROUGE; 12 bài còn lại hoà ở cả
+hai thước đo) — tức không có dấu hiệu thước đo nào thiên vị một mô hình. Tương quan từng
+bài giữa hai thước đo cao nhất ở BARTpho: **+0,938**.
 
 **Nhưng BERTScore tương phản kém hơn nhiều.** Toàn bộ khoảng cách từ Random-3 lên
 Oracle-3 chỉ **4,22 điểm** BERTScore, trong khi ROUGE-1 trải **24,85 điểm** — rộng gấp
@@ -706,33 +725,39 @@ thấy thiệt hại thật lớn hơn nhiều lần con số ấy.
 
 **Mô hình càng mạnh, cái giá của việc cắt càng lộ ra — và ở `train_20k` thì đo được.**
 
-| Mô hình | ViT5, không bị cắt | ViT5, bị cắt | Hiệu của hiệu |
-|---|---|---|---|
-| `train_5k` | 32,76 ±0,98 | 25,60 ±2,57 | −1,37 [−4,28, +1,58], p = 0,36 |
-| `train_10k` | 33,16 ±1,01 | 24,94 ±2,41 | −2,43 [−5,27, +0,44], p = 0,10 |
-| **`train_20k`** | **34,31 ±1,04** | **24,50 ±2,59** | **−4,02 [−6,84, −1,12], p = 0,007** |
-| **BARTpho `train_20k`** | **36,19 ±1,09** | **26,80 ±2,95** | **−4,04 [−7,33, −0,79], p = 0,017** |
+| Mô hình | Bài bị cắt | Không bị cắt | Bị cắt | Hiệu của hiệu |
+|---|---|---|---|---|
+| ViT5 `train_5k` | 93 (9,3%) | 32,76 ±0,98 | 25,60 ±2,57 | −1,37 [−4,28, +1,58], p = 0,36 |
+| ViT5 `train_10k` | 93 (9,3%) | 33,16 ±1,01 | 24,94 ±2,41 | −2,43 [−5,27, +0,44], p = 0,10 |
+| **ViT5 `train_20k`** | 93 (9,3%) | **34,31 ±1,04** | **24,50 ±2,59** | **−4,02 [−6,84, −1,12], p = 0,007** |
+| **BARTpho `train_20k`** | **102 (10,2%)** | **36,19 ±1,09** | **26,80 ±2,95** | **−4,04 [−7,33, −0,79], p = 0,017** |
 
 **Toàn bộ phần lợi của việc thêm dữ liệu rơi vào nhóm bài không bị cắt**: 32,76 → 33,16
 → 34,31 ở nhóm vừa cửa sổ, trong khi nhóm bị cắt đứng yên (25,60 → 24,94 → 24,50). Mô
 hình càng giỏi thì phần nó không được đọc càng thành nút thắt — đúng chiều phải thấy
-nếu việc cắt có giá thật. Ba phép đo dùng chung 93 bài bị cắt ấy, nên chúng không độc
-lập với nhau; thứ đáng tin ở đây là **cả hướng lẫn độ lớn đều tăng đơn điệu** theo sức
-mạnh của mô hình, và đến `train_20k` thì khoảng tin cậy đã rời khỏi 0.
+nếu việc cắt có giá thật. **Ba phép đo trên ViT5 dùng chung đúng 93 bài bị cắt ấy**, nên
+chúng không độc lập với nhau; thứ đáng tin ở đây là **cả hướng lẫn độ lớn đều tăng đơn
+điệu** theo sức mạnh của mô hình, và đến `train_20k` thì khoảng tin cậy đã rời khỏi 0.
+Hàng BARTpho đứng ngoài dãy đó: tokenizer của nó cắt ở chỗ khác nên nhóm bị cắt là 102
+bài, không phải 93 — không so trực tiếp với ba hàng trên được, nhưng nó độc lập xác nhận
+cùng một kết luận trên một mô hình khác.
 
-**Trả lời câu hỏi 2, trên mô hình tốt nhất hiện có:** cắt bài ở 1.024 token lấy đi
-khoảng **4 điểm ROUGE-1 [1,1; 6,8] ở 9,3% số bài** — tính ra toàn tập là khoảng 0,37
-điểm. Nhỏ so với 5,95 điểm mà ViT5 hơn Lead-3, nhưng không còn là nhiễu, và nó sẽ lớn
-dần nếu mô hình còn mạnh lên.
+**Trả lời câu hỏi 2, trên mô hình tốt nhất hiện có — BARTpho `train_20k`:** cắt bài ở
+1.024 token lấy đi khoảng **4 điểm ROUGE-1 [0,8; 7,3] ở 10,2% số bài** — tính ra toàn
+tập là khoảng **0,41 điểm**. Nhỏ so với 7,78 điểm mà BARTpho hơn Lead-3, nhưng không
+còn là nhiễu, và nó sẽ lớn dần nếu mô hình còn mạnh lên. Trên ViT5 `train_20k` con số
+tương ứng là −4,02 [−6,84, −1,12] ở 9,3% số bài, tức khoảng 0,37 điểm toàn tập — hai mô
+hình cho cùng một độ lớn dù tokenizer khác nhau.
 
-**Một nghịch lý cần giải thích trong báo cáo:** chỉ 2,4% chữ của sapo nằm riêng ở phần
-bị cắt, mà thiệt hại đo được lại tới 4 điểm. Vậy thứ mất đi chủ yếu **không** phải chữ
-của sapo nằm ở đuôi bài, mà nhiều khả năng là ngữ cảnh giúp mô hình chọn ý và diễn đạt.
+**Một nghịch lý cần giải thích trong báo cáo:** chỉ khoảng 2,5% chữ của sapo nằm riêng ở
+phần bị cắt (2,4% với ViT5, 2,5% với BARTpho), mà thiệt hại đo được lại tới 4 điểm. Vậy
+thứ mất đi chủ yếu **không** phải chữ của sapo nằm ở đuôi bài, mà nhiều khả năng là ngữ
+cảnh giúp mô hình chọn ý và diễn đạt.
 Đây là giả thuyết, chưa kiểm; cách kiểm rẻ nhất là cho tầng 4 lọc câu trước rồi so.
 
 Chạy lại cho mô hình khác bằng `--system <tag>`. Thêm dữ liệu train không làm hẹp
-khoảng tin cậy — vẫn là 93 bài bị cắt ấy; muốn hẹp hơn phải chấm trên nhiều bài hơn,
-ví dụ gộp `tune` vào hoặc chấm trên `test` ở lần chấm cuối.
+khoảng tin cậy — vẫn là 93 bài bị cắt ấy (102 với BARTpho); muốn hẹp hơn phải chấm trên
+nhiều bài hơn, ví dụ gộp `tune` vào hoặc chấm trên `test` ở lần chấm cuối.
 
 ## Cấu trúc
 
