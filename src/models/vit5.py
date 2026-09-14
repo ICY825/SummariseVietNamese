@@ -147,6 +147,8 @@ def run_tag(args, name):
         bits.append(f"lp{args.length_penalty:g}")
     if args.min_length:
         bits.append(f"min{args.min_length}")
+    if getattr(args, "filter", "none") != "none":
+        bits.append(f"loc-{args.filter}")
     if args.eval_limit:
         bits.append(f"thu{args.eval_limit}")
     return "_".join(bits)
@@ -255,6 +257,11 @@ def main():
         help="chạy tiếp từ checkpoint gần nhất trong --out, khi Colab ngắt giữa chừng",
     )
     ap.add_argument("--no-train", action="store_true", help="chỉ nạp và sinh, để thử đường ống")
+    ap.add_argument(
+        "--filter", default="none", choices=["none", "lexrank", "lead_lexrank"],
+        help="tầng 4: lọc câu từ TOÀN bài cho vừa ngân sách token trước khi đưa vào "
+             "mô hình, thay vì lấy phần đầu bài. Chỉ đụng tới bài vượt ngân sách",
+    )
     args = ap.parse_args()
 
     if args.eval_split == "test":
@@ -300,6 +307,26 @@ def main():
         eval_rows = eval_rows[: args.eval_limit]
         print(f"  CHẠY THỬ: chỉ sinh {len(eval_rows)} bài — số liệu KHÔNG dùng báo cáo.")
     print(f"  train {len(train_rows)} bài, eval {len(eval_rows)} bài.\n")
+
+    # Tang 4. Phai dat SAU khi nap du lieu va SAU khi co tokenizer: ngan sach token
+    # chi co nghia khi dem bang chinh tokenizer cua mo hinh se doc van ban do. Tru 2
+    # token dac biet ma tokenizer tu them vao moi chuoi.
+    filter_info = None
+    if args.filter != "none":
+        from models.hybrid import apply_filter
+
+        def _dem(s):
+            return len(tok(s, add_special_tokens=False)["input_ids"])
+
+        ngan_sach = args.max_input - 2
+        filter_info = {"eval": apply_filter(eval_rows, _dem, ngan_sach, args.filter)}
+        if train_rows:
+            filter_info["train"] = apply_filter(train_rows, _dem, ngan_sach, args.filter)
+        for ten, tk in filter_info.items():
+            print(f"  lọc [{ten}] {args.filter}: {tk['n_loc']}/{tk['n']} bài "
+                  f"({tk['phan_tram_loc']}%) bị lọc, giữ trung bình {tk['cau_giu_tb']} câu, "
+                  f"bỏ {tk['cau_bo_tb']} câu")
+        print()
 
     # Luong `--no-train` khong sinh checkpoint nao, va `--model` cua no thuong la mot
     # duong dan dai tren dia — ghep vao ten thu muc se ra thu khong doc noi. Cac lan
@@ -451,6 +478,7 @@ def main():
         "finished_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "args": vars(args),
         "generation": gen,
+        "filter": filter_info,
         "data": {
             # `--no-train` khong dung tap train nao. Ghi ten mac dinh (`train_2k`) vao
             # day se khien ho so lan chay KHAI SAI rang mo hinh duoc train tren 2.000

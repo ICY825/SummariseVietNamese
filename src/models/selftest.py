@@ -25,7 +25,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from data.text import sentences  # noqa: E402
+from data.text import for_scoring, sentences  # noqa: E402
 from models.extractive import (  # noqa: E402
     _tfidf,
     join,
@@ -198,6 +198,66 @@ try:
 finally:
     ex._phobert_vectors = _goc
 check_true("đã trả `_phobert_vectors` về bản thật", ex._phobert_vectors is _goc)
+
+print("\n9. Tầng 4 — bộ lọc câu trước khi đưa cho mô hình sinh")
+# Dem token bang so tu tren van ban THO — dung dang ma bo loc dem, va dung dang ma
+# mo hinh sinh doc. Tokenizer that chi doi CON SO, khong doi logic, nen khong can keo
+# `transformers` vao `.venv` sach.
+from models.hybrid import K as HK  # noqa: E402
+from models.hybrid import apply_filter, filter_article, filter_indices  # noqa: E402
+
+dem = lambda s: len(s.split())  # noqa: E731
+
+# Cau 0 va 1 cung chu de, cau 2 lac de han. Do dai: 4 / 4 / 4 tu.
+H = "cảnh_sát bắt nghi_phạm . cảnh_sát khám nhà . giá vàng tăng ."
+HS = sentences(H)
+check_true("ngân sách rộng -> giữ hết câu", filter_indices(HS, dem, 999) == [0, 1, 2])
+check_true("ngân sách chỉ đủ 2 câu (đếm dạng thô) -> bỏ câu lạc đề", filter_indices(HS, dem, 9) == [0, 1])
+check_true("đầu ra luôn theo thứ tự bài", filter_indices(HS, dem, 9) == sorted(filter_indices(HS, dem, 9)))
+
+# `lead_lexrank` phai bao dam K cau dau ngay ca khi chung khong phai cau trung tam nhat.
+# Bai duoi: cau 0,1,2 moi cau mot chu de; cau 3 va 4 lap lai chu de cua cau 4 -> theo
+# do trung tam thi cum cuoi thang, nhung cau 0-2 van phai co mat.
+I = ("alpha alpha alpha . beta beta beta . gamma gamma gamma . "
+     "delta delta delta . delta delta delta khac .")
+IS = sentences(I)
+thuan = filter_indices(IS, dem, 12, "lexrank")
+bao_dam = filter_indices(IS, dem, 12, "lead_lexrank")
+check_true(f"lead_lexrank giữ đủ {HK} câu đầu", set(range(HK)) <= set(bao_dam))
+check_true("hai chiến lược cho kết quả khác nhau", thuan != bao_dam)
+
+# Cau trung noi dung khong duoc chon hai lan — no an ngan sach ma khong them thong tin.
+J = "cảnh_sát bắt nghi_phạm . giá vàng tăng mạnh . cảnh_sát bắt nghi_phạm ."
+JS = sentences(J)
+idx = filter_indices(JS, dem, 999)
+check_true("không chọn hai bản sao của cùng một câu", len(idx) == 2)
+check_true("bỏ bản sao thì giữ bản ĐẦU", 0 in idx and 2 not in idx)
+
+# Truong hop bien.
+check_true("bài rỗng -> không câu nào", filter_indices([], dem, 100) == [])
+check_true("câu đầu đã dài hơn ngân sách -> vẫn trả về 1 câu",
+           filter_indices(HS, dem, 1) == [0])
+try:
+    filter_indices(HS, dem, 10, "khong_co_that")
+    check_true("chiến lược lạ -> phải báo lỗi", False)
+except ValueError:
+    check_true("chiến lược lạ -> phải báo lỗi", True)
+
+# Dau ra phai o DANG THO: mo hinh sinh doc van xuoi binh thuong, khong doc gach duoi.
+check_true("đầu ra bộ lọc ở dạng thô", "_" not in filter_article(H, dem, 8))
+
+# `apply_filter` chi dung toi bai VUOT ngan sach; bai vua cua so phai nguyen van.
+rows = [
+    {"article": H, "article_raw": for_scoring(H)},      # ngan, khong bi dung toi
+    {"article": I, "article_raw": for_scoring(I)},      # dai, se bi loc
+]
+goc0 = rows[0]["article_raw"]
+tk = apply_filter(rows, dem, 12, "lexrank")
+check_true("bài vừa cửa sổ giữ nguyên văn", rows[0]["article_raw"] == goc0)
+check_true("bài vượt ngân sách bị lọc", rows[1]["article_raw"] != for_scoring(I))
+check_true("thống kê đếm đúng số bài bị lọc", tk["n_loc"] == 1 and tk["n"] == 2)
+check_true("thống kê ghi lại chiến lược và ngân sách",
+           tk["strategy"] == "lexrank" and tk["budget"] == 12)
 
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

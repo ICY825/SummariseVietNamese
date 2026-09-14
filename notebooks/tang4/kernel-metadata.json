@@ -1,0 +1,17 @@
+{
+  "id": "minh12605/dl-summarisevn-tang4",
+  "title": "DL-SummariseVN tang 4",
+  "code_file": "kaggle_tang4.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [
+    "minh12605/dl-summarisevn-vit5"
+  ],
+  "model_sources": []
+}
