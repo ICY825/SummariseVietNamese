@@ -143,6 +143,69 @@ sapo nào dài hơn bài gốc, không có sapo rỗng. Không cần viết bộ
 
 ## Tập con cố định
 
+Có **hai tầng chia** chồng lên nhau, đừng lẫn: bộ dữ liệu đã chia sẵn train/val/test từ
+phía tác giả, còn đề tài này chỉ đóng băng các tập con *bên trong* ba split đó.
+
+### Tầng 1 — bộ gốc chia sẵn 70/15/15, và chia ngẫu nhiên
+
+Đề tài **không tự chia** train/val/test; `load_split()` nạp thẳng ba split có sẵn. Nhờ
+vậy kết quả còn đặt cạnh các công trình khác dùng cùng bộ này được.
+
+| Split | Bài báo | Tỷ lệ | Bản đang dùng | Tỷ lệ |
+|---|---|---|---|---|
+| `train` | 105.418 | 70,0% | 99.134 | 68,9% |
+| `validation` | 22.642 | 15,0% | 22.184 | 15,4% |
+| `test` | 22.644 | 15,0% | 22.498 | 15,6% |
+
+Tỷ lệ của bản đang dùng lệch nhẹ khỏi 70/15/15 vì phần thiếu 4,6% rơi chủ yếu vào
+`train` (6.284 trong tổng số 6.888 bài).
+
+**Bài báo chỉ nói tỷ lệ, không nói chia bằng cách nào**, nên phải đo. Lấy mẫu ngẫu nhiên
+3.000 bài mỗi split (`seed=13`; đếm bằng `\w+` nên từ ghép tính một đơn vị và dấu câu
+không tính):
+
+| Chỉ số | train | val | test |
+|---|---|---|---|
+| số từ trong bài | 367,59 | 370,68 | 373,82 |
+| số từ trong sapo | 25,61 | 25,76 | 25,63 |
+| số câu trong bài | 16,74 | 16,89 | 16,95 |
+
+Ba split gần như trùng nhau trên cả ba chỉ số, và Bảng II của bài báo cũng vậy. Kiểm
+thêm năm xuất hiện trong bài ở bốn đoạn khác nhau của `train`: cả bốn đều trộn lẫn
+2014–2019. Kết luận: **chia ngẫu nhiên trên toàn corpus**, không cắt theo mốc thời gian
+cũng không chia theo nguồn báo.
+
+Hệ quả tốt: train và test cùng phân phối, không có dịch chuyển phân phối cần xử lý.
+**Hệ quả phải nêu trong báo cáo:** vì chia ngẫu nhiên chứ không cắt theo thời gian, kết
+quả ở đây *không* đo được khả năng khái quát sang tin tức của giai đoạn sau — đó là giới
+hạn của bộ dữ liệu, không phải của đề tài.
+
+*(Đối chiếu cách đếm: Bảng II của bài báo ghi 418,37 từ mỗi bài và 28,48 từ mỗi sapo.
+Đếm token tách theo khoảng trắng — dấu câu tính là một token, đúng định dạng của bộ này
+— cho 412,81 và 28,21, tức khớp. Khoảng lệch so với bảng trên chỉ là khác quy ước đếm,
+không phải khác dữ liệu.)*
+
+### Hai cạm bẫy của cách chia này
+
+**`guid` đánh số riêng cho từng split, đều bắt đầu từ 1.** `guid=501` của `train` và
+`guid=501` của `test` là hai bài khác hẳn nhau. Đã xác nhận: `guid` lớn nhất mỗi split
+đúng bằng cỡ split đó theo bài báo (105.418 / 22.642 / 22.644), nhỏ nhất đều là 1. Vì
+thế `make_splits.py` lưu kèm trường `split` trong mỗi file, và **không bao giờ được gộp
+`guid` giữa hai split rồi so**.
+
+**Trong mỗi split, bài xếp theo khối** — lấy N bài đầu của bất kỳ split nào cũng cho số
+liệu lệch. Đo độ dài bài trung bình trên từng khối 1.500 bài liên tiếp của `train`:
+
+| Vị trí | 0 | 22.000 | 44.000 | 77.000 |
+|---|---|---|---|---|
+| số từ trung bình | 354,8 | 408,4 | 302,3 | 470,1 |
+
+Độ lệch chuẩn giữa các khối liên tiếp là **52,71**, trong khi giữa các mẫu ngẫu nhiên
+cùng cỡ chỉ là **4,80** — gấp 11 lần. Đó là lý do `make_splits.py` **xáo một lần rồi
+mới cắt tiền tố**, và mọi khâu kiểm tra dữ liệu đều lấy mẫu ngẫu nhiên với `seed=13`.
+
+### Tầng 2 — tập con do đề tài đóng băng
+
 Dữ liệu đầy đủ vượt xa ngân sách của Colab bản miễn phí, nên `src/data/make_splits.py`
 đóng băng sẵn các tập con vào `data/splits/` (`seed=13`). **Mọi tầng đều nạp qua
 `data.splits.load_split()`, không tầng nào được tự lấy mẫu lại** — có vậy tầng 0 và
@@ -154,6 +217,15 @@ tầng 4 mới được chấm trên đúng cùng một tập bài.
 | `val` | 1.000 | Theo dõi qua từng epoch |
 | `tune` | 500 | Dò tham số sinh văn bản (tuần 5), rời hẳn `val` và `test` |
 | `test` | 2.000 | Chấm điểm cuối cùng, dùng một lần |
+
+**Vì sao các tập train lồng nhau.** Xáo pool `train` đúng một lần rồi cắt tiền tố, nên
+`train_2k ⊂ train_5k ⊂ train_10k ⊂ train_20k`. Lấy bốn mẫu ngẫu nhiên độc lập thì chênh
+lệch trên đường cong học sẽ lẫn cả dao động do lấy mẫu, và không đọc được gì.
+
+**`val` và `tune` cắt từ hai đoạn khác nhau của cùng một pool đã xáo**, nên rời hẳn
+nhau — đã kiểm lại: `val ∩ tune = 0`. Đây là phép kiểm giao nhau *duy nhất* có nghĩa
+giữa các tập của đề tài, vì chỉ hai tập này mới cùng đến từ split `validation`; mọi phép
+so `guid` giữa `train`, `val` và `test` đều vô nghĩa do ba split đánh số độc lập.
 
 **Vì sao test chỉ 2.000 bài.** Đo trên tập test thật: độ lệch chuẩn ROUGE-1 giữa các
 bài là 9,8, độ lệch chuẩn của *hiệu* khi so cặp đôi là 12,5. Nửa khoảng tin cậy 95%
