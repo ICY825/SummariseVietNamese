@@ -134,5 +134,49 @@ check("một nửa ở mỗi phần -> 50%", lost_reference("mưa nắng", "hôm
 check("âm tiết mới của sapo không tính là mất", lost_reference("mưa bão", "hôm nay mưa", "mai nắng"), 0.0)
 check("không phân biệt hoa thường", lost_reference("Nắng", "hôm nay mưa", "mai nắng"), 100.0)
 
+print("\n7. Chấm blind: đồng thuận, tương quan, gộp nhãn")
+from eval.human_eval import kendall_tau_b, krippendorff_alpha, label_article, rankdata, spearman  # noqa: E402
+import random  # noqa: E402
+
+# Ba nguoi cham giong het nhau -> dong thuan tuyet doi
+check("alpha: mọi người chấm trùng nhau -> 1", krippendorff_alpha([[1, 1, 1], [3, 3, 3], [5, 5, 5]]), 1.0)
+# Tinh tay: don vi [1,2] va [4,5]. D_o = (2+2)/4 = 1; toan bo {1,2,4,5}: tong (a-b)^2 tren
+# cap co thu tu = 2*4*46 - 2*144 = 80, D_e = 80/(4*3) = 20/3; alpha = 1 - 3/20 = 0,85
+check("alpha tính tay [[1,2],[4,5]] = 0,85", krippendorff_alpha([[1, 2], [4, 5]]), 0.85)
+check_true("alpha: đơn vị một điểm bị bỏ", abs(krippendorff_alpha([[1, 2], [4, 5], [3]]) - 0.85) < 1e-12)
+check_true("alpha: không có phương sai -> None", krippendorff_alpha([[3, 3], [3, 3]]) is None)
+check_true("rankdata: hoà lấy hạng trung bình", list(rankdata([10, 20, 20, 5])) == [2.0, 3.5, 3.5, 1.0])
+check("Spearman đơn điệu không tuyến tính -> 1", spearman([1, 2, 3, 4], [1, 8, 27, 64]), 1.0)
+check("Spearman ngược chiều -> -1", spearman([1, 2, 3], [9, 5, 1]), -1.0)
+check("Kendall trùng thứ tự -> 1", kendall_tau_b([1, 2, 3], [0.1, 0.5, 0.9]), 1.0)
+check("Kendall ngược thứ tự -> -1", kendall_tau_b([1, 2, 3], [3, 2, 1]), -1.0)
+check_true("Kendall toàn hoà -> None", kendall_tau_b([2, 2, 2], [1, 2, 3]) is None)
+nhan = label_article({"a": "giống nhau", "b": "khác", "c": "giống nhau"}, random.Random(0))
+check_true("gộp bản trùng chữ: 3 hệ thống -> 2 nhãn", len(nhan) == 2)
+check_true("nhãn gộp trỏ tới cả hai hệ thống",
+           any(hs == ["a", "c"] for _, _, hs in nhan) and sorted(l for l, _, _ in nhan) == ["A", "B"])
+thu_tu = {tuple(h for _, _, hs in label_article({"x": "1", "y": "2", "z": "3"}, random.Random(s)) for h in hs)
+          for s in range(30)}
+check_true("xáo thứ tự: nhiều hạt giống cho nhiều thứ tự", len(thu_tu) > 1)
+
+# read_sheet gioi han mot tap bai: phieu may du 50 bai duoc doc lai chi o phan trung mau
+import tempfile  # noqa: E402
+from eval.human_eval import read_sheet  # noqa: E402
+
+khoa_gia = {"bai": [{"ma_bai": "B01", "nhan": {"A": ["x"], "B": ["y"]}},
+                    {"ma_bai": "B02", "nhan": {"A": ["x"]}}]}
+with tempfile.TemporaryDirectory() as tmp:
+    day_du = Path(tmp) / "du.csv"
+    day_du.write_text("ma_bai,nhan,day_du,trung_thuc,troi_chay,ghi_chu\n"
+                      "B01,A,5,5,5,\nB01,B,4,4,4,\nB02,A,3,3,3,\n", encoding="utf-8")
+    d, loi = read_sheet(day_du, khoa_gia, {"B01"})
+    check_true("chỉ đọc bài trong mẫu, dòng bài khác không tính là lỗi", set(d) == {("B01", "A"), ("B01", "B")} and not loi)
+    thieu = Path(tmp) / "thieu.csv"
+    thieu.write_text("ma_bai,nhan,day_du,trung_thuc,troi_chay,ghi_chu\nB01,A,5,5,5,\n", encoding="utf-8")
+    _, loi = read_sheet(thieu, khoa_gia, {"B01"})
+    check_true("thiếu dòng của bài trong mẫu vẫn báo lỗi", any("thiếu" in x for x in loi))
+    _, loi = read_sheet(day_du, khoa_gia)
+    check_true("không giới hạn thì đọc đủ mọi bài, không lỗi", not loi)
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

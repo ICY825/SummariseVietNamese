@@ -1,0 +1,244 @@
+{
+ "nguoi": [
+  "llm_judge"
+ ],
+ "n_bai": 50,
+ "systems": [
+  "sapo",
+  "lead3",
+  "tang2_k2",
+  "bartpho"
+ ],
+ "he_thong": {
+  "sapo": {
+   "day_du": {
+    "mean": 3.54,
+    "lo": 3.24,
+    "hi": 3.82
+   },
+   "trung_thuc": {
+    "mean": 4.02,
+    "lo": 3.7,
+    "hi": 4.32
+   },
+   "troi_chay": {
+    "mean": 4.56,
+    "lo": 4.36,
+    "hi": 4.74
+   }
+  },
+  "lead3": {
+   "day_du": {
+    "mean": 3.6,
+    "lo": 3.36,
+    "hi": 3.84
+   },
+   "trung_thuc": {
+    "mean": 5.0,
+    "lo": 5.0,
+    "hi": 5.0
+   },
+   "troi_chay": {
+    "mean": 3.52,
+    "lo": 3.34,
+    "hi": 3.68
+   }
+  },
+  "tang2_k2": {
+   "day_du": {
+    "mean": 3.28,
+    "lo": 3.06,
+    "hi": 3.5
+   },
+   "trung_thuc": {
+    "mean": 4.96,
+    "lo": 4.88,
+    "hi": 5.0
+   },
+   "troi_chay": {
+    "mean": 3.12,
+    "lo": 2.88,
+    "hi": 3.36
+   }
+  },
+  "bartpho": {
+   "day_du": {
+    "mean": 2.82,
+    "lo": 2.56,
+    "hi": 3.08
+   },
+   "trung_thuc": {
+    "mean": 4.38,
+    "lo": 4.06,
+    "hi": 4.68
+   },
+   "troi_chay": {
+    "mean": 4.34,
+    "lo": 4.08,
+    "hi": 4.58
+   }
+  }
+ },
+ "so_cap": {
+  "sapo − lead3 day_du": {
+   "diff": -0.06,
+   "lo": -0.4,
+   "hi": 0.28,
+   "p": 0.7734,
+   "significant": false
+  },
+  "sapo − lead3 trung_thuc": {
+   "diff": -0.98,
+   "lo": -1.3,
+   "hi": -0.68,
+   "p": 0.0,
+   "significant": true
+  },
+  "sapo − lead3 troi_chay": {
+   "diff": 1.04,
+   "lo": 0.76,
+   "hi": 1.3,
+   "p": 0.0,
+   "significant": true
+  },
+  "sapo − tang2_k2 day_du": {
+   "diff": 0.26,
+   "lo": -0.1,
+   "hi": 0.62,
+   "p": 0.1656,
+   "significant": false
+  },
+  "sapo − tang2_k2 trung_thuc": {
+   "diff": -0.94,
+   "lo": -1.28,
+   "hi": -0.62,
+   "p": 0.0,
+   "significant": true
+  },
+  "sapo − tang2_k2 troi_chay": {
+   "diff": 1.44,
+   "lo": 1.12,
+   "hi": 1.76,
+   "p": 0.0,
+   "significant": true
+  },
+  "sapo − bartpho day_du": {
+   "diff": 0.72,
+   "lo": 0.36,
+   "hi": 1.08,
+   "p": 0.0002,
+   "significant": true
+  },
+  "sapo − bartpho trung_thuc": {
+   "diff": -0.36,
+   "lo": -0.8,
+   "hi": 0.08,
+   "p": 0.1248,
+   "significant": false
+  },
+  "sapo − bartpho troi_chay": {
+   "diff": 0.22,
+   "lo": -0.12,
+   "hi": 0.56,
+   "p": 0.2142,
+   "significant": false
+  },
+  "lead3 − tang2_k2 day_du": {
+   "diff": 0.32,
+   "lo": 0.04,
+   "hi": 0.6,
+   "p": 0.0254,
+   "significant": true
+  },
+  "lead3 − tang2_k2 trung_thuc": {
+   "diff": 0.04,
+   "lo": 0.0,
+   "hi": 0.12,
+   "p": 0.7208,
+   "significant": false
+  },
+  "lead3 − tang2_k2 troi_chay": {
+   "diff": 0.4,
+   "lo": 0.12,
+   "hi": 0.7,
+   "p": 0.0056,
+   "significant": true
+  },
+  "lead3 − bartpho day_du": {
+   "diff": 0.78,
+   "lo": 0.46,
+   "hi": 1.1,
+   "p": 0.0,
+   "significant": true
+  },
+  "lead3 − bartpho trung_thuc": {
+   "diff": 0.62,
+   "lo": 0.32,
+   "hi": 0.94,
+   "p": 0.0,
+   "significant": true
+  },
+  "lead3 − bartpho troi_chay": {
+   "diff": -0.82,
+   "lo": -1.12,
+   "hi": -0.52,
+   "p": 0.0,
+   "significant": true
+  },
+  "tang2_k2 − bartpho day_du": {
+   "diff": 0.46,
+   "lo": 0.12,
+   "hi": 0.8,
+   "p": 0.0082,
+   "significant": true
+  },
+  "tang2_k2 − bartpho trung_thuc": {
+   "diff": 0.58,
+   "lo": 0.3,
+   "hi": 0.88,
+   "p": 0.0,
+   "significant": true
+  },
+  "tang2_k2 − bartpho troi_chay": {
+   "diff": -1.22,
+   "lo": -1.52,
+   "hi": -0.9,
+   "p": 0.0,
+   "significant": true
+  }
+ },
+ "dong_thuan": {
+  "day_du": null,
+  "trung_thuc": null,
+  "troi_chay": null
+ },
+ "cau_hoi_3": {
+  "rouge1": {
+   "spearman_ban": 0.15031990954662178,
+   "kendall_trong_bai_tb": 0.06359502876428255,
+   "n_bai_xep_duoc": 49,
+   "spearman_he_thong": -0.5
+  },
+  "rouge2": {
+   "spearman_ban": 0.18434604798375565,
+   "kendall_trong_bai_tb": 0.05797548075242732,
+   "n_bai_xep_duoc": 48,
+   "spearman_he_thong": -0.5
+  },
+  "rougeL": {
+   "spearman_ban": 0.19449372379097904,
+   "kendall_trong_bai_tb": -0.04930237220350947,
+   "n_bai_xep_duoc": 49,
+   "spearman_he_thong": -0.5
+  },
+  "bertscore": {
+   "spearman_ban": 0.1863799748822441,
+   "kendall_trong_bai_tb": -0.04930237220350948,
+   "n_bai_xep_duoc": 49,
+   "spearman_he_thong": -0.5
+  }
+ },
+ "phieu": [
+  "llm_judge.csv"
+ ]
+}

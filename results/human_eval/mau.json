@@ -1,0 +1,22 @@
+{
+ "tu_khoa": "khoa.json",
+ "seed": "13-mau",
+ "n": 12,
+ "nguoi": 2,
+ "ma_bai": [
+  "B01",
+  "B04",
+  "B09",
+  "B12",
+  "B17",
+  "B33",
+  "B34",
+  "B37",
+  "B38",
+  "B42",
+  "B43",
+  "B47"
+ ],
+ "created_at": "2026-09-15 14:47:57",
+ "phieu_sha256": "04bd3c00ea1e5daaad8f7c4c908db743874f36e2060af2bddcd65be17d1290e4"
+}

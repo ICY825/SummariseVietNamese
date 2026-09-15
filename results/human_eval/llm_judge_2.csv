@@ -1,0 +1,200 @@
+ma_bai,nhan,day_du,trung_thuc,troi_chay,ghi_chu
+B01,A,3,5,5,
+B01,B,2,5,4,"Đầy đủ: chỉ nêu cảnh đâm chủ nhà, thiếu việc bắt giữ và tạm giữ"
+B01,C,2,5,4,"Đầy đủ: một câu, thiếu việc bắt giữ và tạm giữ"
+B01,D,3,4,5,
+B02,A,3,4,3,
+B02,B,4,3,5,
+B02,C,2,5,4,"Đầy đủ: chỉ nêu nạn nhân, thiếu người chồng và nguyên nhân"
+B02,D,2,5,3,"Đầy đủ: chỉ một câu hành vi, thiếu bối cảnh và diễn biến sau"
+B03,A,3,5,5,
+B03,B,2,3,5,"Đầy đủ: không nêu mức phạt hay nội dung vi phạm"
+B03,C,2,5,4,"Đầy đủ: chỉ nêu khai gian cát xê, thiếu mức phạt và hậu quả"
+B03,D,2,5,5,"Đầy đủ: thiếu mức phạt và hậu quả"
+B04,A,1,2,5,"Đầy đủ: nói về MV, không nêu chuyện tình cảm; Trung thực: 'MV đầu tiên trong 10 năm' không có trong bài"
+B04,B,3,5,4,
+B04,C,2,5,5,"Đầy đủ: chung chung, không nêu nội dung chia sẻ"
+B04,D,3,5,3,
+B05,A,3,5,3,
+B05,B,4,3,5,
+B05,C,4,2,4,"Trung thực: ghi đường Bà Triệu thuộc quận 12, bài gốc là huyện Hóc Môn"
+B05,D,3,5,5,
+B06,A,4,5,5,
+B06,B,3,5,3,
+B06,C,3,5,5,
+B07,A,2,5,4,"Đầy đủ: thiếu chủ thể xác nhận và cáo buộc nhận tiền"
+B07,B,3,5,3,
+B07,C,4,5,4,
+B07,D,4,5,3,
+B08,A,2,5,5,"Đầy đủ: không nêu hai mẹ con tử vong"
+B08,B,4,3,5,
+B08,C,3,5,4,
+B08,D,2,2,5,"Đầy đủ: chỉ nêu thời gian và địa điểm; Trung thực: 5h30 trái bài gốc (5h đã dập tắt)"
+B09,A,2,5,5,"Đầy đủ: chỉ nêu yêu cầu với Bộ Công an, thiếu bối cảnh tai nạn và trách nhiệm người đứng đầu"
+B09,B,3,4,4,
+B09,C,4,5,4,
+B09,D,3,5,5,
+B10,A,4,5,5,
+B10,B,3,5,5,
+B10,C,4,4,5,
+B10,D,4,5,4,
+B11,A,1,5,5,"Đầy đủ: không nêu cảnh báo về dữ liệu cho công nghệ nhận diện"
+B11,B,3,5,4,
+B11,C,1,3,5,"Đầy đủ: chỉ mô tả trào lưu, không nêu cảnh báo"
+B11,D,2,5,3,"Đầy đủ: chỉ gợi ý câu hỏi, không nêu nội dung cảnh báo"
+B12,A,3,5,5,
+B12,B,3,5,5,
+B12,C,3,5,3,
+B12,D,3,3,5,
+B13,A,2,5,4,"Đầy đủ: chỉ nêu số ảnh, thiếu bối cảnh thượng đỉnh và giọng điệu tích cực"
+B13,B,3,5,5,
+B13,C,3,3,5,
+B13,D,4,5,4,
+B14,A,3,5,5,
+B14,B,3,5,3,
+B14,C,3,5,5,
+B14,D,2,5,4,"Đầy đủ: chỉ nêu lợi ích môi trường, thiếu người và tác động cộng đồng"
+B15,A,5,5,5,
+B15,B,3,2,3,"Trung thực: đảo chủ thể, Chandrayaan-2 định vị Vikram chứ không phải được định vị"
+B15,C,4,4,5,
+B15,D,2,5,3,"Đầy đủ: không nêu việc định vị được tàu đổ bộ"
+B16,A,1,5,2,"Đầy đủ: không có ý chính; Trôi chảy: 'không ngoại lệ' thiếu tiền đề, khó hiểu"
+B16,B,2,5,3,"Đầy đủ: chỉ nêu Mỹ vượt trội, thiếu nhận định cuộc chiến kéo dài"
+B16,C,3,5,5,
+B16,D,3,5,5,
+B17,A,3,5,5,
+B17,B,4,5,4,
+B17,C,3,5,4,
+B17,D,4,5,3,
+B18,A,2,5,3,"Đầy đủ: không nêu vị trí cụ thể và mâu thuẫn với tuyên bố"
+B18,B,2,5,4,"Đầy đủ: một câu chung, thiếu vị trí và mâu thuẫn"
+B18,C,4,5,4,
+B18,D,4,5,5,
+B19,A,4,5,5,
+B19,B,3,4,5,
+B19,C,3,3,5,
+B19,D,3,5,3,
+B20,A,3,5,5,
+B20,B,3,5,4,
+B20,C,4,3,4,
+B20,D,3,5,3,
+B21,A,2,5,3,"Đầy đủ: trích lời rời, không rõ ai và việc bắt tàu"
+B21,B,4,5,5,
+B21,C,2,5,3,"Đầy đủ: không nêu việc bắt tàu và lời cảnh báo hối hận"
+B21,D,3,5,5,
+B22,A,2,4,4,"Đầy đủ: không nêu sự cố bắn rơi A-6E"
+B22,B,3,5,5,
+B22,C,3,5,5,
+B22,D,3,5,3,
+B23,A,3,5,3,
+B23,B,4,5,5,
+B23,C,3,4,4,
+B23,D,3,5,3,
+B24,A,5,5,5,
+B24,B,4,5,3,
+B24,C,2,5,3,"Đầy đủ: không nêu nội dung cam kết phi hạt nhân hoá"
+B24,D,4,5,3,
+B25,A,3,5,3,
+B25,B,5,4,5,
+B25,C,3,5,4,
+B25,D,2,5,4,"Đầy đủ: thiếu giá vàng trong nước, dành chỗ cho giá bạc"
+B26,A,4,3,4,
+B26,B,3,5,4,
+B26,C,2,5,4,"Đầy đủ: chỉ nêu các clip, thiếu việc bắt giữ và xác minh ở Yên Bái"
+B26,D,2,5,4,"Đầy đủ: thiếu việc bắt giữ và xác minh ở Yên Bái"
+B27,A,3,2,4,"Trung thực: người chèo thuyền thấy cá sấu là chồng chị Liễu, không phải chị Liễu"
+B27,B,4,5,4,
+B27,C,4,5,5,
+B27,D,2,5,3,"Đầy đủ: không nói rõ sự việc gì, thiếu địa điểm"
+B28,A,3,3,5,
+B28,B,4,5,5,
+B28,C,4,5,4,
+B28,D,3,2,5,"Trung thực: ngày 8-8, công văn hoả tốc, gửi UBND TP đều không đúng bài gốc"
+B29,A,4,5,5,
+B29,B,3,5,3,
+B29,C,3,5,4,
+B29,D,4,5,5,
+B30,A,2,5,5,"Đầy đủ: chỉ nêu tỉnh cao nhất, thiếu ý đa số chưa hài lòng và nguyên nhân"
+B30,B,2,5,4,"Đầy đủ: chỉ nêu tỉnh cao nhất, thiếu ý chính"
+B30,C,3,4,3,
+B30,D,1,5,5,"Đầy đủ: chỉ nêu nguồn thông tin, không có kết quả"
+B31,A,1,3,5,"Đầy đủ: chỉ tả cảnh, không nêu sự tận tuỵ của bé Út"
+B31,B,2,5,4,"Đầy đủ: chỉ hai chi tiết rời, thiếu ý chính"
+B31,C,3,5,4,
+B31,D,3,5,4,
+B32,A,3,5,3,
+B32,B,2,5,2,"Đầy đủ: thiếu ý chính; Trôi chảy: dấu ngoặc thừa, 'Kiều' chưa được giới thiệu, hai câu rời"
+B32,C,4,5,5,
+B32,D,2,5,5,"Đầy đủ: chỉ một chi tiết phụ"
+B33,A,4,5,4,
+B33,B,5,5,4,
+B33,C,2,3,5,"Đầy đủ: không nêu việc giữ nguyên giá"
+B33,D,4,4,4,
+B34,A,4,3,3,
+B34,B,3,5,5,
+B34,C,2,5,4,"Đầy đủ: không nêu tên doanh nghiệp rõ ràng và giá trị trái phiếu"
+B34,D,3,4,5,
+B35,A,3,5,5,
+B35,B,4,5,5,
+B35,C,2,5,5,"Đầy đủ: chỉ nêu khai mạc, không nêu chuyện thu vé"
+B35,D,3,5,5,
+B36,A,3,5,4,
+B36,B,2,4,5,"Đầy đủ: chung chung, không nêu tên người và câu chuyện"
+B36,C,2,2,5,"Đầy đủ: thiếu quá trình sáng tạo; Trung thực: giá 30 triệu/chiếc sai, bài gốc là 450.000 đồng"
+B36,D,3,5,4,
+B37,A,2,5,3,"Đầy đủ: chỉ nêu buổi giới thiệu, thiếu nội dung dự án"
+B37,B,3,5,4,
+B37,C,2,1,5,"Đầy đủ: không nêu nội dung dự án; Trung thực: sáu không gian và tài trợ 8.500 euro là bịa"
+B37,D,2,5,4,"Đầy đủ: thiếu khó khăn và ba cam kết của dự án"
+B38,A,3,5,4,
+B38,B,3,5,4,
+B38,C,4,5,4,
+B38,D,4,5,4,
+B39,A,4,5,5,
+B39,B,4,5,5,
+B39,C,3,5,5,
+B39,D,3,5,4,
+B40,A,4,5,3,
+B40,B,3,5,5,
+B40,C,4,5,3,
+B40,D,3,5,4,
+B41,A,4,5,4,
+B41,B,4,5,4,
+B41,C,4,4,5,
+B41,D,3,5,3,
+B42,A,4,5,5,
+B42,B,4,5,5,
+B42,C,5,4,5,
+B42,D,2,2,5,"Đầy đủ: không nêu việc dừng hoạt động; Trung thực: nhầm chi nhánh Bỉm Sơn thành cả trung tâm Thanh Hoá"
+B43,A,2,3,3,"Đầy đủ: thiếu lý do xây không phép và phản hồi chủ đầu tư"
+B43,B,2,2,4,"Đầy đủ: thiếu lý do xây không phép; Trung thực: nhóm người Trung Quốc không bị đề xuất xử phạt, không phải bên xây dựng"
+B43,C,3,5,5,
+B43,D,3,5,5,
+B44,A,4,5,5,
+B44,B,4,5,3,
+B44,C,4,4,5,
+B44,D,4,5,5,
+B45,A,3,4,4,
+B45,B,1,2,4,"Đầy đủ: câu trích không có bối cảnh; Trung thực: câu nói là của ông Nguyễn Xuân Anh, không phải ông Dũng"
+B45,C,3,5,4,
+B45,D,2,5,3,"Đầy đủ: chỉ nêu lý do di dời, thiếu phản hồi và kết luận của thành phố"
+B46,A,4,5,5,
+B46,B,3,5,3,
+B46,C,4,5,5,
+B46,D,5,5,3,
+B47,A,3,5,5,
+B47,B,2,5,3,"Đầy đủ: chỉ nêu đại biểu hỏi về an toàn thực phẩm"
+B47,C,3,4,5,
+B47,D,3,5,3,
+B48,A,2,4,5,"Đầy đủ: không nêu tông hai xe máy và thương vong"
+B48,B,3,5,4,
+B48,C,5,3,5,
+B48,D,4,5,4,
+B49,A,4,5,5,
+B49,B,4,5,5,
+B49,C,4,5,4,
+B49,D,3,5,3,
+B50,A,2,5,5,"Đầy đủ: chỉ nêu định hướng quy hoạch, thiếu việc phê duyệt và quy mô"
+B50,B,4,5,5,
+B50,C,3,5,4,
+B50,D,3,3,5,

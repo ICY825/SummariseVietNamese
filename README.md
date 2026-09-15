@@ -1254,6 +1254,219 @@ Tái lập mọi số trong mục này: `~/.venvs/torch/Scripts/python.exe src/e
 (cần `sentencepiece` cho tokenizer BARTpho), ghi `results/tables/tang4_vong2_val_sosanh.json`
 kèm danh sách `guid` của 102 bài bị lọc. Script tự kiểm lại 26,80 / 25,98 / 26,67 trước.
 
+## Tuần 7 — chấm blind có người thật (câu hỏi 3)
+
+Phiếu đã dựng nhưng **không có người chấm**: điểm hiện có là **hai lượt chấm bằng mô hình
+ngôn ngữ** theo đúng phiếu này — xem mục "Kết quả" cuối phần. Các đoạn thiết kế dưới đây vẫn
+áp dụng nguyên vẹn nếu sau này có người chấm thật điền `cham_nguoi1..3.csv`.
+
+```bash
+.venv/Scripts/python.exe src/eval/human_eval.py prepare    # đã chạy; từ chối chạy lại khi khoa.json đã có
+.venv/Scripts/python.exe src/eval/human_eval.py analyze    # sau khi thu đủ cham_nguoi1..3.csv
+```
+
+**Thiết kế.** 50 bài rút ngẫu nhiên từ `val` (`seed=13`), 3 người chấm, thang 1–5 cho ba
+tiêu chí: **đầy đủ** (nắm được ý chính), **trung thực** (mọi thông tin có trong bài gốc)
+và **trôi chảy**. Chấm trên `val` vì chỉ `val` có bản tóm tắt của mọi tầng. Cái giá là
+`val` đã được dùng để chọn `lead_lexrank` và mốc Lead-2 — nhưng không hệ thống nào trong
+phiếu được *chọn* bằng `val` (`k2` chọn trên `tune`).
+
+**Người chấm chỉ dựa vào phiếu.** Họ không xem ROUGE, tên hệ thống hay sapo dưới danh
+nghĩa "đáp án" — mọi đánh giá so với **bài gốc**; biết điểm tự động thì phép so ở câu hỏi
+3 thành vòng lặp. Đầu `phieu_doc.html` có tám quy tắc chung (trong đó: không cộng điểm chỉ
+vì bản dài; thông tin bài gốc không nhắc tới vẫn bị trừ điểm trung thực) và **bảng mô tả
+từng mức 1–5 cho cả ba tiêu chí**, để "3 điểm" có cùng nghĩa với mọi người chấm. Bảng và
+quy tắc được lưu nguyên văn vào `khoa.json` (`RUBRIC`, `RULES` trong `human_eval.py`).
+
+**Bốn hệ thống, mỗi hệ thống trả lời một câu hỏi.**
+
+| Trong phiếu | Vì sao |
+|---|---|
+| Sapo tham chiếu | trần của thang điểm người chấm; ẩn danh như mọi hệ thống khác |
+| Lead-3 | mốc extractive ngây thơ mà mọi tầng phải vượt |
+| Tầng 2 `k2` | extractive tốt nhất (31,00) |
+| BARTpho `train_20k` | abstractive tốt nhất (35,23) — cặp `k2`/BARTpho trả lời câu hỏi 1 |
+
+Bỏ ViT5 vì cùng vai trò với BARTpho mà thêm 25% tải chấm (`--systems` thêm được); bỏ
+tầng 4 vì nó không khác BARTpho một cách đo được, người chấm sẽ tốn công mà không phân
+biệt được gì. Mỗi người chấm 199 bản và đọc 50 bài gốc (524 âm tiết mỗi bài).
+
+**Chốt chặn cho tính blind**, đều đã kiểm trên phiếu thật:
+
+- Mọi văn bản qua `for_scoring()`: 0/199 bản còn gạch dưới, 0 bản còn dấu cách trước dấu
+  câu, không tên hệ thống nào xuất hiện trong phiếu.
+- Thứ tự nhãn xáo riêng từng bài; không hệ thống nào ở cùng một nhãn quá 19/50 bài.
+- Bản trùng chữ chỉ hiện một nhãn. Ở bài B06, BARTpho sinh **trùng khít sapo** nên hai hệ
+  thống chung nhãn C và nhận chung một điểm — hiện hai bản giống hệt nhau sẽ để lộ việc
+  có hai hệ thống trùng nhau.
+- Đối chiếu từng nhãn trong phiếu với file dự đoán gốc qua khoá: 0 lệch.
+
+**Không chốt được: độ dài.** Trung bình Lead-3 dài 104,8 âm tiết, `k2` 64,6, BARTpho 34,5
+và sapo 35,0. Người chấm tinh ý đoán được bản dài nhất là Lead-3. Phải nêu trong báo cáo.
+
+**Khoá không vào git.** `results/human_eval/khoa.json` nằm trong `.gitignore`, vì người
+chấm đọc được repo thì quy trình blind hỏng. Mất khoá cũng không sao: `prepare` tất định
+— chạy lại vào một thư mục khác ra `phieu_doc.html` và ba file CSV trùng từng byte, khoá
+trùng mọi trường trừ `created_at`. `analyze` từ chối chạy nếu phiếu đọc đã bị sửa (so
+bằng SHA-256 lưu trong khoá).
+
+**BARTpho có chép sapo không — không phải rò rỉ.** Bản trùng khít ở B06 dẫn tới một lượt
+kiểm. Trên cả 1.000 bài `val`, BARTpho trùng khít sapo 4 lần, ViT5 2 lần. Không bài
+`val` nào có sapo hay 300 ký tự đầu bài trùng một bài `train_20k`. Hai trong bốn lần là
+hợp lệ, vì sapo nằm nguyên văn trong bài (B06: sapo chính là câu mở đầu bài). Guid 6748
+có một tin **cùng sự kiện** trong `train_20k` (Jaccard âm tiết 0,40); guid 17129 chưa giải
+thích được. Cả hai không nằm trong 50 bài của phiếu. Lượt kiểm này cũng nhắc lại một cạm
+bẫy đã ghi: 181 `guid` của `val` "trùng" `train_20k`, nhưng cả 181 là bài khác hẳn — `guid`
+đánh số riêng theo split.
+
+**`analyze` tính gì.** Điểm từng hệ thống (trung bình các người chấm, rồi bootstrap theo
+bài); so cặp đôi theo bài; đồng thuận giữa người chấm bằng Krippendorff's alpha (dữ liệu
+khoảng); và cho câu hỏi 3: Spearman giữa điểm người chấm và ROUGE-1/2/L, BERTScore trên
+từng bản, Kendall tau-b trong từng bài (hai thước đo có xếp các hệ thống của cùng một bài
+giống nhau không), và xếp hạng cấp hệ thống. Sapo không có ROUGE nên không vào phần này.
+`selftest.py` mục 7 kiểm alpha bằng giá trị tính tay (0,85), Spearman, Kendall và việc gộp
+nhãn. Chạy thử trên phiếu **giả** (điểm là hàm của ROUGE-1 cộng nhiễu, CSV kiểu Excel bản
+Việt dùng dấu chấm phẩy): đọc được, alpha ≈ 0,8, tương quan dương như cài vào; phiếu còn ô
+trống thì bị chặn, trừ khi chạy với `--bo-qua-loi`. Số của lần chạy thử **không** phải kết
+quả và không được lưu vào `results/`.
+
+### Kết quả — hai lượt chấm bằng mô hình ngôn ngữ, **không phải người chấm**
+
+Không có người chấm, nên phiếu được chấm **hai lượt** bằng mô hình ngôn ngữ (Claude), theo
+đúng tám quy tắc và bảng mức điểm, mỗi điểm 1–2 kèm lý do:
+
+| Lượt | Ai chấm | Được đọc gì | File |
+|---|---|---|---|
+| 1 | phiên làm việc đã dựng phiếu | bài gốc và các bản gắn nhãn xuất từ `phieu_doc.html` | `results/human_eval/llm_judge.csv` |
+| 2 | một tác tử con **độc lập** | **chỉ** 5 file xuất đó cùng bảng tiêu chí; không đọc repo, khoá hay điểm lượt 1 | `results/human_eval/llm_judge_2.csv` |
+
+Khoá chỉ được ghép vào sau khi cả hai lượt chấm xong:
+`human_eval.py analyze --phieu "llm_judge*.csv" --ten llm_judge_2luot` →
+`results/tables/llm_judge_2luot_val.json` (từng lượt riêng: `--phieu llm_judge.csv`, tức
+`llm_judge_val.json`). **Không được trình bày là đánh giá của người.**
+
+Trước khi có lượt 2, lượt 1 đã được rà lại và sửa **bốn** điểm trung thực áp thang không
+nhất quán với chính quy tắc "không nhắc tới → 3, sai chi tiết quan trọng → 2, phần lớn bịa
+→ 1" (B04A 2→3, B31A 2→1, B28D 2→3, B50D 3→2). Sửa cả bốn không đổi kết luận nào (BARTpho
+trừ Lead-3 về trung thực: −0,64 → −0,62; Spearman với ROUGE-1: +0,145 → +0,150).
+
+**Hai lượt đồng thuận cao, và xếp hạng hệ thống trùng nhau ở cả ba tiêu chí.**
+
+| Tiêu chí | Trùng khít | Lệch ≤ 1 điểm | Krippendorff's alpha | TB lượt 1 / lượt 2 |
+|---|---|---|---|---|
+| Đầy đủ | 68% | 100% | 0,82 | 3,31 / 3,05 |
+| Trung thực | 90% | 99% | 0,92 | 4,59 / 4,56 |
+| Trôi chảy | 61% | 99% | 0,76 | 3,88 / 4,23 |
+
+Lượt 2 khắt khe hơn về đầy đủ và dễ hơn về trôi chảy, nhưng lệch đều ở mọi hệ thống nên
+thứ hạng không đổi. Chỉ **3/597** điểm lệch từ 2 trở lên, và đối chiếu lại bài gốc thì cả
+ba là **lượt 1 chấm quá tay**:
+
+- **B19B** (sapo), trung thực 2 / 4: chính bài gốc lẫn người phát ngôn — đoạn mở bằng Đại sứ
+  rồi gắn câu trích cho ông Shamsulddin — nên "gán nhầm phát ngôn" là quá nặng.
+- **B31A** (sapo), trung thực 1 / 3: tiếng nhạc, bài "Chị tôi" và sinh tố đều có gợi ý trong
+  bài, chỉ không nói thẳng; điểm 1 (chính là một trong bốn chỗ đã sửa ở trên) quá nặng, 3
+  mới đúng thang.
+- **B39A** (Lead-3), trôi chảy 3 / 5: bản dài nhưng đọc trôi — lượt 1 đã trừ vì độ dài.
+
+Điểm gốc của cả hai lượt được giữ nguyên: sửa một lượt sau khi đã thấy lượt kia là xoá mất
+tính độc lập mà alpha đo.
+
+**Điểm trung bình hai lượt:**
+
+| Hệ thống | Đầy đủ | Trung thực | Trôi chảy |
+|---|---|---|---|
+| Sapo tham chiếu | 3,41 ±0,26 | 4,03 ±0,28 | **4,62** ±0,17 |
+| Lead-3 | **3,48** ±0,23 | **5,00** ±0,00 | 3,83 ±0,17 |
+| Tầng 2 `k2` | 3,11 ±0,21 | 4,96 ±0,06 | 3,37 ±0,21 |
+| BARTpho | 2,72 ±0,23 | 4,32 ±0,31 | 4,41 ±0,22 |
+
+**Mỗi hướng mạnh ở một tiêu chí — đúng thứ ROUGE không tách ra được.**
+
+- **BARTpho viết trôi chảy nhất trong các hệ thống máy**: hơn Lead-3 +0,58 [+0,29, +0,86]
+  và `k2` +1,04 [+0,77, +1,31], ngang sapo (−0,21 [−0,51, +0,09]).
+- **Nhưng thiếu ý và kém trung thực hơn extractive.** Đầy đủ: kém Lead-3 −0,76 [−1,05,
+  −0,47], kém `k2` −0,39 [−0,68, −0,09]. Trung thực: kém Lead-3 −0,68 [−0,99, −0,38], kém
+  `k2` −0,64 [−0,94, −0,35]. BARTpho bị 1–2 điểm đầy đủ ở 21/50 (lượt 1) và 24/50 (lượt 2)
+  bản — bản ngắn (34 âm tiết) bỏ mất đúng ý chính: thương vong, mức phạt, việc ai làm gì.
+  Bị 1–2 điểm trung thực ở 7/50 và 9/50 bản, và cả hai lượt ghi cùng những lỗi cụ thể: sai
+  địa điểm ("quận 12" thay cho huyện Hóc Môn), đảo chủ thể (tàu định vị thành tàu được định
+  vị), nhầm người (chị Liễu thay cho chồng chị), gán phát ngôn cho nhầm người, nhầm đơn vị
+  (cả trung tâm thay cho một chi nhánh), sai giá (30 triệu thay cho 450.000 đồng), gán hành
+  vi cho nhầm nhóm người.
+- **Extractive gần như luôn trung thực** (Lead-3 5,00, `k2` 4,96) vì chép nguyên câu; lỗi
+  của nó là mạch văn: câu mất tiền đề ("Theo cách này", "Do đó, công ty này", "Tương tự như
+  vậy"), lẫn chú thích ảnh và tiêu đề phụ, ngoặc kép vỡ. **Mức nặng nhẹ thì tuỳ người
+  chấm**: lượt 1 cho 14/50 bản của `k2` điểm trôi chảy 1–2, lượt 2 chỉ 1/50 — thứ hạng giữ
+  nguyên, còn con số "bao nhiêu bản hỏng" thì không nên trích. Lead-3 hơn `k2` cả ở đầy đủ
+  (+0,37 [+0,13, +0,62]) lẫn trôi chảy (+0,46 [+0,20, +0,73]).
+- **Sapo cũng bị trừ điểm trung thực** (4,03) vì chứa thông tin bài gốc không có — cùng
+  hiện tượng mục "Đây có phải bài toán abstractive thật không?" đã đo bằng n-gram. Một phần
+  lỗi "bịa" của BARTpho có thể là nó học đúng thói quen ấy của sapo.
+
+**Câu hỏi 3 — ROUGE gần như không nói gì về điểm này.** Trên 150 bản của ba hệ thống máy,
+Spearman giữa điểm trung bình ba tiêu chí (hai lượt) và ROUGE-1 chỉ **+0,12** (ROUGE-2
++0,17, ROUGE-L +0,18, BERTScore +0,16). Trong từng bài — ba bản của cùng một bài có được xếp
+cùng thứ tự không — Kendall tau trung bình **−0,04** với ROUGE-1 và −0,15 với BERTScore,
+tức không hơn ngẫu nhiên. Ở cấp hệ thống, ROUGE xếp BARTpho > `k2` > Lead-3, còn điểm trung
+bình ba tiêu chí xếp Lead-3 > BARTpho > `k2` (Spearman −0,50). Lượt 1 một mình cho cùng bức
+tranh (ROUGE-1 +0,15). Cách đọc nhất quán với các lỗi đã ghi: ROUGE thưởng việc trùng chữ
+với sapo nhưng không phạt thông tin sai, không phạt thiếu ý chính, và không phạt câu mất
+tiền đề.
+
+**Giới hạn — phải nêu khi dùng bất kỳ con số nào ở trên.**
+
+- **Không phải người đọc.** Câu hỏi 3 ở đây thành "ROUGE so với đánh giá bằng mô hình ngôn
+  ngữ theo bảng tiêu chí", không phải "so với cảm nhận người đọc".
+- **Hai lượt cùng một họ mô hình.** Alpha 0,76–0,92 cho thấy kết quả không phải may rủi của
+  một lượt chấm, nhưng hai lượt có thể chung thiên lệch — nó là **cận trên** của độ tin cậy,
+  không tương đương đồng thuận giữa hai người thật.
+- **Lượt 1 không hoàn toàn blind**: đã biết bài B06 là bản trùng sapo và bản dài nhất thường
+  là Lead-3. Lượt 2 không có thông tin này, và hai lượt vẫn xếp hạng như nhau.
+- **Tiêu chí trung thực có lợi sẵn cho extractive**: chép nguyên câu thì gần như không thể
+  sai. Đọc từng cột thay vì gộp ba tiêu chí thành một điểm.
+
+### Kiểm chứng máy chấm bằng một mẫu người chấm — phiếu đã dựng, chờ người chấm
+
+Hai lượt máy chấm đồng thuận với nhau, nhưng điều đó không chứng minh chúng đồng thuận với
+**người**. Để giữ được chữ "người đọc" trong câu hỏi 3 mà không cần 3 người × 50 bài, 2
+người chấm một mẫu nhỏ, và điểm của họ được so với điểm máy trên **đúng những bản đó**.
+
+```bash
+.venv/Scripts/python.exe src/eval/human_eval.py prepare-mau    # đã chạy; từ chối chạy lại khi mau.json đã có
+.venv/Scripts/python.exe src/eval/human_eval.py so-sanh        # sau khi thu cham_mau_nguoi1..2.csv
+```
+
+**Mẫu.** 12 bài rút ngẫu nhiên (hạt giống `13-mau`) trong chính 50 bài của phiếu máy đã
+chấm: B01, B04, B09, B12, B17, B33, B34, B37, B38, B42, B43, B47 — 48 bản, mỗi hệ thống
+đúng 12, không có nhãn gộp. Mỗi người chấm khoảng 45–60 phút. Người chấm nhận
+`phieu_doc_mau.html` và **một** file `cham_mau_nguoi<i>.csv`; cùng tám quy tắc và bảng mức
+điểm như phiếu máy đã dùng. `mau.json` ghi danh sách bài và mã băm phiếu.
+
+**Mẫu là một phần của đúng phiếu máy đã chấm, không phải phiếu gần giống.** Trước khi
+rút, `prepare-mau` dựng lại 50 bài và đòi trùng khít `phieu_doc.html` đã phát lẫn
+`khoa.json`. Đã kiểm trên file sinh ra: mã bài và nhãn A–D giữ nguyên nên điểm người ghép
+thẳng với điểm máy theo (bài, nhãn); từng bài trong phiếu mẫu trùng khít phần tương ứng của
+phiếu lớn (chỉ khác ký tự xuống dòng cuối trang); phần hướng dẫn và bảng mức điểm giống hệt;
+không lộ tên hệ thống. Việc tách `build_bai()` ra để dùng chung không đổi gì: `prepare` chạy
+lại vào thư mục khác vẫn ra phiếu 50 bài và ba CSV trùng từng byte.
+
+**`so-sanh` đo gì.** Trên 48 bản của mẫu, theo từng tiêu chí: alpha người–người, alpha
+người–máy (trung bình người so với trung bình máy), Spearman người–máy, máy chấm cao hay
+thấp hơn người bao nhiêu; thứ hạng bốn hệ thống theo người và theo máy; **chiều** của các
+kết luận chính (BARTpho − Lead-3, BARTpho − `k2`, Lead-3 − `k2`) khi người chấm và khi máy
+chấm; và Spearman với ROUGE-1/BERTScore tính riêng cho người và cho máy. Ghi
+`results/tables/nguoi_vs_may_val.json`. Chạy thử trên phiếu **giả** (điểm máy cộng nhiễu,
+CSV kiểu Excel bản Việt): chạy hết, phiếu còn ô trống bị chặn trừ khi `--bo-qua-loi`. Số
+của lần chạy thử **không** phải kết quả và không được lưu vào `results/`.
+
+**Đọc kết quả thế nào — quyết định trước khi thấy số.** Nếu alpha người–máy xấp xỉ alpha
+người–người và các kết luận chính cùng chiều, được viết "điểm máy trên 50 bài đã được kiểm
+chứng trên một mẫu người chấm 12 bài". Nếu người–máy thấp hơn rõ ở một tiêu chí, kết luận
+về tiêu chí đó chỉ được nêu theo người chấm trên mẫu, và độ lệch ấy tự nó là một phát hiện
+về máy chấm. 12 bài là ít: khoảng tin cậy trên mẫu rộng, nên mẫu dùng để kiểm **chiều** và
+**mức đồng thuận**, không để thay số của 50 bài.
+
 ## Cấu trúc
 
 ```
@@ -1276,7 +1489,9 @@ src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py,
                    truncation.py (câu hỏi 2, cần transformers),
                    run_bertscore.py (chấm BERTScore, cần torch),
-                   tang4_sosanh.py (tầng 4 vòng 1/2 và đối chứng, cần sentencepiece)
+                   tang4_sosanh.py (tầng 4 vòng 1/2 và đối chứng, cần sentencepiece),
+                   human_eval.py (tuần 7: dựng phiếu chấm blind, phân tích phiếu,
+                   phiếu mẫu cho người chấm và so người với máy chấm)
 app/               demo Gradio
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
@@ -1357,6 +1572,16 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
   - [x] tầng 2 chọn số câu linh hoạt — `k2` chọn trên `tune`, đạt 31,00 trên `val`
     (+2,30 so với `k3`, +1,91 so với mốc Lead-2 thêm sau)
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
+  - [x] công cụ chấm blind: phiếu 50 bài `val` × 4 hệ thống đã dựng và kiểm (`human_eval.py`)
+  - [x] chấm phiếu — **không có người chấm**; thay bằng hai lượt chấm của mô hình ngôn ngữ,
+    ghi rõ là máy chấm (`llm_judge.csv`, `llm_judge_2.csv` do tác tử độc lập chấm), alpha
+    0,76–0,92: BARTpho trôi chảy nhất nhưng thiếu ý và kém trung thực hơn extractive;
+    tương quan với ROUGE-1 chỉ +0,12
+  - [x] phiếu mẫu 12 bài cho người chấm kiểm chứng máy chấm (`prepare-mau`), đã kiểm là một
+    phần trùng khít của phiếu 50 bài
+  - [ ] 2 người chấm điền `cham_mau_nguoi1..2.csv` (~45–60 phút mỗi người), rồi chạy `so-sanh`
+  - [ ] phân tích lỗi định tính — nguyên liệu đã có: cột `ghi_chu` của `llm_judge.csv`
+  - [ ] demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
 
 ### Rà soát tuần 5 — đã lấp và còn nợ

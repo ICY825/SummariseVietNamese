@@ -1,0 +1,132 @@
+# Nhật ký tiến trình — để làm tiếp mà không phải bắt đầu lại
+
+Cập nhật: 15/09/2026. Số liệu chi tiết và lập luận nằm trong `README.md`; file này chỉ
+ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**.
+
+## Đang ở đâu
+
+- **Tuần 1–6: xong và đã commit.** Commit tuần 6: `cfcc199`.
+- **Tuần 7: đang làm dở.** Commit ngay sau file này chứa toàn bộ phần tuần 7 đến thời
+  điểm dừng (chưa push lên GitHub).
+- Tuần 8 (báo cáo, chấm `test`, kiểm tái lập) chưa bắt đầu.
+
+## Kết quả chính đã có (chi tiết: README)
+
+| Hạng mục | Kết quả |
+|---|---|
+| Tầng 3 | BARTpho `train_20k` 35,23 ROUGE-1 trên `val` — tốt nhất; ViT5 33,40 |
+| Tầng 2 | PhoBERT chọn câu, `k2` (2 câu, chọn trên `tune`) 31,00; hơn mốc Lead-2 +1,91 |
+| Tầng 4 vòng 1 | lọc câu lúc suy luận không lấy lại được thiệt hại do cắt bài |
+| Tầng 4 vòng 2 | huấn luyện lại trên đầu vào đã lọc cũng không (hiệu hai hiệu −0,17 [−2,35, +2,00]) |
+| Đối chứng `--no-train` | trùng khít hai bản lọc 898/898 ở nhóm không lọc |
+| Tuần 7, máy chấm | 2 lượt LLM chấm 50 bài × 4 hệ thống, alpha 0,76–0,92; BARTpho trôi chảy nhất nhưng thiếu ý và kém trung thực hơn extractive; tương quan với ROUGE-1 chỉ +0,12 |
+
+## Việc còn dở — theo thứ tự nên làm
+
+### 1. Người chấm mẫu (tuần 7) — **đang chờ người**
+
+Phiếu mẫu 12 bài đã dựng và kiểm. Cần 2 người, mỗi người ~45–60 phút.
+
+1. Gửi mỗi người `results/human_eval/phieu_doc_mau.html` và **một** file
+   `results/human_eval/cham_mau_nguoi1.csv` hoặc `cham_mau_nguoi2.csv`.
+   **Không** gửi `khoa.json`, `mau.json`, `llm_judge*.csv`, link repo, điểm ROUGE.
+2. Người chấm chỉ điền số nguyên 1–5 vào `day_du`, `trung_thuc`, `troi_chay`; ghi lý do vào
+   `ghi_chu` khi cho 1–2; lưu **CSV UTF-8**, giữ đúng tên file.
+3. Chép hai file đã điền đè vào `results/human_eval/`, rồi:
+
+   ```bash
+   .venv/Scripts/python.exe src/eval/human_eval.py so-sanh
+   ```
+
+   Ghi `results/tables/nguoi_vs_may_val.json`. Cách đọc kết quả đã ghi sẵn trong README,
+   mục "Kiểm chứng máy chấm bằng một mẫu người chấm".
+4. Viết kết luận kiểm chứng vào README (mục đó và mục "Tiến độ").
+
+### 2. Phân tích lỗi định tính (tuần 7)
+
+Nguyên liệu đã có: cột `ghi_chu` của `results/human_eval/llm_judge.csv` và
+`llm_judge_2.csv` (ghép với hệ thống qua `khoa.json`). README đã tóm các loại lỗi chính;
+còn thiếu một mục phân loại lỗi có hệ thống, kèm ví dụ.
+
+### 3. Demo Gradio (tuần 7)
+
+Chưa bắt đầu. Thư mục `app/` đang trống.
+
+### 4. Nợ cũ (không bắt buộc)
+
+- ViT5 `train_2k` (~22 phút GPU) — **phải chấm `test` trước**, hoặc đẩy lên kernel riêng,
+  vì đẩy lên `dl-summarisevn-vit5` làm checkpoint BARTpho không còn lấy được qua
+  `kernel_sources`.
+- Đường cong học cho BARTpho (~2 giờ GPU).
+- Sinh lại vòng 2 tầng 4 từ `checkpoint-2500` (~15 phút GPU) để loại trừ ảnh hưởng chọn
+  epoch 3 so với epoch 2. Checkpoint vẫn còn trong output kernel `dl-summarisevn-tang4-train`.
+
+### 5. Tuần 8
+
+Chấm mọi tầng trên `test`, viết báo cáo, kiểm tra tái lập.
+
+## Tuyệt đối không làm
+
+- **Không** chạy lại `human_eval.py prepare` hay `prepare-mau` — cả hai từ chối khi
+  `khoa.json` / `mau.json` đã có; xoá chúng để chạy lại là làm mất khớp với phiếu đã phát.
+- **Không** sửa `phieu_doc.html` hay `phieu_doc_mau.html` sau khi đã phát —
+  `analyze`/`so-sanh` so mã băm và sẽ từ chối chạy.
+- **Không** sửa điểm trong `llm_judge.csv` hay `llm_judge_2.csv` sau khi đã thấy lượt kia
+  hoặc điểm người — sẽ mất tính độc lập.
+- **Không** điền điểm máy vào `cham_nguoi*.csv` hay `cham_mau_nguoi*.csv` — đó là phiếu người.
+
+## File quan trọng không nằm trong git
+
+- `results/human_eval/khoa.json` — khoá chấm blind, cố ý bỏ khỏi git (`.gitignore`) để
+  người chấm đọc repo không biết nhãn nào là hệ thống nào. Nó **vẫn nằm trên máy**. Nếu mất:
+  `prepare` tất định — chạy lại **vào một thư mục khác** (đặt `human_eval.OUT`) ra đúng khoá
+  (đã kiểm từng byte), rồi chép `khoa.json` về.
+- File dự đoán của baseline (`results/predictions/baselines_*`) — bỏ khỏi git có chủ ý,
+  sinh lại bằng `run_baselines.py` trên CPU.
+
+## Môi trường
+
+| Môi trường | Dùng cho |
+|---|---|
+| `.venv` (dự án) | mọi lệnh thường: `run_baselines.py`, `phobert_select.py select`, `human_eval.py`, selftest |
+| `~/.venvs/torch` | cần `torch`/`transformers`: `run_bertscore.py`, `tang4_sosanh.py`. Đã cài thêm `sentencepiece` (tokenizer BARTpho) |
+| `~/.venvs/kaggle` | Kaggle CLI: `notebooks/kaggle_push.py`, `kaggle kernels status/output` |
+
+Tự kiểm tra sau mỗi lần sửa code (vài giây, không cần mạng):
+
+```bash
+.venv/Scripts/python.exe src/eval/selftest.py
+.venv/Scripts/python.exe src/models/selftest.py
+```
+
+## Kernel Kaggle (tài khoản `minh12605`)
+
+| Kernel | Nội dung | Trạng thái |
+|---|---|---|
+| `dl-summarisevn-vit5` | checkpoint BARTpho `train_20k` gốc (version mới nhất) | xong |
+| `dl-summarisevn-tang2` | checkpoint tầng 2 PhoBERT | xong |
+| `dl-summarisevn-tang2-score` | điểm câu tầng 2 trên `tune`/`val` | xong, đã tải về |
+| `dl-summarisevn-tang-4` | đối chứng `--no-train` không lọc | xong, đã tải về |
+| `dl-summarisevn-tang4-train` | tầng 4 vòng 2, có `checkpoint-2500` và `3750` | xong, đã tải về |
+
+## Bẫy đã gặp (đỡ mất thời gian lần sau)
+
+- **`guid` đánh số riêng theo split.** Trùng `guid` giữa `val` và `train` không có nghĩa là
+  rò rỉ (đã kiểm: 181/181 là bài khác nhau).
+- **Windows ghi `\r\n`.** So mã băm file với chuỗi Python sẽ lệch; so văn bản đã đọc, hoặc
+  so file với file. Git tự chuyển về LF (`.gitattributes`).
+- **PowerShell + `python -c "..."`** vỡ khi code có ngoặc nhọn/nháy → dùng
+  `@'...'@ | python -`, hoặc ghi script ra file.
+- **Commit message pipe từ PowerShell** bị dính BOM ở đầu → viết message ra file rồi
+  `git commit -F <file>`.
+- **Mất mạng khi chạy BERTScore** (`getaddrinfo failed`) → đặt `HF_HUB_OFFLINE=1` và
+  `TRANSFORMERS_OFFLINE=1`, mô hình đọc từ cache.
+- **Tên file của `run_baselines.py` có `k`**: `--k 2 --systems leadk` ghi `baselines_val_k2_leadk.json`.
+- **Kaggle `kernels logs` rỗng** với phiên đã xong; kết quả nằm trong `_run.json` của output.
+
+## Mở phiên làm việc mới
+
+Nhắn cho Claude, ví dụ:
+
+> Đọc `NHAT_KY.md` và phần "Tiến độ" trong `README.md`, kiểm tra lại trạng thái hiện tại
+> (git log, selftest), rồi làm tiếp việc số … trong "Việc còn dở".

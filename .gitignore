@@ -29,6 +29,11 @@ results/predictions/*
 # chinh nhung ban tom tat nay.
 !results/predictions/phobert-sent-*.json
 
+# Khoa cham blind (nhan nao la he thong nao): KHONG commit, vi nguoi cham doc duoc repo
+# thi quy trinh blind hong. Mat file cung khong sao: `human_eval.py prepare` tat dinh,
+# chay lai tren may sach ra dung phieu va dung khoa (da kiem tung byte).
+results/human_eval/khoa.json
+
 # Cache va checkpoint
 .cache/
 checkpoints/

@@ -1,0 +1,200 @@
+ma_bai,nhan,day_du,trung_thuc,troi_chay,ghi_chu
+B01,A,4,5,4,
+B01,B,3,5,4,
+B01,C,2,5,4,"thiếu bối cảnh vụ trộm và việc bắt giữ"
+B01,D,3,3,5,
+B02,A,3,5,2,"câu cuối bị cụt"
+B02,B,4,3,5,
+B02,C,2,5,3,"không nêu ai gây ra vụ việc"
+B02,D,3,5,3,
+B03,A,3,5,5,
+B03,B,2,3,4,"dạng câu hỏi, không nêu mức phạt; 'kết tội' sai bản chất (phạt hành chính)"
+B03,C,3,5,4,
+B03,D,2,5,4,"thiếu mức phạt 130 triệu USD"
+B04,A,1,3,5,"lạc đề sang MV; 'MV đầu tiên trong 10 năm' không có trong bài"
+B04,B,3,5,3,
+B04,C,2,5,5,"chung chung, không nêu nội dung chia sẻ"
+B04,D,4,5,3,
+B05,A,3,5,2,"lẫn chú thích ảnh"
+B05,B,4,3,5,
+B05,C,4,2,4,"sai địa điểm 'quận 12' (bài ghi huyện Hóc Môn)"
+B05,D,3,5,4,
+B06,A,4,5,4,
+B06,B,4,5,4,
+B06,C,4,5,5,
+B07,A,2,5,3,"không rõ đơn vị nào xác minh; thiếu cáo buộc nhận tiền"
+B07,B,4,5,2,"trích dẫn thiếu ngoặc mở; 'ông Hùng' nhập nhằng"
+B07,C,4,5,4,
+B07,D,4,5,3,
+B08,A,2,5,4,"thiếu việc 2 mẹ con tử vong"
+B08,B,4,3,5,
+B08,C,4,5,4,
+B08,D,2,3,5,"thiếu thương vong; giờ 5h30 không có trong bài"
+B09,A,3,5,5,
+B09,B,3,4,3,
+B09,C,4,5,3,
+B09,D,3,5,4,
+B10,A,4,5,4,
+B10,B,3,5,5,
+B10,C,4,5,5,
+B10,D,4,5,4,
+B11,A,2,5,5,"thiếu cảnh báo về dữ liệu cho công nghệ nhận diện"
+B11,B,3,5,4,
+B11,C,2,3,5,"thiếu cảnh báo; Instagram, Twitter không có trong bài"
+B11,D,3,5,2,"lẫn tiêu đề phụ dạng câu hỏi"
+B12,A,4,5,5,
+B12,B,4,5,5,
+B12,C,4,5,2,"dấu ngoặc kép lộn xộn, ghép hai câu rời"
+B12,D,3,3,5,
+B13,A,2,5,4,"thiếu bối cảnh thượng đỉnh và ý hẹn gặp tiếp"
+B13,B,3,5,4,
+B13,C,3,3,5,
+B13,D,5,5,4,
+B14,A,4,5,4,
+B14,B,3,5,2,"'Theo cách này' không có tiền đề"
+B14,C,4,5,5,
+B14,D,3,5,4,
+B15,A,5,5,4,
+B15,B,3,2,3,"đảo chủ thể: Vikram mới là tàu được định vị"
+B15,C,4,4,5,
+B15,D,2,5,2,"thiếu việc định vị Vikram; lẫn chú thích ảnh"
+B16,A,1,5,2,"câu thiếu vế trước, không có ý chính"
+B16,B,2,5,2,"'Tương tự như vậy' không có tiền đề; chỉ nêu Mỹ vượt trội"
+B16,C,4,5,5,
+B16,D,3,5,4,
+B17,A,4,5,5,
+B17,B,5,5,4,
+B17,C,3,5,5,
+B17,D,4,5,3,
+B18,A,2,5,2,"không nêu vị trí; 'vị trí trên' không rõ"
+B18,B,2,5,5,"thiếu vị trí và mâu thuẫn với tuyên bố"
+B18,C,4,5,4,
+B18,D,5,5,5,
+B19,A,4,5,4,
+B19,B,3,2,5,"gán nhầm phát ngôn cho Đại sứ"
+B19,C,3,4,5,
+B19,D,4,5,3,
+B20,A,4,5,5,
+B20,B,4,5,3,
+B20,C,5,3,4,
+B20,D,3,5,3,
+B21,A,2,5,2,"thiếu bối cảnh, 'họ' không rõ; ngoặc kép lỗi"
+B21,B,4,5,5,
+B21,C,3,5,3,
+B21,D,4,5,5,
+B22,A,2,4,4,"không nêu sự cố là gì"
+B22,B,4,5,5,
+B22,C,4,5,4,
+B22,D,4,5,3,
+B23,A,3,5,3,
+B23,B,4,5,5,
+B23,C,3,5,4,
+B23,D,3,5,3,
+B24,A,5,5,5,
+B24,B,4,5,3,
+B24,C,2,5,3,"không nói hứa điều gì"
+B24,D,5,5,4,
+B25,A,2,5,2,"thiếu giá trong nước; lặp ý"
+B25,B,5,4,5,
+B25,C,3,5,3,
+B25,D,2,5,4,"thiếu giá trong nước, sa vào giá bạc"
+B26,A,4,3,4,
+B26,B,3,5,4,
+B26,C,2,5,4,"thiếu việc bị bắt và việc Sở GD xác minh"
+B26,D,2,5,3,"thiếu ý chính về việc xác minh"
+B27,A,3,2,3,"nhầm: chồng chị Liễu mới là người thấy cá sấu"
+B27,B,4,5,4,
+B27,C,4,5,5,
+B27,D,2,5,2,"cá sấu chỉ nằm trong chú thích ảnh; câu cụt"
+B28,A,4,3,5,
+B28,B,4,5,4,
+B28,C,3,5,3,
+B28,D,3,3,5,
+B29,A,4,5,4,
+B29,B,4,5,2,"'Do đó, công ty này' không có tiền đề"
+B29,C,3,5,4,
+B29,D,4,5,5,
+B30,A,3,5,5,
+B30,B,3,5,3,
+B30,C,4,5,2,"dấu ngoặc kép lộn xộn"
+B30,D,1,5,4,"không nêu kết quả khảo sát"
+B31,A,1,1,4,"toàn bộ chi tiết (tivi, sinh tố mít) không có trong bài"
+B31,B,2,5,3,"chỉ hai chi tiết lẻ"
+B31,C,3,5,3,
+B31,D,3,5,3,
+B32,A,3,5,2,"lẫn tiêu đề phụ"
+B32,B,2,5,2,"'Kiều' không có tiền đề, ngoặc kép thừa"
+B32,C,4,5,5,
+B32,D,2,5,5,"chỉ một chi tiết phụ"
+B33,A,4,5,4,
+B33,B,5,5,3,
+B33,C,2,3,5,"thiếu việc giữ nguyên giá; 'tăng trích lập' không có trong bài"
+B33,D,5,5,3,
+B34,A,4,3,3,
+B34,B,3,5,4,
+B34,C,3,5,3,
+B34,D,3,5,5,
+B35,A,3,5,4,
+B35,B,4,5,4,
+B35,C,2,5,5,"thiếu chuyện thu vé"
+B35,D,3,5,4,
+B36,A,3,5,4,
+B36,B,3,5,5,
+B36,C,3,2,5,"sai giá: bài ghi 450.000 đồng/chiếc"
+B36,D,3,5,4,
+B37,A,2,5,3,"'Đó là thông tin' không rõ là gì"
+B37,B,3,5,3,
+B37,C,2,1,5,"số 6 không gian, 8.500 euro, 2018-2021 không có trong bài"
+B37,D,3,5,3,
+B38,A,3,5,4,
+B38,B,4,5,4,
+B38,C,5,5,4,
+B38,D,3,4,4,
+B39,A,4,5,3,
+B39,B,4,5,4,
+B39,C,3,5,5,
+B39,D,3,5,3,
+B40,A,5,5,3,
+B40,B,4,5,5,
+B40,C,5,5,3,
+B40,D,3,5,4,
+B41,A,4,5,4,
+B41,B,4,5,4,
+B41,C,3,5,4,
+B41,D,4,5,4,
+B42,A,4,5,4,
+B42,B,4,5,4,
+B42,C,4,4,5,
+B42,D,2,2,5,"nhầm đơn vị: chi nhánh Bỉm Sơn, không phải cả trung tâm; thiếu việc dừng hoạt động"
+B43,A,2,3,3,"thiếu lý do xây không phép; ghép sai ngày"
+B43,B,2,2,4,"nhóm người Trung Quốc không xây công trình; thiếu chủ đầu tư"
+B43,C,4,5,5,
+B43,D,3,5,4,
+B44,A,4,5,4,
+B44,B,4,5,3,
+B44,C,5,4,5,
+B44,D,4,5,5,
+B45,A,3,4,4,
+B45,B,1,2,3,"gán nhầm phát ngôn cho ông Dũng; 'việc này' không rõ"
+B45,C,3,5,3,
+B45,D,3,5,3,
+B46,A,5,5,5,
+B46,B,3,5,3,
+B46,C,5,5,5,
+B46,D,5,5,3,
+B47,A,4,5,5,
+B47,B,2,5,2,"lẫn chú thích ảnh, thiếu nội dung chất vấn"
+B47,C,3,4,5,
+B47,D,3,5,2,"lẫn chú thích ảnh"
+B48,A,2,5,5,"thiếu thương vong"
+B48,B,3,5,3,
+B48,C,5,3,5,
+B48,D,4,5,4,
+B49,A,4,5,5,
+B49,B,4,5,5,
+B49,C,4,5,3,
+B49,D,4,5,3,
+B50,A,2,4,5,"thiếu việc phê duyệt và quy mô"
+B50,B,4,5,4,
+B50,C,3,5,3,
+B50,D,2,2,4,"không nêu tên dự án; 66.000 là quy mô đào tạo, không phải nơi ở"
