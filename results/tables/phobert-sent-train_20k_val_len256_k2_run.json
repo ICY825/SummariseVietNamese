@@ -1,0 +1,126 @@
+{
+ "tag": "phobert-sent-train_20k_val_len256_k2",
+ "rule": "k2",
+ "rules_tried": [
+  "k1",
+  "k2",
+  "k3",
+  "p0.3",
+  "p0.4",
+  "p0.5",
+  "p0.6",
+  "p0.7",
+  "p0.8",
+  "p0.9"
+ ],
+ "chosen_on": "tune",
+ "finished_at": "2026-09-15 09:45:01",
+ "scores_files": {
+  "tune": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\predictions\\phobert-sent-train_20k_tune_len256_scores.json",
+  "val": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\predictions\\phobert-sent-train_20k_val_len256_scores.json"
+ },
+ "scoring_env": {
+  "tune": {
+   "model": "/kaggle/input/notebooks/minh12605/dl-summarisevn-tang2/tang2/phobert_sent/final",
+   "device": "cuda",
+   "torch": "2.10.0+cu128",
+   "seconds": 7.4
+  },
+  "val": {
+   "model": "/kaggle/input/notebooks/minh12605/dl-summarisevn-tang2/tang2/phobert_sent/final",
+   "device": "cuda",
+   "torch": "2.10.0+cu128",
+   "seconds": 14.2
+  }
+ },
+ "tune": {
+  "phobert-sent-k1": {
+   "rouge1": 29.490186115786777,
+   "so_cau_tb": 1.0
+  },
+  "phobert-sent-k2": {
+   "rouge1": 31.114290689409135,
+   "so_cau_tb": 2.0
+  },
+  "phobert-sent-k3": {
+   "rouge1": 28.620536437385542,
+   "so_cau_tb": 2.992
+  },
+  "phobert-sent-p0.3": {
+   "rouge1": 29.212157501213408,
+   "so_cau_tb": 2.81
+  },
+  "phobert-sent-p0.4": {
+   "rouge1": 29.556147232006513,
+   "so_cau_tb": 2.646
+  },
+  "phobert-sent-p0.5": {
+   "rouge1": 29.915425107369025,
+   "so_cau_tb": 2.398
+  },
+  "phobert-sent-p0.6": {
+   "rouge1": 30.601128017254776,
+   "so_cau_tb": 2.076
+  },
+  "phobert-sent-p0.7": {
+   "rouge1": 30.768646615132717,
+   "so_cau_tb": 1.706
+  },
+  "phobert-sent-p0.8": {
+   "rouge1": 30.26813081411776,
+   "so_cau_tb": 1.292
+  },
+  "phobert-sent-p0.9": {
+   "rouge1": 29.637135082459782,
+   "so_cau_tb": 1.038
+  }
+ },
+ "tune_vs_k3": {
+  "rouge1": "phobert-sent-k2 − phobert-sent-k3 (rouge1): +2.49 [+1.93, +3.05] p=0.0000 → CÓ ý nghĩa",
+  "rouge2": "phobert-sent-k2 − phobert-sent-k3 (rouge2): +1.36 [+0.84, +1.87] p=0.0000 → CÓ ý nghĩa",
+  "rougeL": "phobert-sent-k2 − phobert-sent-k3 (rougeL): +2.25 [+1.73, +2.76] p=0.0000 → CÓ ý nghĩa"
+ },
+ "k3_reproduces_kaggle_val": "1000/1000",
+ "val": {
+  "corpus": {
+   "rouge1": {
+    "mean": 30.995113095160093,
+    "lo": 30.252318848144572,
+    "hi": 31.755217483512293
+   },
+   "rouge2": {
+    "mean": 16.664896084790605,
+    "lo": 15.946035895079467,
+    "hi": 17.387325154080113
+   },
+   "rougeL": {
+    "mean": 22.390787582597376,
+    "lo": 21.726880397976227,
+    "hi": 23.070977866238973
+   },
+   "rougeLsum": {
+    "mean": 24.887615029374285,
+    "lo": 24.19349761115588,
+    "hi": 25.608513858747283
+   }
+  },
+  "length": {
+   "mean_syllables": 67.43,
+   "min": 12,
+   "max": 193,
+   "empty": 0
+  },
+  "so_cau_tb": 2.0
+ },
+ "versus": {
+  "k3 rouge1": "phobert-sent-k2 − phobert-sent (rouge1): +2.30 [+1.91, +2.70] p=0.0000 → CÓ ý nghĩa",
+  "k3 rouge2": "phobert-sent-k2 − phobert-sent (rouge2): +1.18 [+0.84, +1.53] p=0.0000 → CÓ ý nghĩa",
+  "k3 rougeL": "phobert-sent-k2 − phobert-sent (rougeL): +2.14 [+1.79, +2.50] p=0.0000 → CÓ ý nghĩa",
+  "Lead-3 rouge1": "phobert-sent-k2 − Lead-3 (rouge1): +3.54 [+2.95, +4.16] p=0.0000 → CÓ ý nghĩa",
+  "Lead-3 rouge2": "phobert-sent-k2 − Lead-3 (rouge2): +1.98 [+1.43, +2.55] p=0.0000 → CÓ ý nghĩa",
+  "Lead-3 rougeL": "phobert-sent-k2 − Lead-3 (rougeL): +3.19 [+2.65, +3.75] p=0.0000 → CÓ ý nghĩa",
+  "Lead-1 rouge1": "phobert-sent-k2 − Lead-1 (rouge1): +3.29 [+2.42, +4.19] p=0.0000 → CÓ ý nghĩa",
+  "Lead-1 rouge2": "phobert-sent-k2 − Lead-1 (rouge2): +1.72 [+0.99, +2.47] p=0.0000 → CÓ ý nghĩa",
+  "Lead-1 rougeL": "phobert-sent-k2 − Lead-1 (rougeL): +1.37 [+0.61, +2.12] p=0.0004 → CÓ ý nghĩa"
+ }
+}

@@ -1,0 +1,75 @@
+{
+ "tag": "baselines_val_k2_leadk",
+ "finished_at": "2026-09-15 09:53:17",
+ "args": {
+  "split": "val",
+  "k": 2,
+  "limit": 0,
+  "systems": [
+   "leadk"
+  ],
+  "n_boot": 10000
+ },
+ "data": {
+  "split": "val",
+  "n": 1000,
+  "k": 2,
+  "seed": 13,
+  "guid_first": "2",
+  "guid_last": "22641"
+ },
+ "env": {
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "datasets": "5.0.1",
+  "numpy": "2.4.6"
+ },
+ "systems": [
+  {
+   "name": "Lead-2",
+   "corpus": {
+    "rouge1": {
+     "mean": 29.08548268252072,
+     "lo": 28.375478636825513,
+     "hi": 29.806796489296723
+    },
+    "rouge2": {
+     "mean": 15.35464625837515,
+     "lo": 14.701546114920268,
+     "hi": 16.03811004261346
+    },
+    "rougeL": {
+     "mean": 20.918935262211424,
+     "lo": 20.29469841698335,
+     "hi": 21.562629418385004
+    },
+    "rougeLsum": {
+     "mean": 23.066766128838257,
+     "lo": 22.408094366993833,
+     "hi": 23.749780769462244
+    }
+   },
+   "length": {
+    "mean_syllables": 70.476,
+    "min": 12,
+    "max": 216,
+    "empty": 0
+   },
+   "novel": {
+    "1gram": 0.0,
+    "2gram": 0.0,
+    "4gram": 0.0
+   },
+   "seconds": {
+    "generate": 0.6908931732177734,
+    "evaluate": 70.95132088661194
+   }
+  }
+ ],
+ "versus_baseline": {},
+ "files": {
+  "table": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\tables\\baselines_val_k2_leadk.json",
+  "markdown": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\tables\\baselines_val_k2_leadk.md",
+  "predictions": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\predictions\\baselines_val_k2_leadk.json"
+ }
+}

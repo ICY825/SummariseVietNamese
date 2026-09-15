@@ -1011,10 +1011,13 @@ trên `val`.
 | Oracle-3 trong cửa sổ 256 token | 43,94 ±0,89 | — | — | — | — |
 | Oracle-3 cả bài | 48,09 ±0,90 | 31,60 ±1,07 | 35,90 ±1,05 | 50 | 1,0% |
 
-**Hệ thống extractive tốt nhất của đề tài, nhưng biên nhỏ.** Hơn Lead-3
+**Hệ thống extractive tốt nhất của đề tài lúc báo cáo, nhưng biên nhỏ** — nay đã bị bản
+chọn 2 câu (`k2`, 31,00) vượt, xem mục chọn số câu linh hoạt. Hơn Lead-3
 **+1,24 [+0,78, +1,71], p < 0,0001** (ROUGE-2 +0,81 [+0,38, +1,23]), hơn LexRank +3,75,
 hơn LexRank-PhoBERT +4,94 và hơn TextRank +5,46 — hệ thống extractive đầu tiên của đề
-tài vượt được lead (không kể Oracle-3, vốn đọc sapo). Nhưng nó chỉ hơn Lead-1
+tài vượt được lead (không kể Oracle-3, vốn đọc sapo) — nhưng theo ROUGE thì **không** vượt
+được mốc Lead-2 thêm sau (−0,39, p = 0,19), dù BERTScore nói có (+0,23); xem mục chọn số
+câu linh hoạt. Nó chỉ hơn Lead-1
 **+0,99 [+0,12, +1,87], p = 0,026**, và vẫn thua cả hai mô hình sinh: ViT5 −4,70,
 BARTpho −6,54.
 
@@ -1040,7 +1043,8 @@ với 53,3% của oracle trong cửa sổ; vị trí trung bình 2,6 so với 2,
 câu, dài trung bình 100 âm tiết. Oracle-3 dừng sớm khi thêm câu không tăng điểm nên chỉ
 128/1.000 bản có đủ 3 câu, dài 50 âm tiết — gần sapo thật (35) hơn nhiều. Với F1, chữ
 thừa làm mất precision; đây cũng là lý do Lead-1 (36 âm tiết) ngang Lead-3 ở tầng 0.
-Chọn số câu linh hoạt thay vì cố định k = 3 là hướng cải thiện rẻ nhất, chưa làm.
+Chọn số câu linh hoạt thay vì cố định k = 3 là hướng cải thiện rẻ nhất — đã làm, xem
+mục "Chọn số câu linh hoạt" dưới đây: lấy 2 câu thay vì 3 được +2,30.
 
 **Kiểm chứng.** Chấm lại từ file dự đoán ra đúng bảng (lệch 0); `guid` khớp
 `data/splits/val.json`; không bản tóm tắt nào rỗng. Loss huấn luyện (trung bình mỗi 50
@@ -1063,13 +1067,64 @@ huấn luyện rồi sinh trong cùng một tiến trình; nhưng mọi lần `-
 lớp cho điểm nạp đúng, hai lần nạp cho cùng điểm, thiếu `head.pt` thì lớp khác đi.
 Checkpoint thật vẫn còn ở output của kernel `dl-summarisevn-tang2` (`tang2/phobert_sent/final`).
 
-**Chọn số câu linh hoạt — công cụ đã sẵn, chưa có số liệu.** `src/models/phobert_select.py`
-tách làm hai bước: `score` chạy PhoBERT một lần cho mỗi split và ghi điểm từng câu ra
-`results/predictions/phobert-sent-train_20k_<split>_len256_scores.json`; `select` dò 10
-quy tắc trên `tune` (`k1`–`k3`, và `pT` = mọi câu có xác suất ≥ T, tối đa 3, ít nhất 1)
-rồi chỉ đem quy tắc thắng sang `val`. Trước khi tin quy tắc mới, `select` kiểm rằng `k3`
-dựng lại **từng chữ** file dự đoán của lần chạy Kaggle. `selftest.py` mục 11 kiểm `k3`
-trùng `pick_indices()` và hành vi của ngưỡng.
+### Chọn số câu linh hoạt — lấy 2 câu, +2,30
+
+`src/models/phobert_select.py` tách làm hai bước. `score` chạy PhoBERT một lần cho mỗi
+split và ghi điểm từng câu ra
+`results/predictions/phobert-sent-train_20k_<split>_len256_scores.json`. Bước này chạy
+trên kernel `dl-summarisevn-tang2-score` và gắn checkpoint của `dl-summarisevn-tang2`, vì
+tải 540 MB về máy đứt nhiều lần; mỗi split mất 7–14 giây GPU. `select` dò 10 quy tắc
+trên `tune` (`k1`–`k3`, và `pT` = mọi câu có xác suất ≥ T, tối đa 3, ít nhất 1) rồi chỉ
+đem **một** quy tắc thắng sang `val`. `selftest.py` mục 11 kiểm `k3` trùng
+`pick_indices()` và hành vi của ngưỡng.
+
+**Checkpoint nạp đúng.** `k3` dựng lại **1.000/1.000** bản tóm tắt của lần chạy Kaggle
+trên `val`, từng chữ. Tức là `head.pt` được nạp và điểm câu trùng lần huấn luyện.
+
+**Trên `tune` (500 bài), `k2` thắng**: 31,11, so với `p0.7` 30,77, `p0.6` 30,60, `k1`
+29,49 và `k3` 28,62. So với `k3` là +2,49 [+1,93, +3,05]. Họ ngưỡng `pT` đi đúng hướng
+(bớt câu thì điểm tăng) nhưng không vượt được một con số cố định.
+
+| Trên `val` | rouge1 | rouge2 | rougeL | Độ dài | Số câu |
+|---|---|---|---|---|---|
+| Lead-1 | 27,70 ±0,92 | 14,94 ±0,83 | 21,02 ±0,81 | 35 | 1 |
+| Lead-3 | 27,45 ±0,60 | 14,68 ±0,58 | 19,20 ±0,55 | 102 | 3 |
+| Tầng 2, `k3` (đã báo cáo) | 28,69 ±0,61 | 15,49 ±0,58 | 20,25 ±0,54 | 100 | 3 |
+| Lead-2 (mốc thêm sau) | 29,09 ±0,72 | 15,35 ±0,67 | 20,92 ±0,63 | 70 | 2 |
+| **Tầng 2, `k2`** | **31,00 ±0,75** | **16,66 ±0,72** | **22,39 ±0,67** | 67 | 2 |
+
+`k2` hơn `k3` **+2,30 [+1,91, +2,70]**, hơn Lead-3 +3,54 [+2,95, +4,16] và hơn Lead-1
++3,29 [+2,42, +4,19]; mọi p < 0,0001, ROUGE-2 và ROUGE-L cùng chiều. Vẫn thua ViT5 (33,40)
+và BARTpho (35,23), nhưng khoảng cách tới BARTpho đã hẹp từ 6,54 còn 4,23.
+
+**Mốc Lead-2 — và nó sửa lại một câu ở trên.** `k2` dài 67 âm tiết, nằm giữa Lead-1 và
+Lead-3, nên phải hỏi mức tăng đến từ chọn câu hay chỉ từ độ dài. Lead-2 trả lời: nó đạt
+29,09, **hơn cả Lead-3 (+1,63) lẫn Lead-1 (+1,38)**, và `k2` vẫn hơn nó **+1,91 [+1,26,
++2,57]** ở gần cùng độ dài (67 so với 70). Tức khoảng 1,9 trong 3,5 điểm hơn Lead-3 là
+nhờ chọn câu, phần còn lại nhờ độ dài. Nhưng cũng chính Lead-2 cho thấy, **theo ROUGE**,
+tầng 2 `k3` không hơn được Lead-2 (−0,39 [−0,98, +0,21], p = 0,19; BERTScore nói ngược lại,
+xem dưới). Câu "hệ thống extractive đầu tiên vượt lead" ở trên, xét bằng ROUGE, chỉ đúng
+với Lead-1 và Lead-3; với `k2` thì đúng với cả ba. Lead-2 được thêm
+**sau khi đã thấy** `val`, không dò trên `tune`, nên nó là mốc tham chiếu chứ không phải hệ
+thống dự thi. 189/1.000 bản của `k2` trùng khít Lead-2, 581 bản giữ câu đầu tiên.
+
+**BERTScore xác nhận `k2`, nhưng không đồng ý về `k3` với Lead-2.** `k2` đạt **86,26**,
+hơn Lead-2 (85,71) +0,55 [+0,42, +0,68], hơn `k3` (85,94) +0,31 [+0,24, +0,38], hơn Lead-3
++0,71 và Lead-1 +0,69; thua BARTpho −1,05 [−1,24, −0,86]; mọi p < 0,0001. Riêng `k3` so với
+Lead-2 thì hai thước đo ngược nhau: ROUGE-1 −0,39 [−0,98, +0,21] (không đủ bằng chứng) còn
+BERTScore **+0,23 [+0,12, +0,35]**, p < 0,0001. Nên chỉ nói được: theo ROUGE, `k3` không vượt
+Lead-2; theo BERTScore thì có. `k2` vượt Lead-2 ở cả hai. So ghép cặp theo `guid` giữa
+`bertscore_baselines_val_k2_leadk+phobert-sent-train_20k_val_len256_k2.json` và hai bảng
+BERTScore cũ.
+
+Hiện vật: `results/tables/phobert-sent-train_20k_tune_len256_rules.json` (lưới trên
+`tune`), `phobert-sent-train_20k_val_len256_k2.json` và `_run.json` (ghi luôn phép kiểm
+1000/1000), `results/tables/baselines_val_k2_leadk.json` (Lead-2). Chạy lại:
+
+```bash
+.venv/Scripts/python.exe src/models/phobert_select.py select
+.venv/Scripts/python.exe src/models/run_baselines.py --split val --k 2 --systems leadk   # Lead-2
+```
 
 ## Tầng 4 — lọc câu trước, abstractive viết lại
 
@@ -1110,7 +1165,8 @@ chưa đủ để kết luận.
 bài cắt thô, nay nhận văn bản đã lọc — tức lệch phân phối. Hai cách đọc đều nhất quán
 với số liệu: hoặc ngữ cảnh ở đuôi bài không phải thứ bị mất, hoặc mô hình chưa từng học
 cách dùng văn bản đã lọc. Tách được hai cách đọc này cần vòng 2: huấn luyện lại BARTpho
-trên đầu vào đã lọc (~2,6 giờ GPU).
+trên đầu vào đã lọc (~2,6 giờ GPU). **Đã chạy** — xem "Vòng 2" dưới đây: cách đọc thứ hai
+cũng không được ủng hộ.
 
 **Đối chứng nội tại, và một giả thuyết đã bị bác.** Trên 898 bài không bị lọc, 783 bản
 tóm tắt trùng khít bản gốc và ROUGE-1 chênh −0,02 [−0,22, +0,18], p = 0,85 — nhóm này
@@ -1120,7 +1176,8 @@ lọc trùng nhau **898/898** trên nhóm này và khác bản gốc ở đúng 
 bài bị lọc (12,3%) và lô không có (14,4%) gần như bằng nhau, nên giả thuyết ấy bị bác.
 Nguyên nhân còn lại là **đường chạy**: bản gốc sinh ngay sau huấn luyện, bản lọc nạp
 `final` từ đĩa với `--no-train`. Nó không đổi điểm, nhưng một đối chứng sạch tuyệt đối
-cần thêm một lần chạy `--no-train` **không lọc** trên `val` (~15 phút GPU).
+cần thêm một lần chạy `--no-train` **không lọc** trên `val` (~15 phút GPU). **Đã chạy** và
+xác nhận đúng nguyên nhân này — xem đoạn "Đối chứng sạch" ngay dưới.
 
 **BERTScore cũng không thấy gì.** Trong 102 bài bị lọc, so với cắt thô: `lexrank`
 +0,08 [−0,31, +0,49], `lead_lexrank` +0,07 [−0,31, +0,47]; hai chiến lược với nhau −0,01.
@@ -1132,17 +1189,70 @@ chí của `apply_filter()` (quá 1.022 token) và kiểm bằng ROUGE-1 của n
 25,98 / 26,67 như bảng trên. Chạy chung ba file bằng cú pháp đổi tên mới của
 `run_bertscore.py` (`TAG:TÊN`), vì cả ba cùng mang tên hệ thống `bartpho-syllable-train_20k`.
 
-**Vòng 2 và đối chứng — đã chuẩn bị, chưa chạy.**
+**Đối chứng sạch: `--no-train` không lọc.** `notebooks/tang4/` nạp đúng checkpoint `final`
+theo đúng đường `--no-train` như hai bản lọc, chỉ bỏ bộ lọc. Nó đạt 35,18 trên toàn tập
+và **trùng khít cả hai bản lọc 898/898** ở nhóm không bị lọc, trong khi chỉ trùng bản
+gốc 874/1.000 (783 ở nhóm ấy). Vậy 115 bản khác nhau nói ở trên đúng là do đường chạy
+(sinh ngay sau huấn luyện, hay nạp từ đĩa), không phải do bộ lọc. So với đối chứng này
+trong 102 bài bị lọc: `lexrank` −0,49 [−2,67, +1,70], `lead_lexrank` +0,21 [−1,90,
++2,49]. Kết luận của vòng 1 không đổi. Đối chứng trừ bản gốc trên toàn tập: −0,05
+[−0,24, +0,14], p = 0,58.
 
-- `notebooks/tang4/` giờ chỉ chạy **đối chứng không lọc** (`GRID = [{"filter": "none"}]`),
-  cùng đường `--no-train` với hai bản lọc; ô đóng gói chỉ lấy file mới sinh ra.
-- `notebooks/tang4_train/` huấn luyện BARTpho `train_20k` với `--filter lead_lexrank` áp
-  lên cả train lẫn `val`, cấu hình còn lại y hệt bản gốc. Nó là **kernel riêng**
-  (`dl-summarisevn-tang4-train`): đẩy lên kernel `dl-summarisevn-vit5` sẽ khiến
-  checkpoint BARTpho gốc không còn là "version mới nhất" mà `notebooks/tang4/` và lần chấm
-  `test` đang dựa vào. Chỉ một chiến lược vì mỗi lần là ~2,7 giờ GPU; `lead_lexrank` được
-  chọn nhờ vòng 1 trên `val`, nên kết quả vòng 2 trên `val` không hoàn toàn độc lập với
-  phép chọn ấy.
+### Vòng 2 — huấn luyện lại trên đầu vào đã lọc: cũng không lấy lại được
+
+`notebooks/tang4_train/` (kernel riêng `dl-summarisevn-tang4-train`) huấn luyện lại
+BARTpho `train_20k` với `--filter lead_lexrank` áp lên **cả** train lẫn `val`. Mọi tham số
+dòng lệnh trùng bản gốc, trừ `--filter` (đối chiếu từ hai `run.json`). Bộ lọc đụng
+2.071/20.000 bài train (10,36%) và đúng 102/1.000 bài `val` như vòng 1. 142,9 phút trên
+T4.
+
+| Nhóm | Bản gốc (cắt thô) | Vòng 1 `lead_lexrank` | Vòng 2 `lead_lexrank` |
+|---|---|---|---|
+| 102 bài bị lọc | 26,80 | 26,67 | 27,36 |
+| 898 bài không bị lọc | 36,19 | 36,17 | 36,92 |
+| Toàn `val` (ROUGE-1) | 35,23 ±1,06 | 35,20 | 35,95 ±1,02 |
+| ROUGE-2 / ROUGE-L toàn tập | 20,48 / 27,93 | — | 20,78 / 28,58 |
+
+**Có tăng, nhưng tăng ở cả những bài không hề bị lọc.** So ghép cặp với bản gốc, ROUGE-1:
+toàn tập +0,72 [−0,08, +1,51], p = 0,076; nhóm bị lọc **+0,56** [−1,43, +2,56]; nhóm
+không bị lọc **+0,73** [−0,13, +1,58]. 898 bài kia nhận **đúng cùng đầu vào** ở cả hai mô
+hình, nên chênh lệch ở đó chỉ đo độ dao động giữa hai lần huấn luyện. Lợi ích riêng của bộ
+lọc là phần nhóm bị lọc vượt lên trên mức ấy: **−0,17 [−2,35, +2,00]**, p = 0,89
+(`group_diff`, lấy mẫu độc lập hai nhóm). Hiệu hai hiệu theo ROUGE-2 là −0,00 [−1,89,
++1,90], theo ROUGE-L −0,26 [−2,31, +1,78]. Lấy đối chứng `--no-train` làm mốc thay cho
+bản gốc thì ROUGE-1 là +0,14 [−2,09, +2,40]. Không thước đo nào thấy gì.
+
+**BERTScore đồng ý rằng không có gì.** Toàn tập: bản gốc 87,31, đối chứng 87,29 (−0,02
+[−0,05, +0,02]), vòng 2 **87,44** (+0,14 [−0,01, +0,29], p = 0,07). Tách theo nhóm: bị lọc
++0,35 [−0,03, +0,73], không lọc +0,11 [−0,05, +0,27], hiệu hai hiệu **+0,23 [−0,17,
++0,66]**, p = 0,28. Chiều ngược với ROUGE-1 (−0,17) nhưng cả hai đều nằm gọn trong nhiễu —
+đúng như ở vòng 1.
+
+**Nên cách đọc thứ hai của vòng 1 cũng không được ủng hộ.** Vòng 1 để ngỏ khả năng mô
+hình chỉ "chưa học cách dùng văn bản đã lọc". Nay mô hình đã được học đúng điều đó, và
+nhóm bị lọc vẫn không nhích hơn phần còn lại. Nhưng đây là **không thấy**, không phải
+**chứng minh không có**. Cận trên +2,00 vẫn chứa khoảng một nửa thiệt hại 4,04 do cắt đo
+ở câu hỏi 2, vì 102 bài quá ít để thấy hiệu ứng dưới ~2 điểm.
+
+**Ba điều phải nói kèm khi báo cáo.**
+
+- **Khác checkpoint được chọn.** `load_best_model_at_end` theo `eval_loss`: bản gốc lấy
+  epoch 2 (1,4237, epoch 3 là 1,4239), vòng 2 lấy epoch 3 (1,4285). Hai mô hình vì thế
+  khác nhau cả số epoch hiệu dụng. Đây là ứng viên cho mức +0,7 ở nhóm không lọc, bên
+  cạnh dao động ngẫu nhiên. Phép hiệu hai hiệu chỉ khử được ảnh hưởng này **nếu** thêm
+  một epoch tác động lên hai nhóm như nhau — giả định hợp lý nhưng chưa kiểm; muốn kiểm
+  phải sinh lại từ `checkpoint-2500` của vòng 2 (~15 phút GPU, checkpoint vẫn nằm trong
+  output kernel). `eval_loss` hai bên cũng không so trực tiếp được, vì một bên đo trên
+  `val` đã lọc.
+- **`lead_lexrank` được chọn trên `val`** (vòng 1), nên vòng 2 trên `val` không hoàn toàn
+  độc lập với phép chọn ấy. Kết quả là âm tính nên sai lệch này không làm phồng kết luận.
+- **Một lần huấn luyện, một seed.** Vòng 2 sinh bản tóm tắt dài hơn một chút (34,7 so với
+  34,0 âm tiết) và nhiều 2-gram mới hơn (12,8% so với 11,3%); chỉ 158/1.000 bản trùng
+  khít bản gốc.
+
+Tái lập mọi số trong mục này: `~/.venvs/torch/Scripts/python.exe src/eval/tang4_sosanh.py`
+(cần `sentencepiece` cho tokenizer BARTpho), ghi `results/tables/tang4_vong2_val_sosanh.json`
+kèm danh sách `guid` của 102 bài bị lọc. Script tự kiểm lại 26,80 / 25,98 / 26,67 trước.
 
 ## Cấu trúc
 
@@ -1153,7 +1263,8 @@ data/splits/       file ID cố định của train/val/test
 notebooks/         kaggle_train_vit5.ipynb (huấn luyện tầng 3), sweep/ và
                    sweep_bartpho/ (dò tham số sinh), tang4/ (lọc câu lúc suy luận),
                    tang4_train/ (huấn luyện trên đầu vào đã lọc), tang2/ (PhoBERT
-                   chọn câu), kaggle_push.py (đẩy lên Kaggle)
+                   chọn câu), tang2_score/ (cho điểm câu bằng checkpoint tầng 2),
+                   kaggle_push.py (đẩy lên Kaggle)
 src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp),
                    make_splits.py (đóng băng), inspect_vietnews.py (kiểm tra),
                    browse.py (duyệt dữ liệu trên trình duyệt)
@@ -1164,7 +1275,8 @@ src/models/        extractive.py (tầng 0-1), phobert_sent.py (tầng 2, cần 
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py,
                    truncation.py (câu hỏi 2, cần transformers),
-                   run_bertscore.py (chấm BERTScore, cần torch)
+                   run_bertscore.py (chấm BERTScore, cần torch),
+                   tang4_sosanh.py (tầng 4 vòng 1/2 và đối chứng, cần sentencepiece)
 app/               demo Gradio
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
@@ -1237,10 +1349,13 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [x] Tuần 6 — Tầng 2 và tầng 4. Tầng 2: hệ thống extractive đầu tiên vượt Lead-3
   (+1,24). Tầng 4 vòng 1: lọc lúc suy luận không lấy lại được thiệt hại do cắt.
   BERTScore xác nhận cả hai kết luận.
-- [ ] Phần còn lại của tuần 6 — công cụ đã sẵn, chờ chạy:
-  - [ ] đối chứng `--no-train` không lọc — `notebooks/tang4/`, ~15 phút GPU
-  - [ ] tầng 4 vòng 2, huấn luyện lại trên đầu vào đã lọc — `notebooks/tang4_train/`, ~2,8 giờ GPU
-  - [ ] tầng 2 chọn số câu linh hoạt — `phobert_select.py`, cần tải checkpoint tầng 2 (540 MB)
+- [x] Phần còn lại của tuần 6:
+  - [x] đối chứng `--no-train` không lọc — trùng khít hai bản lọc 898/898 ở nhóm không
+    lọc; kết luận vòng 1 không đổi
+  - [x] tầng 4 vòng 2, huấn luyện lại trên đầu vào đã lọc — cũng không lấy lại được
+    thiệt hại do cắt (hiệu hai hiệu −0,17 [−2,35, +2,00])
+  - [x] tầng 2 chọn số câu linh hoạt — `k2` chọn trên `tune`, đạt 31,00 trên `val`
+    (+2,30 so với `k3`, +1,91 so với mốc Lead-2 thêm sau)
 - [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
 
@@ -1270,7 +1385,8 @@ Còn nợ:
   chỗ đường cong dốc nhất, trong khi bước 5k → 10k hiện không đo được.
   **Còn ràng buộc thứ tự:** nó đẩy lên kernel `dl-summarisevn-vit5` và khiến checkpoint
   BARTpho không còn lấy được qua `kernel_sources` — trong khi checkpoint ấy vẫn cần
-  cho lần chạy đối chứng `--no-train` không lọc và cho lần chấm `test` ở tuần 8.
+  cho lần chấm `test` ở tuần 8. (Đối chứng `--no-train` không lọc đã chạy xong nên không
+  còn phụ thuộc vào nó.) Hoặc chấm `test` trước, hoặc đẩy `train_2k` lên kernel riêng.
 - [ ] **Đường cong học cho BARTpho** (~2 giờ GPU) — hiện chỉ có một điểm `train_20k`.
   Không bắt buộc: có thể trình bày đường cong như một khảo sát *trên ViT5*, nói rõ vậy.
 - [ ] **Chấm mọi tầng trên `test`** — việc của tuần 8, đúng thiết kế. Hiện tầng 0–1
