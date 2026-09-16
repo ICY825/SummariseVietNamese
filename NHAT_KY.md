@@ -51,6 +51,33 @@ Lead-3 < tầng 2 < tầng 3 ở cả hai thước đo, mọi cặp p < 0,0001. 
 | Tuần 7, người chấm mẫu | 2 người × 12 bài (48 bản); `day_du`/`trung_thuc` kiểm chứng đạt, `troi_chay` không đạt (máy phóng đại); 9/9 kết luận cùng chiều; người vs ROUGE-1 −0,02 |
 | Tuần 7, phân tích lỗi | bốn họ lỗi; hồ sơ lỗi extractive và abstractive bù trừ nhau; ba ví dụ "bịa" rõ nhất đều thuộc sapo |
 
+## HƯỚNG MỚI (16/09/2026) — một hệ thống: đủ ý và không sai sự thật
+
+Bạn quyết định đổi cả đề tài: không chia tầng nữa mà làm **một** hệ thống tóm tắt, với tiêu
+chí **đủ ý và không sai sự thật, không cần càng ngắn càng tốt**. Các tầng cũ trở thành phần
+phân tích dẫn tới hệ thống đó. Kế hoạch 5 giai đoạn và quy tắc quyết định nằm ở README, mục
+"Hướng mới".
+
+**Giai đoạn 0 — XONG, đã commit và push:**
+- `src/eval/chinh_xac.py`: ROUGE-1/2 recall, độ phủ chi tiết (tên riêng + con số của sapo),
+  tỷ lệ có chi tiết lạ. `src/eval/cham_chinh_xac.py`: script chấm dùng lại cho mọi giai đoạn.
+  Selftest mục 8 có 21 phép kiểm tính tay, đều đạt.
+- Bộ đo đã kiểm: đối chứng âm 0/1000 cho extractive (sau hai lần sửa do chính phép kiểm này
+  phát hiện); đối chứng dương bắt 3/3 lỗi bịa/đổi chi tiết, 0/5 lỗi gán nhầm đối tượng (giới
+  hạn đã biết); soi tay 15 cờ BARTpho: 8 lỗi thật, 4 thêm ngoài bài/chưa rõ, 3 bắt nhầm.
+- Mốc trên `val`: bảng xếp hạng đảo ngược so với F1 — BARTpho F1 cao nhất nhưng recall 35,6,
+  phủ chi tiết 50,9, **11,8% có chi tiết lạ**; Lead-3 phủ chi tiết 67,6 và PhoBERT 3 câu recall
+  55,6, cả hai 0% chi tiết lạ.
+- Quy tắc đã chốt: chi tiết lạ ≤ 1,0%; ≤ 110 âm tiết trung bình, ≤ 4 câu; phải hơn cả Lead-3
+  lẫn PhoBERT 3 câu về độ phủ chi tiết và recall, có ý nghĩa. Dò trên `tune`, xác nhận `val`,
+  `test` một lần.
+
+**Việc tiếp theo: giai đoạn 1** — extractive có chủ đích trên `tune`, dùng điểm PhoBERT đã có
+sẵn (`results/predictions/phobert-sent-train_20k_{tune,val}_len256_scores.json`), không cần GPU.
+
+**Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
+sách độ dài, không thì "dài hơn" sẽ luôn thắng.
+
 ## Việc còn dở — theo thứ tự nên làm
 
 ### 1. Báo cáo và slide (tuần 8) — **chưa làm, bạn đã chọn để sau**

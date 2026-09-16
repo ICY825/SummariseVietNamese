@@ -1680,6 +1680,91 @@ mà không câu hỏi nghiên cứu nào cần tới; kết luận BARTpho hơn 
 ~/.venvs/kaggle/Scripts/python.exe notebooks/kaggle_push.py --dir notebooks/test_final
 ```
 
+## Hướng mới — một hệ thống duy nhất: đủ ý và không sai sự thật
+
+Xem demo trên bài thật cho thấy mỗi tầng đều bỏ sót sự kiện chính theo một kiểu khác nhau.
+Từ đây đề tài đổi mục tiêu: **một** hệ thống, với định nghĩa bản tóm tắt tốt là **đủ ý chính
+và không sai sự thật — không cần càng ngắn càng tốt**. Các tầng ở trên trở thành phần phân
+tích dẫn tới hệ thống đó.
+
+### Giai đoạn 0 — chốt thước đo TRƯỚC khi thử bất kỳ cấu hình nào
+
+**Vì sao không dùng ROUGE F1 làm chỉ số chính nữa.** F1 trộn precision vào, mà precision
+giảm theo độ dài, nên F1 phạt bản tóm tắt dài hơn kể cả khi nó đủ ý hơn. Chính vì vậy BARTpho
+— một câu, 34 âm tiết — đứng đầu bảng F1 dù thiếu ý nhiều nhất.
+
+Thước đo mới nằm ở `src/eval/chinh_xac.py`, đếm âm tiết bằng đúng `syllables()` của ROUGE:
+
+| Tiêu chí | Chỉ số | Ý nghĩa |
+|---|---|---|
+| Đủ ý | **ROUGE-1 recall** | bao nhiêu chữ của sapo có trong bản tóm tắt |
+| Đủ ý | **Độ phủ chi tiết** | bao nhiêu tên riêng và con số của sapo có trong bản tóm tắt |
+| Không sai sự thật | **Tỷ lệ có chi tiết lạ** | % bản tóm tắt có tên riêng hoặc con số không có trong bài gốc |
+
+Con số phải khớp **kèm ngữ cảnh** (ít nhất một âm tiết bên cạnh giống bài gốc), vì chỉ kiểm
+có mặt thì "giá 30 triệu" vẫn lọt khi bài có "30 năm" ở chỗ khác. Cụm tên riêng được ghép từ
+các đoạn liền nhau có trong bài, để "Cẩm Lệ Đà Nẵng" không bị coi là bịa khi bài viết
+"Cẩm Lệ, TP Đà Nẵng".
+
+**Kiểm chứng bộ đo trước khi tin nó.** Hai lần sửa đều do phép kiểm dưới đây phát hiện:
+
+- **Đối chứng âm** — extractive chép nguyên câu thì không thể có chi tiết lạ. Bản đầu tiên
+  gắn cờ nhầm 5–10% bài của Lead-3 và PhoBERT, vì tách `48` ra khỏi `48D`, `8` ra khỏi `8h`
+  trong khi ROUGE giữ nguyên chúng. Sau khi sửa: Lead-1, Lead-3, PhoBERT **0/1000**; Oracle-3
+  1/1000, do rác sẵn trong dữ liệu ("St. Xem thêm > >").
+- **Đối chứng dương** — các lỗi trung thực của BARTpho mà người và máy chấm đã ghi nhận:
+  chi tiết bịa hoặc đổi (B05 "quận 12", B08 "5h30", B28 "ngày 8-8") **3/3 bắt được**; gán
+  nhầm đối tượng hoặc đảo chủ thể (B36, B42, B45, B27, B43) **0/5**. B36 viết "giá 30 triệu"
+  cho nón lá — con số có thật trong bài nhưng là giá của xe đạp, nên so khớp chuỗi về bản chất
+  không bắt được.
+- **Soi tay 15 cờ ngẫu nhiên của BARTpho**: 8 lỗi sự thật rõ ràng ("hưởng thọ 74 tuổi", "Tuy
+  Đức (Đắk Lắk)", bịa chức danh, thêm năm không có trong bài), 4 ca thêm thông tin ngoài bài
+  hoặc chưa phân định được, 3 ca bắt nhầm do cách viết ("G 20"/"G20", "năm 2014"/"3/2014",
+  "Malaysia Najib Razak"). Tức bộ đo **hơi bắt thừa** — chấp nhận được với mục tiêu không sai
+  sự thật, và phải nêu kèm mỗi khi trích con số.
+
+**Mốc trên `val`** (1.000 bài, `results/tables/chinh_xac_val_moc.json`):
+
+| Hệ thống | ROUGE-1 recall | Phủ chi tiết | Có chi tiết lạ | ROUGE-1 F1 | Độ dài |
+|---|---|---|---|---|---|
+| Lead-1 | 28,9 | 45,2 | 0,0% | 27,7 | 1,0 câu, 35 âm tiết |
+| Lead-2 | 44,7 | 60,5 | 0,0% | 29,1 | 2,0 câu, 70 âm tiết |
+| Lead-3 | 54,4 | **67,6** | 0,0% | 27,5 | 3,0 câu, 102 âm tiết |
+| LexRank | 52,3 | 60,4 | 0,3% | 24,9 | 3,1 câu, 112 âm tiết |
+| PhoBERT 3 câu | **55,6** | 66,3 | 0,0% | 28,7 | 3,0 câu, 100 âm tiết |
+| PhoBERT `k2` | 46,2 | 58,5 | 0,0% | 31,0 | 2,0 câu, 67 âm tiết |
+| BARTpho | 35,6 | 50,9 | **11,8%** | **35,2** | 1,1 câu, 34 âm tiết |
+| ViT5 | 31,8 | 48,9 | 7,8% | 33,4 | 1,0 câu, 30 âm tiết |
+| Oracle-3 | 57,7 | 66,8 | 0,1% | 48,1 | 1,7 câu, 50 âm tiết |
+
+Theo tiêu chí mới, bảng xếp hạng **đảo ngược**: hệ thống đứng đầu F1 thiếu ý nhất và có chi
+tiết lạ nhiều nhất. Oracle-3 **không** phải trần của độ phủ chi tiết ở đây (66,8 < 67,6 của
+Lead-3), vì nó được dựng để tối đa F1 nên dừng sớm ở 1,7 câu.
+
+**Recall tự tăng theo độ dài** — chép nguyên cả bài là đạt 100%. Nên so sánh "đủ ý" chỉ có
+nghĩa ở **cùng ngân sách độ dài**; đó là lý do quy tắc dưới đây ràng buộc độ dài và chọn mốc
+là hai hệ thống ở đúng ngân sách ấy.
+
+**Quy tắc quyết định — chốt trước khi thử:**
+
+1. **Không sai sự thật (ràng buộc cứng):** tỷ lệ bản có chi tiết lạ **≤ 1,0%**. Phần chép
+   nguyên câu tự đạt; mọi câu do mô hình sinh viết ra phải qua phép kiểm này.
+2. **Độ dài (ràng buộc cứng):** trung bình **≤ 110 âm tiết** và **tối đa 4 câu** mỗi bản.
+3. **Đủ ý (mục tiêu):** độ phủ chi tiết **và** ROUGE-1 recall phải **cao hơn cả Lead-3 lẫn
+   PhoBERT 3 câu** — hai hệ thống mạnh nhất ở ngân sách khoảng 100 âm tiết — một cách có ý
+   nghĩa (bootstrap ghép cặp, khoảng tin cậy 95% không chứa 0).
+4. **Luôn báo cáo kèm ROUGE-1 F1**, kể cả khi nó thấp hơn BARTpho — sự đánh đổi phải được nêu.
+5. **Dò cấu hình trên `tune`, xác nhận trên `val`, chấm `test` đúng một lần** ở cuối. Trước
+   `test`, hệ thống cuối được chấm thêm theo tiêu chí `day_du`/`trung_thuc` trên một mẫu `val`.
+
+```bash
+.venv/Scripts/python.exe src/eval/cham_chinh_xac.py --split val --ten moc \
+    baselines_val:Lead-1 baselines_val_k2_leadk:Lead-2 baselines_val:Lead-3 baselines_val:LexRank \
+    phobert-sent-train_20k_val_len256:phobert-sent phobert-sent-train_20k_val_len256_k2 \
+    bartpho-syllable-train_20k_val_e3_lr3e-05_bs16_in1024 vit5-base-train_20k_val_e3_lr3e-05_bs16_in1024 \
+    baselines_val:Oracle-3
+```
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
@@ -1869,6 +1954,13 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     tầng 4 bằng tầng 3 (+0,01, p = 0,58)
   - [ ] báo cáo và slide
   - [ ] kiểm tra tái lập trên máy sạch
+- [ ] Hướng mới — một hệ thống duy nhất: đủ ý và không sai sự thật
+  - [x] giai đoạn 0: chốt thước đo (`eval/chinh_xac.py`), kiểm chứng bằng đối chứng âm/dương
+    và soi tay, đo mốc trên `val`, chốt quy tắc quyết định trước khi thử
+  - [ ] giai đoạn 1: extractive có chủ đích (phủ ý mới, bỏ lặp, nối tiền đề, lọc rác)
+  - [ ] giai đoạn 2: cho BARTpho viết lại có kiểm soát, lùi về extractive khi không qua kiểm
+  - [ ] giai đoạn 3: chấm theo tiêu chí `day_du`/`trung_thuc` trên mẫu `val`
+  - [ ] giai đoạn 4: chấm `test` một lần, demo một ô, viết lại khung báo cáo
 
 ### Rà soát tuần 5 — đã lấp và còn nợ
 

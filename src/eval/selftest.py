@@ -178,5 +178,46 @@ with tempfile.TemporaryDirectory() as tmp:
     _, loi = read_sheet(day_du, khoa_gia)
     check_true("không giới hạn thì đọc đủ mọi bài, không lỗi", not loi)
 
+print("\n8. Hướng mới: đủ ý và không sai sự thật")
+from eval.chinh_xac import chi_tiet, chi_tiet_la, do_phu_chi_tiet, rouge_recall  # noqa: E402
+
+rc = rouge_recall("an bình", "an bình yên vui")
+check("recall 1-gram: 2/4 âm tiết của sapo", rc["r1"], 50.0)
+check("recall 2-gram: 1/3 bigram của sapo", rc["r2"], 100 / 3)
+check("recall không phạt bản dài: thêm chữ thừa vẫn 100",
+      rouge_recall("an bình yên vui và rất nhiều chữ thừa", "an bình yên vui")["r1"], 100.0)
+
+ct = chi_tiet("Hôm nay ông Nguyễn Văn An mua xe giá 450.000 đồng.")
+check_true("tách được tên riêng giữa câu", ("nguyễn", "văn", "an") in ct)
+check_true("tách được con số có dấu phân cách", ("450", "000") in ct)
+check_true("chữ hoa đầu câu không thành tên riêng", ("hôm",) not in ct)
+ct = chi_tiet("Theo Bộ Công an, vụ việc xảy ra ở TP. Hồ Chí Minh.")
+check_true("cụm đầu câu bỏ từ đầu: 'Theo Bộ Công' -> 'bộ công'", ("bộ", "công") in ct and ("theo", "bộ", "công") not in ct)
+check_true("viết tắt 'TP.' không ngắt cụm tên riêng", ("tp", "hồ", "chí", "minh") in ct)
+check_true("dạng tách từ cho cùng chi tiết như dạng thô",
+           chi_tiet("Ông Nguyễn_Văn_An mua xe .") == chi_tiet("Ông Nguyễn Văn An mua xe."))
+
+bai = "Ông Lê Văn Bình bán nhà giá 450.000 đồng tại huyện Hóc Môn ."
+check_true("chép nguyên câu thì không có chi tiết lạ", chi_tiet_la("Ông Lê Văn Bình bán nhà giá 450.000 đồng.", bai) == [])
+check_true("đổi con số thì bị bắt", ("30",) in chi_tiet_la("Ông Lê Văn Bình bán nhà giá 30 triệu.", bai))
+check_true("đổi địa danh thì bị bắt", ("quận",) in chi_tiet_la("Bình bán nhà ở Quận 12.", bai)
+           or ("12",) in chi_tiet_la("Bình bán nhà ở Quận 12.", bai))
+check_true("so khớp không phân biệt hoa thường", chi_tiet_la("Nhà ở HÓC MÔN.", bai) == [])
+check("độ phủ chi tiết: phủ tên, thiếu con số và địa danh (1/3)",
+      do_phu_chi_tiet("Lê Văn Bình bán nhà.", bai), 100 / 3)
+check_true("sapo không có chi tiết nào thì độ phủ là None", do_phu_chi_tiet("abc", "không có gì viết hoa") is None)
+bai2 = "Xe tông nhau trên quốc lộ 48D lúc 8h , nạn nhân ở quận Cẩm Lệ , TP Đà Nẵng ."
+check_true("token chữ-số chép nguyên ('48D', '8h') không bị coi là lạ",
+           chi_tiet_la("Xe tông nhau trên quốc lộ 48D lúc 8h.", bai2) == [])
+check_true("đổi '48D' thành '48C' vẫn bị bắt", ("48c",) in chi_tiet_la("Xe tông nhau trên quốc lộ 48C.", bai2))
+check_true("tên riêng viết gộp 'Cẩm Lệ Đà Nẵng' vẫn được bài hỗ trợ",
+           chi_tiet_la("Nạn nhân ở Cẩm Lệ Đà Nẵng.", bai2) == [])
+check_true("tên riêng không có trong bài vẫn bị bắt", chi_tiet_la("Nạn nhân ở Hải Châu.", bai2) == [("hải", "châu")])
+bai3 = "Ông Bình sống ở đây 30 năm , nay bán nhà giá 450.000 đồng khiến 3 người chết ."
+check_true("con số có ở chỗ khác nhưng sai ngữ cảnh vẫn bị bắt ('giá 30 triệu' vs '30 năm')",
+           ("30",) in chi_tiet_la("Ông Bình bán nhà giá 30 triệu.", bai3))
+check_true("viết đảo câu nhưng giữ cụm số thì không bị bắt ('làm chết 3 người')",
+           chi_tiet_la("Vụ việc làm chết 3 người.", bai3) == [])
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)
