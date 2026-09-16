@@ -1,0 +1,98 @@
+{
+ "tag": "bartpho-syllable-train_20k_test_in1024",
+ "name": "bartpho-syllable-train_20k",
+ "finished_at": "2026-09-16 08:16:59",
+ "args": {
+  "model": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/vinai_bartpho-syllable_train_20k/final",
+  "name": "bartpho-syllable-train_20k",
+  "train_split": "train_2k",
+  "eval_split": "test",
+  "epochs": 3.0,
+  "lr": 3e-05,
+  "batch": 2,
+  "grad_accum": 8,
+  "gen_batch": 16,
+  "beams": 4,
+  "no_repeat_ngram": 3,
+  "length_penalty": 1.0,
+  "min_length": 0,
+  "max_input": 1024,
+  "max_target": 80,
+  "prefix": "",
+  "eval_limit": 0,
+  "logging_steps": 25,
+  "max_steps": 0,
+  "fp16": "auto",
+  "out": "/kaggle/working/test_final",
+  "resume": false,
+  "no_train": true,
+  "filter": "none",
+  "cho_phep_test": true
+ },
+ "generation": {
+  "num_beams": 4,
+  "no_repeat_ngram_size": 3,
+  "length_penalty": 1.0,
+  "min_length": 0,
+  "early_stopping": true
+ },
+ "filter": null,
+ "data": {
+  "train_split": null,
+  "n_train": 0,
+  "eval_split": "test",
+  "n_eval": 2000,
+  "max_input": 1024,
+  "max_target": 80,
+  "seed": 13
+ },
+ "env": {
+  "gpu": "Tesla T4",
+  "fp16": true,
+  "torch": "2.10.0+cu128",
+  "transformers": "5.0.0",
+  "python": "3.12.13"
+ },
+ "train": null,
+ "scores": {
+  "corpus": {
+   "rouge1": {
+    "mean": 34.551701945297054,
+    "lo": 33.8071577426589,
+    "hi": 35.32064803866771
+   },
+   "rouge2": {
+    "mean": 19.834006242376926,
+    "lo": 19.12318767060378,
+    "hi": 20.56372374613213
+   },
+   "rougeL": {
+    "mean": 27.255116594839304,
+    "lo": 26.534951199787294,
+    "hi": 27.983966660576055
+   },
+   "rougeLsum": {
+    "mean": 27.88630982049144,
+    "lo": 27.16487478309729,
+    "hi": 28.611250478808504
+   }
+  },
+  "length": {
+   "mean_syllables": 34.3115,
+   "min": 13,
+   "max": 70,
+   "empty": 0
+  },
+  "novel": {
+   "1gram": 2.22002460281436,
+   "2gram": 11.008311461053713,
+   "4gram": 24.889412300769425
+  }
+ },
+ "versus_lead3": "bartpho-syllable-train_20k − Lead-3 (rouge1): +7.33 [+6.65, +8.01] p=0.0000 → CÓ ý nghĩa",
+ "files": {
+  "table": "/kaggle/working/BTL_DL/results/tables/bartpho-syllable-train_20k_test_in1024.json",
+  "predictions": "/kaggle/working/BTL_DL/results/predictions/bartpho-syllable-train_20k_test_in1024.json",
+  "checkpoint": "/kaggle/input/notebooks/minh12605/dl-summarisevn-vit5/runs/vinai_bartpho-syllable_train_20k/final"
+ }
+}

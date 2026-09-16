@@ -8,7 +8,8 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**.
 - **Tuần 1–6: xong và đã commit.** Commit tuần 6: `cfcc199`.
 - **Tuần 7: đang làm dở.** Commit ngay sau file này chứa toàn bộ phần tuần 7 đến thời
   điểm dừng (chưa push lên GitHub).
-- Tuần 8 (báo cáo, chấm `test`, kiểm tái lập) chưa bắt đầu.
+- **Tuần 7: xong.** Tuần 8: **đã chấm xong `test`** cho mọi tầng; BERTScore trên `test`
+  cũng xong; còn báo cáo, kiểm tra tái lập.
 
 ## Kết quả chính đã có (chi tiết: README)
 
@@ -83,9 +84,31 @@ chọn nhầm bản checkpoint hỏng khi trên máy có nhiều bản.
 - Sinh lại vòng 2 tầng 4 từ `checkpoint-2500` (~15 phút GPU) để loại trừ ảnh hưởng chọn
   epoch 3 so với epoch 2. Checkpoint vẫn còn trong output kernel `dl-summarisevn-tang4-train`.
 
-### 5. Tuần 8
+### 5. Tuần 8 — **đang làm**
 
-Chấm mọi tầng trên `test`, viết báo cáo, kiểm tra tái lập.
+**Chấm `test`: XONG** 16/09/2026 (bảng đầy đủ trong README, mục "Tuần 8"). Lead-3 27,22 <
+tầng 2 `k2` 31,43 < tầng 3 BARTpho 34,55, mọi cặp p < 0,0001; tầng 4 34,61 không hơn tầng 3
+(+0,06, p = 0,50) — lặp lại đúng kết luận trên `val`.
+
+Cách đã làm, để không phải nghĩ lại:
+- `test` mở bằng cờ `--cho-phep-test` ở `vit5.py` và `phobert_select.py`; chốt từ chối vẫn
+  còn cho mọi lần chạy không có cờ.
+- Tầng 2 chạy tại máy: `score --split test --cho-phep-test` (401 s CPU) rồi lệnh mới
+  `cham-test --cho-phep-test`, lệnh này đọc quy tắc thắng từ bảng dò trên `tune`.
+- Tầng 3–4 chạy bằng kernel `dl-summarisevn-test-final` (khoảng 60 phút từ lúc đẩy tới lúc xong, gồm cả thời gian xếp hàng; hai cấu hình).
+- File dự đoán của `vit5.py` lưu `guid` dạng **số**, bảng và split dùng **chuỗi** — so thẳng
+  hai danh sách sẽ báo lệch oan; đổi sang chuỗi thì khớp tuyệt đối.
+- **Không có ViT5 trên `test`**: checkpoint đã bị ghi đè, CLI không lấy được version cũ.
+
+Checkpoint đã sao lưu sang `~/Documents/dl-summarisevn-checkpoints/` (đối chiếu từng byte),
+ngoài `~/.cache/` vốn dễ bị dọn.
+
+**BERTScore trên `test`: XONG** — 9 hệ thống × 2.000 bài, cùng thứ tự với ROUGE (tầng 2 −
+Lead-3 +0,89; tầng 3 − tầng 2 +0,82; mọi p < 0,0001), tầng 4 bằng tầng 3 (+0,01, p = 0,58).
+Chạy CPU trong `~/.venvs/torch`, khoảng 45 phút. Script chỉ tự so với Lead-3; các cặp khác
+tính thêm bằng `paired_bootstrap` trên `per_article`.
+
+Còn lại: báo cáo, kiểm tra tái lập.
 
 ## Tuyệt đối không làm
 

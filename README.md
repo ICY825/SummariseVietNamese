@@ -1605,6 +1605,81 @@ người–người ở `trung_thuc` chỉ 0,568 — chính hai người cũng c
 ở `trung_thuc` là 0,949: hai lượt máy giống nhau hơn hai người giống nhau, tức máy **nhất
 quán** chứ chưa chắc **đúng**.
 
+## Tuần 8 — kết quả cuối trên `test`
+
+Chấm **một lần duy nhất** trên 2.000 bài, bootstrap ghép cặp 10.000 lần, `seed=13`; số sau
+dấu ± là nửa khoảng tin cậy 95%. Bảng sinh thẳng từ file trong `results/tables/`.
+
+| Hệ thống | rouge1 | rouge2 | rougeL | Độ dài | 2-gram mới |
+|---|---|---|---|---|---|
+| Lead-1 (tầng 0) | 27,03 ±0,65 | 14,77 ±0,58 | 20,73 ±0,58 | 36 | 0,0% |
+| Lead-3 (tầng 0) | 27,22 ±0,44 | 14,73 ±0,43 | 19,17 ±0,41 | 102 | 0,0% |
+| Tầng 2 — PhoBERT `k2` | 31,43 ±0,56 | 17,29 ±0,54 | 22,89 ±0,52 | 67 | 1,2% |
+| **Tầng 3 — BARTpho `train_20k`** | **34,55 ±0,76** | **19,83 ±0,72** | **27,26 ±0,72** | 34 | 11,0% |
+| Tầng 4 — lọc `lexrank` rồi viết lại | 34,61 ±0,75 | 19,87 ±0,71 | 27,28 ±0,72 | 34 | 11,1% |
+| Oracle-3 (trần extractive) | 48,14 ±0,63 | 31,89 ±0,76 | 36,21 ±0,76 | 50 | 1,1% |
+
+**Thứ tự Lead-3 < tầng 2 < tầng 3 đứng vững trên tập kiểm định độc lập**, ở cả ba chỉ số,
+mọi p < 0,0001:
+
+| Cặp | rouge1 | rouge2 | rougeL |
+|---|---|---|---|
+| tầng 2 − Lead-3 | +4,21 [+3,77, +4,64] | +2,56 [+2,17, +2,95] | +3,73 [+3,33, +4,13] |
+| tầng 3 − tầng 2 | +3,12 [+2,44, +3,81] | +2,54 [+1,90, +3,17] | +4,36 [+3,70, +5,01] |
+| tầng 3 − Lead-3 | +7,33 [+6,65, +8,01] | +5,10 [+4,48, +5,72] | +8,09 [+7,45, +8,73] |
+
+**Tầng 4 không hơn tầng 3:** +0,06 [−0,12, +0,24] ROUGE-1, p = 0,50 (rouge2 p = 0,70,
+rougeL p = 0,74). Lặp lại đúng kết luận trên `val`: lọc câu trước khi sinh **không** lấy lại
+được phần mất do cắt bài ở 1.024 token. Trên một tập độc lập, đây là kết quả âm tính vững
+chứ không phải nhiễu.
+
+**BERTScore xác nhận bằng một thước đo độc lập** (`xlm-roberta-base`, 2.000 bài, 9 hệ thống):
+
+| Hệ thống | BERTScore |
+|---|---|
+| TextRank | 84,97 ±0,10 |
+| LexRank | 85,23 ±0,10 |
+| Lead-1 | 85,44 ±0,13 |
+| Lead-3 | 85,51 ±0,10 |
+| Tầng 2 — PhoBERT `k2` | 86,40 ±0,11 |
+| **Tầng 3 — BARTpho** | **87,21 ±0,14** |
+| Tầng 4 — lọc `lexrank` | 87,22 ±0,14 |
+| Oracle-3 | 89,05 ±0,13 |
+
+| Cặp | BERTScore | p |
+|---|---|---|
+| tầng 2 − Lead-3 | +0,89 [+0,80, +0,98] | < 0,0001 |
+| tầng 3 − tầng 2 | +0,82 [+0,69, +0,95] | < 0,0001 |
+| tầng 3 − Lead-3 | +1,71 [+1,58, +1,84] | < 0,0001 |
+| tầng 4 − tầng 3 | +0,01 [−0,02, +0,04] | 0,58 |
+
+Cùng một thứ tự, cùng một kết luận âm tính cho tầng 4 — nên cả hai phát hiện chính không phải
+hiện tượng riêng của ROUGE. BERTScore còn tách được hai phương pháp đồ thị xuống **dưới**
+Lead-3 một cách có ý nghĩa (TextRank −0,54, LexRank −0,27, p < 0,0001), khớp kết luận tuần 3b.
+Khoảng cách tuyệt đối nhỏ hơn ROUGE vì BERTScore nén vào dải hẹp (mọi hệ thống đều 85–89).
+
+**Cùng tầm với `val`**, không có dấu hiệu nhầm split: tầng 2 `k2` 31,00 trên `val` → 31,43
+trên `test`; BARTpho 35,23 → 34,55.
+
+**Kỷ luật "`test` dùng một lần".** `vit5.py` và `phobert_select.py` vốn từ chối `test`; chốt
+được **giữ nguyên** và chỉ mở bằng cờ tường minh `--cho-phep-test`, nên mọi lần gõ nhầm vẫn bị
+chặn. Quy tắc `k2` của tầng 2 được **đọc** từ bảng dò trên `tune` (hồ sơ ghi
+`chosen_on: tune`), không dò lại trên `test`. Tầng 3–4 chạy bằng kernel
+`dl-summarisevn-test-final`, chỉ *đọc* checkpoint qua `kernel_sources` nên không thể ghi đè
+output chứa BARTpho.
+
+**Không có ViT5 trên `test`.** Checkpoint ViT5 `train_20k` đã bị ghi đè khi chính kernel
+`dl-summarisevn-vit5` huấn luyện BARTpho (12/09), và `kaggle kernels output` không truy cập
+được version cũ — xin version 999 vẫn trả về bản mới nhất. Huấn luyện lại tốn ~232 phút GPU
+mà không câu hỏi nghiên cứu nào cần tới; kết luận BARTpho hơn ViT5 dẫn từ bảng `val` ở trên.
+
+```bash
+~/.venvs/torch/Scripts/python.exe src/models/phobert_select.py score \
+    --model <thư mục checkpoint tầng 2> --split test --cho-phep-test
+.venv/Scripts/python.exe src/models/phobert_select.py cham-test --cho-phep-test
+~/.venvs/kaggle/Scripts/python.exe notebooks/kaggle_push.py --dir notebooks/test_final
+```
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
@@ -1788,6 +1863,12 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     thật; kèm kernel `dl-summarisevn-xuat-ckpt` lấy lại checkpoint mà `kernels output`
     trả về 0 byte
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
+  - [x] chấm tầng 2, 3, 4 trên `test` (tầng 0–1 đã có từ tuần 3b): Lead-3 27,22 < tầng 2
+    31,43 < tầng 3 34,55, mọi cặp p < 0,0001; tầng 4 không hơn tầng 3 (+0,06, p = 0,50)
+  - [x] BERTScore trên `test` — cùng thứ tự Lead-3 < tầng 2 < tầng 3 (mọi cặp p < 0,0001),
+    tầng 4 bằng tầng 3 (+0,01, p = 0,58)
+  - [ ] báo cáo và slide
+  - [ ] kiểm tra tái lập trên máy sạch
 
 ### Rà soát tuần 5 — đã lấp và còn nợ
 

@@ -1,0 +1,52 @@
+{
+ "tag": "phobert-sent-train_20k_test_len256_k2",
+ "rule": "k2",
+ "chosen_on": "tune",
+ "finished_at": "2026-09-16 14:40:50",
+ "scores_file": "C:\\Users\\TUF\\Downloads\\BTL_DL\\results\\predictions\\phobert-sent-train_20k_test_len256_scores.json",
+ "scoring_env": {
+  "model": "C:/Users/TUF/.cache/dl-summarisevn/xuat/ckpt/tang2",
+  "device": "cpu",
+  "torch": "2.14.0+cpu",
+  "seconds": 400.8
+ },
+ "test": {
+  "corpus": {
+   "rouge1": {
+    "mean": 31.42986036704199,
+    "lo": 30.874707224796655,
+    "hi": 31.992154441746845
+   },
+   "rouge2": {
+    "mean": 17.29143995994055,
+    "lo": 16.75555439561636,
+    "hi": 17.83394778087285
+   },
+   "rougeL": {
+    "mean": 22.89468528714354,
+    "lo": 22.37167329536242,
+    "hi": 23.411140398055192
+   },
+   "rougeLsum": {
+    "mean": 25.36376745727641,
+    "lo": 24.830968347926888,
+    "hi": 25.897092035034078
+   }
+  },
+  "length": {
+   "mean_syllables": 66.5545,
+   "min": 11,
+   "max": 231,
+   "empty": 0
+  },
+  "so_cau_tb": 1.999
+ },
+ "versus": {
+  "Lead-3 rouge1": "phobert-sent-k2 − Lead-3 (rouge1): +4.21 [+3.77, +4.64] p=0.0000 → CÓ ý nghĩa",
+  "Lead-3 rouge2": "phobert-sent-k2 − Lead-3 (rouge2): +2.56 [+2.17, +2.95] p=0.0000 → CÓ ý nghĩa",
+  "Lead-3 rougeL": "phobert-sent-k2 − Lead-3 (rougeL): +3.73 [+3.33, +4.13] p=0.0000 → CÓ ý nghĩa",
+  "Lead-1 rouge1": "phobert-sent-k2 − Lead-1 (rouge1): +4.40 [+3.78, +5.04] p=0.0000 → CÓ ý nghĩa",
+  "Lead-1 rouge2": "phobert-sent-k2 − Lead-1 (rouge2): +2.53 [+1.99, +3.08] p=0.0000 → CÓ ý nghĩa",
+  "Lead-1 rougeL": "phobert-sent-k2 − Lead-1 (rougeL): +2.16 [+1.61, +2.72] p=0.0000 → CÓ ý nghĩa"
+ }
+}

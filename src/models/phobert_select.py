@@ -221,6 +221,61 @@ def cmd_select(args):
     print(f"\nĐã ghi results/tables/{tag}.json, _run.json và results/predictions/{tag}.json")
 
 
+def cmd_cham_test(args):
+    """Áp quy tắc đã thắng trên `tune` lên `test` — lần chấm cuối của tầng 2.
+
+    **Không dò lại quy tắc ở đây.** Chọn quy tắc là việc đã làm xong trên `tune` ở tuần 6;
+    dò lại trên `test` thì `test` không còn là tập kiểm định độc lập nữa, và con số cuối
+    cùng sẽ lạc quan hơn sự thật. Quy tắc được ĐỌC từ bảng dò trên `tune` chứ không gõ
+    cứng, để bảng kết quả tự khai nó dùng đúng quy tắc nào và quy tắc ấy chọn ở đâu.
+    """
+    if not args.cho_phep_test:
+        raise SystemExit(
+            "Từ chối chấm trên `test`. Tập này dùng MỘT lần ở cuối dự án.\n"
+            "Khi thật sự chấm lần cuối: thêm cờ --cho-phep-test."
+        )
+
+    p_rules = RESULTS / "tables" / f"{BASE.format(split='tune')}_rules.json"
+    if not p_rules.exists():
+        raise SystemExit(f"Chưa có {p_rules}. Chạy `select` trước để chốt quy tắc trên tune.")
+    sweep = json.loads(p_rules.read_text(encoding="utf-8"))
+    best = max(sweep, key=lambda r: r["corpus"]["rouge1"]["mean"])
+    rule = best["name"].removeprefix(f"{NAME}-")
+    print(f"Quy tắc thắng trên `tune`: {rule} (ROUGE-1 {best['corpus']['rouge1']['mean']:.2f})")
+
+    tag = f"{BASE.format(split='test')}_{rule}"
+    dest = RESULTS / "tables" / f"{tag}.json"
+    if dest.exists():
+        raise SystemExit(f"{dest} đã có. `test` chấm MỘT lần — xoá tay nếu thật sự muốn chấm lại.")
+
+    rows, d = load_scores("test")
+    res, preds = _eval(rows, d["scores"], rule, args.n_boot)
+    print("\n" + table([res]) + f"\nSố câu trung bình: {res['so_cau_tb']}")
+
+    moc = {r["name"]: r for r in json.loads(
+        (RESULTS / "tables" / "baselines_test.json").read_text(encoding="utf-8"))}
+    versus = {}
+    for ten in ("Lead-3", "Lead-1"):
+        for m in ("rouge1", "rouge2", "rougeL"):
+            versus[f"{ten} {m}"] = compare(res, moc[ten], m, n_boot=args.n_boot)
+            print("  " + versus[f"{ten} {m}"])
+
+    save([res], f"{tag}.json")
+    (RESULTS / "predictions" / f"{tag}.json").write_text(json.dumps(
+        {"guid": [str(r["guid"]) for r in rows],
+         "reference": [r["abstract"] for r in rows], res["name"]: preds},
+        ensure_ascii=False), encoding="utf-8")
+    (RESULTS / "tables" / f"{tag}_run.json").write_text(json.dumps({
+        "tag": tag, "rule": rule, "chosen_on": "tune",
+        "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scores_file": str(scores_path("test")),
+        "scoring_env": {k: d[k] for k in ("model", "device", "torch", "seconds")},
+        "test": {"corpus": res["corpus"], "length": res["length"], "so_cau_tb": res["so_cau_tb"]},
+        "versus": versus,
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"\nĐã ghi results/tables/{tag}.json, _run.json và results/predictions/{tag}.json")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Tầng 2: chọn số câu linh hoạt.")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -238,6 +293,13 @@ def main():
     c = sub.add_parser("select", help="dò quy tắc trên tune, áp quy tắc thắng lên val")
     c.add_argument("--n-boot", type=int, default=10_000)
     c.set_defaults(fn=cmd_select)
+    t = sub.add_parser("cham-test", help="áp quy tắc đã thắng trên tune lên `test` (lần chấm cuối)")
+    t.add_argument("--n-boot", type=int, default=10_000)
+    t.add_argument(
+        "--cho-phep-test", action="store_true",
+        help="BẮT BUỘC: `test` dùng đúng MỘT lần ở cuối dự án",
+    )
+    t.set_defaults(fn=cmd_cham_test)
     args = ap.parse_args()
     args.fn(args)
 
