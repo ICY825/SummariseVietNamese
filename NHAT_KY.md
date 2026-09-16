@@ -56,9 +56,23 @@ tầng duy nhất hoán đổi chi tiết), nên không được gộp ba tiêu 
 "bịa" rõ nhất (B31, B11, B37) đều thuộc **sapo**, tức thói thêm thông tin ngoài bài là học
 từ dữ liệu. Mọi số trong mục đều tính lại được từ bốn file phiếu và `khoa.json`.
 
-### 3. Demo Gradio (tuần 7)
+### 3. Demo Gradio (tuần 7) — **XONG** 16/09/2026
 
-Chưa bắt đầu. Thư mục `app/` đang trống.
+`app/pipeline.py` (đường suy luận) và `app/app.py` (giao diện). Chạy:
+
+```bash
+~/.venvs/demo/Scripts/python.exe app/app.py     # http://127.0.0.1:7860
+```
+
+Đã kiểm bằng chạy thật, không suy diễn: cả bốn tầng chạy với **trọng số thật** (tầng 2
+16,9 s, tầng 3 18,6 s, tầng 4 6,1 s kể cả nạp mô hình), `tom_tat_tat_ca` trả 5/5 tầng,
+máy chủ Gradio lên trong 1,2 s và trả HTTP 200 với đúng 6 textbox trong `/config`.
+
+Checkpoint nằm **ngoài repo** ở `~/.cache/dl-summarisevn/` (2,46 GB) — xem README mục demo
+để biết cách lấy lại. Môi trường `~/.venvs/demo` (gradio 6.27.0, underthesea 9.5.0).
+
+Ba chốt chặn đã kiểm cả chiều thuận lẫn chiều nghịch: trọng số 0 byte, tách từ hỏng, và
+chọn nhầm bản checkpoint hỏng khi trên máy có nhiều bản.
 
 ### 4. Nợ cũ (không bắt buộc)
 
@@ -131,6 +145,14 @@ Tự kiểm tra sau mỗi lần sửa code (vài giây, không cần mạng):
   `TRANSFORMERS_OFFLINE=1`, mô hình đọc từ cache.
 - **Tên file của `run_baselines.py` có `k`**: `--k 2 --systems leadk` ghi `baselines_val_k2_leadk.json`.
 - **Kaggle `kernels logs` rỗng** với phiên đã xong; kết quả nằm trong `_run.json` của output.
+- **`kaggle kernels output` trả file trọng số 0 BYTE.** Mọi file nhỏ tải về đầy đủ và
+  đúng, riêng `model.safetensors` rỗng — không báo lỗi gì. Với BARTpho nó còn bỏ sót hẳn
+  thư mục `final/`. Trọng số vẫn còn bên Kaggle (các kernel đọc qua `kernel_sources` chạy
+  bình thường), nên cách lấy về là kernel CPU `dl-summarisevn-xuat-ckpt` chép sang
+  `/kaggle/working` rồi tải — **không phải huấn luyện lại**. Hệ quả: đừng bao giờ kết luận
+  "mất checkpoint" từ việc `from_pretrained` báo lỗi; kiểm **kích thước** file trước.
+- **Tải file lớn từ Kaggle hay đứt** (`IncompleteRead`), và pip cũng đứt (`getaddrinfo
+  failed`) khi mạng chập chờn. Cứ chạy lại; pip nối tiếp được phần đã tải.
 
 ## Mở phiên làm việc mới
 

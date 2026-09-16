@@ -1605,6 +1605,66 @@ người–người ở `trung_thuc` chỉ 0,568 — chính hai người cũng c
 ở `trung_thuc` là 0,949: hai lượt máy giống nhau hơn hai người giống nhau, tức máy **nhất
 quán** chứ chưa chắc **đúng**.
 
+## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
+
+Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
+
+```bash
+~/.venvs/demo/Scripts/python.exe app/app.py     # mở http://127.0.0.1:7860
+```
+
+Demo cố ý **không có ô "kết quả tốt nhất"**: mục đích của nó là cho thấy hai hồ sơ lỗi
+bù trừ nhau đúng như mục phân loại lỗi ở trên — extractive gần như không sai sự thật
+nhưng đứt mạch và bỏ sót ý, abstractive trôi chảy nhưng thiếu ý và có thể hoán đổi chi tiết.
+
+**Môi trường riêng** `~/.venvs/demo`, để `.venv` chính vẫn sạch `torch` đúng thiết kế:
+`requirements.txt` + torch (CPU) + `transformers==5.0.0` + `sentencepiece` + `gradio` +
+`underthesea`. Bản đã chạy được: torch 2.14.0+cpu, transformers 5.0.0, gradio 6.27.0,
+underthesea 9.5.0.
+
+**Checkpoint để ngoài repo**, ở `~/.cache/dl-summarisevn/` — 2,46 GB: BARTpho `train_20k`
+1,91 GB và tầng 2 540 MB kèm `head.pt`.
+
+### Lấy checkpoint về: `kernels output` trả file trọng số 0 byte
+
+`kaggle kernels output` **không** phục vụ file lớn. Nó tải về đầy đủ mọi file nhỏ —
+`config.json`, `head.pt`, `bpe.codes`, `dict.txt` — nhưng `model.safetensors` là **0 byte**,
+và với BARTpho nó còn bỏ sót hẳn thư mục `final/` mà các kernel khác vẫn dùng. Không có
+thông báo lỗi nào.
+
+Trọng số **vẫn còn nguyên bên Kaggle**: `tang4` và `tang2_score` đọc chúng qua
+`kernel_sources` và chạy thành công. Nên cách lấy về là một kernel CPU đọc lại rồi chép
+sang `/kaggle/working` (`notebooks/xuat_ckpt/`, kernel `dl-summarisevn-xuat-ckpt`) —
+**không phải huấn luyện lại**:
+
+```bash
+~/.venvs/kaggle/Scripts/kaggle.exe kernels push -p notebooks/xuat_ckpt
+~/.venvs/kaggle/Scripts/kaggle.exe kernels output minh12605/dl-summarisevn-xuat-ckpt \
+    -p ~/.cache/dl-summarisevn/xuat
+```
+
+Đừng đẩy kernel này bằng `notebooks/kaggle_push.py`: script đó ghim cứng
+`--accelerator NvidiaTeslaT4`, tức xin GPU cho một việc chỉ chép file.
+
+### Hai lỗi âm thầm mà demo chặn thẳng
+
+Cả hai đều chạy trót lọt và cho ra kết quả **trông hợp lý** nếu không chặn:
+
+1. **Trọng số rỗng.** Kiểm sự tồn tại của `head.pt` là *chưa đủ* — bản tải hỏng vẫn có nó.
+   `kiem_trong_so()` kiểm **kích thước** file trọng số. Thiếu `head.pt` thì lớp cho điểm
+   tầng 2 là trọng số khởi tạo ngẫu nhiên và nó chọn câu bừa mà không báo gì.
+2. **Đầu vào chưa tách từ.** `sentences()` cắt câu theo ranh giới `" . "` của bộ VietNews;
+   văn bản người dùng gõ có dấu chấm dính liền chữ nên nó thấy **đúng một câu**, và mọi
+   tầng extractive trả về **nguyên bài**. `chuan_bi()` báo lỗi khi văn bản có từ hai dấu
+   kết câu trở lên mà chỉ cắt được một câu — và cố ý *không* báo lỗi với bài thật sự một câu.
+
+`tim_checkpoint()` cũng ưu tiên thư mục có trọng số thật khi trên máy có nhiều bản tải:
+chọn nhầm bản hỏng sẽ báo lỗi y hệt như chưa tải gì.
+
+**Chi phí và giới hạn.** Khoảng 15–25 giây một bài trên CPU, phần lớn là nạp mô hình cho
+lần chạy đầu (mô hình được giữ lại cho các lần sau). Với bài ngắn, Lead-3 và LexRank có
+thể cho ra cùng một kết quả — đó là trùng hợp trên bài ít câu, không phải lỗi.
+
 ## Cấu trúc
 
 ```
@@ -1709,7 +1769,7 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     thiệt hại do cắt (hiệu hai hiệu −0,17 [−2,35, +2,00])
   - [x] tầng 2 chọn số câu linh hoạt — `k2` chọn trên `tune`, đạt 31,00 trên `val`
     (+2,30 so với `k3`, +1,91 so với mốc Lead-2 thêm sau)
-- [ ] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
+- [x] Tuần 7 — Người chấm, phân tích lỗi, demo Gradio
   - [x] công cụ chấm blind: phiếu 50 bài `val` × 4 hệ thống đã dựng và kiểm (`human_eval.py`)
   - [x] chấm phiếu — **không có người chấm**; thay bằng hai lượt chấm của mô hình ngôn ngữ,
     ghi rõ là máy chấm (`llm_judge.csv`, `llm_judge_2.csv` do tác tử độc lập chấm), alpha
@@ -1724,7 +1784,9 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
   - [x] phân tích lỗi định tính — 190 ghi chú của 2 lượt máy và 2 người chấm, phân thành
     bốn họ lỗi (thiếu ý, sai sự thật, mạch văn đứt, rác kế thừa từ dữ liệu); hai hồ sơ lỗi
     của extractive và abstractive bù trừ nhau; ba ví dụ "bịa" rõ nhất đều thuộc sapo
-  - [ ] demo Gradio
+  - [x] demo Gradio — `app/pipeline.py` + `app/app.py`, bốn tầng chạy trên CPU với trọng số
+    thật; kèm kernel `dl-summarisevn-xuat-ckpt` lấy lại checkpoint mà `kernels output`
+    trả về 0 byte
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
 
 ### Rà soát tuần 5 — đã lấp và còn nợ

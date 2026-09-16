@@ -1,0 +1,17 @@
+{
+  "id": "minh12605/dl-summarisevn-xuat-ckpt",
+  "title": "DL-SummariseVN xuat ckpt",
+  "code_file": "kaggle_xuat_ckpt.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [
+    "minh12605/dl-summarisevn-vit5",
+    "minh12605/dl-summarisevn-tang2"
+  ],
+  "model_sources": []
+}
