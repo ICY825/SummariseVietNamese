@@ -1,0 +1,336 @@
+{
+ "mau": [
+  "B01",
+  "B04",
+  "B09",
+  "B12",
+  "B17",
+  "B33",
+  "B34",
+  "B37",
+  "B38",
+  "B42",
+  "B43",
+  "B47"
+ ],
+ "nguoi": [
+  "cham_mau_nguoi1",
+  "cham_mau_nguoi2"
+ ],
+ "may": [
+  "llm_judge",
+  "llm_judge_2"
+ ],
+ "n_ban": 48,
+ "tieu_chi": {
+  "day_du": {
+   "alpha_nguoi_nguoi": 0.7469815340909092,
+   "alpha_may_may": 0.7730891719745223,
+   "alpha_nguoi_may": 0.7894705318639195,
+   "spearman_nguoi_may": 0.8217683046507777,
+   "spearman_nguoi_tung_luot_may": {
+    "llm_judge": 0.7926565085539249,
+    "llm_judge_2": 0.7792609622563778
+   },
+   "may_tru_nguoi_tb": -0.20833333333333334,
+   "lech_tuyet_doi_tb": 0.4375,
+   "ty_le_lech_toi_da_1": 0.9583333333333334,
+   "tb_nguoi": 3.3333333333333335,
+   "tb_may": 3.125,
+   "n": 48,
+   "xep_hang_nguoi": [
+    "lead3",
+    "sapo",
+    "tang2_k2",
+    "bartpho"
+   ],
+   "xep_hang_may": [
+    "lead3",
+    "sapo",
+    "tang2_k2",
+    "bartpho"
+   ]
+  },
+  "trung_thuc": {
+   "alpha_nguoi_nguoi": 0.5683499935090225,
+   "alpha_may_may": 0.9493765320260045,
+   "alpha_nguoi_may": 0.7644832985386221,
+   "spearman_nguoi_may": 0.5408126418904926,
+   "spearman_nguoi_tung_luot_may": {
+    "llm_judge": 0.5832967761915969,
+    "llm_judge_2": 0.5502913291942481
+   },
+   "may_tru_nguoi_tb": -0.1875,
+   "lech_tuyet_doi_tb": 0.3333333333333333,
+   "ty_le_lech_toi_da_1": 0.9375,
+   "tb_nguoi": 4.635416666666667,
+   "tb_may": 4.447916666666667,
+   "n": 48,
+   "xep_hang_nguoi": [
+    "lead3",
+    "tang2_k2",
+    "sapo",
+    "bartpho"
+   ],
+   "xep_hang_may": [
+    "lead3",
+    "tang2_k2",
+    "bartpho",
+    "sapo"
+   ]
+  },
+  "troi_chay": {
+   "alpha_nguoi_nguoi": 0.585027865642416,
+   "alpha_may_may": 0.7473404255319149,
+   "alpha_nguoi_may": 0.5040489990545484,
+   "spearman_nguoi_may": 0.6529377342223869,
+   "spearman_nguoi_tung_luot_may": {
+    "llm_judge": 0.6385707253618941,
+    "llm_judge_2": 0.6062867839993781
+   },
+   "may_tru_nguoi_tb": -0.46875,
+   "lech_tuyet_doi_tb": 0.5729166666666666,
+   "ty_le_lech_toi_da_1": 0.8125,
+   "tb_nguoi": 4.59375,
+   "tb_may": 4.125,
+   "n": 48,
+   "xep_hang_nguoi": [
+    "bartpho",
+    "sapo",
+    "lead3",
+    "tang2_k2"
+   ],
+   "xep_hang_may": [
+    "bartpho",
+    "sapo",
+    "lead3",
+    "tang2_k2"
+   ]
+  }
+ },
+ "he_thong": {
+  "sapo": {
+   "day_du": {
+    "nguoi": 3.625,
+    "may": 3.2083333333333335
+   },
+   "trung_thuc": {
+    "nguoi": 4.416666666666667,
+    "may": 3.8333333333333335
+   },
+   "troi_chay": {
+    "nguoi": 4.583333333333333,
+    "may": 4.458333333333333
+   }
+  },
+  "lead3": {
+   "day_du": {
+    "nguoi": 3.7916666666666665,
+    "may": 3.5416666666666665
+   },
+   "trung_thuc": {
+    "nguoi": 4.958333333333333,
+    "may": 5.0
+   },
+   "troi_chay": {
+    "nguoi": 4.583333333333333,
+    "may": 4.041666666666667
+   }
+  },
+  "tang2_k2": {
+   "day_du": {
+    "nguoi": 3.5,
+    "may": 3.2083333333333335
+   },
+   "trung_thuc": {
+    "nguoi": 4.916666666666667,
+    "may": 4.833333333333333
+   },
+   "troi_chay": {
+    "nguoi": 4.5,
+    "may": 3.4166666666666665
+   }
+  },
+  "bartpho": {
+   "day_du": {
+    "nguoi": 2.4166666666666665,
+    "may": 2.5416666666666665
+   },
+   "trung_thuc": {
+    "nguoi": 4.25,
+    "may": 4.125
+   },
+   "troi_chay": {
+    "nguoi": 4.708333333333333,
+    "may": 4.583333333333333
+   }
+  }
+ },
+ "chieu_ket_luan": {
+  "bartpho − lead3 day_du": {
+   "nguoi": {
+    "diff": -1.375,
+    "lo": -1.8333333333333333,
+    "hi": -0.8333333333333334,
+    "p": 0.0,
+    "significant": true
+   },
+   "may": {
+    "diff": -1.0,
+    "lo": -1.5416666666666667,
+    "hi": -0.5,
+    "p": 0.0,
+    "significant": true
+   },
+   "cung_chieu": true
+  },
+  "bartpho − lead3 trung_thuc": {
+   "nguoi": {
+    "diff": -0.7083333333333334,
+    "lo": -1.3333333333333333,
+    "hi": -0.20833333333333334,
+    "p": 0.0006,
+    "significant": true
+   },
+   "may": {
+    "diff": -0.875,
+    "lo": -1.5833333333333333,
+    "hi": -0.25,
+    "p": 0.0024,
+    "significant": true
+   },
+   "cung_chieu": true
+  },
+  "bartpho − lead3 troi_chay": {
+   "nguoi": {
+    "diff": 0.125,
+    "lo": -0.375,
+    "hi": 0.5833333333333334,
+    "p": 0.6422,
+    "significant": false
+   },
+   "may": {
+    "diff": 0.5416666666666666,
+    "lo": 0.041666666666666664,
+    "hi": 1.0833333333333333,
+    "p": 0.0324,
+    "significant": true
+   },
+   "cung_chieu": true
+  },
+  "bartpho − tang2_k2 day_du": {
+   "nguoi": {
+    "diff": -1.0833333333333333,
+    "lo": -1.5833333333333333,
+    "hi": -0.5,
+    "p": 0.0012,
+    "significant": true
+   },
+   "may": {
+    "diff": -0.6666666666666666,
+    "lo": -1.2083333333333333,
+    "hi": -0.08333333333333333,
+    "p": 0.0314,
+    "significant": true
+   },
+   "cung_chieu": true
+  },
+  "bartpho − tang2_k2 trung_thuc": {
+   "nguoi": {
+    "diff": -0.6666666666666666,
+    "lo": -1.3333333333333333,
+    "hi": -0.125,
+    "p": 0.0096,
+    "significant": true
+   },
+   "may": {
+    "diff": -0.7083333333333334,
+    "lo": -1.3333333333333333,
+    "hi": -0.16666666666666666,
+    "p": 0.0024,
+    "significant": true
+   },
+   "cung_chieu": true
+  },
+  "bartpho − tang2_k2 troi_chay": {
+   "nguoi": {
+    "diff": 0.20833333333333334,
+    "lo": -0.4166666666666667,
+    "hi": 0.7916666666666666,
+    "p": 0.5122,
+    "significant": false
+   },
+   "may": {
+    "diff": 1.1666666666666667,
+    "lo": 0.625,
+    "hi": 1.7083333333333333,
+    "p": 0.0,
+    "significant": true
+   },
+   "cung_chieu": true
+  },
+  "lead3 − tang2_k2 day_du": {
+   "nguoi": {
+    "diff": 0.2916666666666667,
+    "lo": -0.25,
+    "hi": 0.7916666666666666,
+    "p": 0.3124,
+    "significant": false
+   },
+   "may": {
+    "diff": 0.3333333333333333,
+    "lo": -0.042708333333332384,
+    "hi": 0.7083333333333334,
+    "p": 0.1248,
+    "significant": false
+   },
+   "cung_chieu": true
+  },
+  "lead3 − tang2_k2 trung_thuc": {
+   "nguoi": {
+    "diff": 0.041666666666666664,
+    "lo": -0.125,
+    "hi": 0.25,
+    "p": 0.918,
+    "significant": false
+   },
+   "may": {
+    "diff": 0.16666666666666666,
+    "lo": 0.0,
+    "hi": 0.5,
+    "p": 0.7198,
+    "significant": false
+   },
+   "cung_chieu": true
+  },
+  "lead3 − tang2_k2 troi_chay": {
+   "nguoi": {
+    "diff": 0.08333333333333333,
+    "lo": -0.16666666666666666,
+    "hi": 0.3333333333333333,
+    "p": 0.6346,
+    "significant": false
+   },
+   "may": {
+    "diff": 0.625,
+    "lo": 0.20833333333333334,
+    "hi": 1.0833333333333333,
+    "p": 0.003,
+    "significant": true
+   },
+   "cung_chieu": true
+  }
+ },
+ "cau_hoi_3": {
+  "rouge1": {
+   "spearman_nguoi": -0.019899660605422476,
+   "spearman_may": 0.04882183047676266,
+   "n": 36
+  },
+  "bertscore": {
+   "spearman_nguoi": -0.12082865818586588,
+   "spearman_may": 0.09530021309064071,
+   "n": 36
+  }
+ }
+}

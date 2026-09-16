@@ -1,49 +1,49 @@
 ﻿ma_bai,nhan,day_du,trung_thuc,troi_chay,ghi_chu
-B01,A,,,,
-B01,B,,,,
-B01,C,,,,
-B01,D,,,,
-B04,A,,,,
-B04,B,,,,
-B04,C,,,,
-B04,D,,,,
-B09,A,,,,
-B09,B,,,,
-B09,C,,,,
-B09,D,,,,
-B12,A,,,,
-B12,B,,,,
-B12,C,,,,
-B12,D,,,,
-B17,A,,,,
-B17,B,,,,
-B17,C,,,,
-B17,D,,,,
-B33,A,,,,
-B33,B,,,,
-B33,C,,,,
-B33,D,,,,
-B34,A,,,,
-B34,B,,,,
-B34,C,,,,
-B34,D,,,,
-B37,A,,,,
-B37,B,,,,
-B37,C,,,,
-B37,D,,,,
-B38,A,,,,
-B38,B,,,,
-B38,C,,,,
-B38,D,,,,
-B42,A,,,,
-B42,B,,,,
-B42,C,,,,
-B42,D,,,,
-B43,A,,,,
-B43,B,,,,
-B43,C,,,,
-B43,D,,,,
-B47,A,,,,
-B47,B,,,,
-B47,C,,,,
-B47,D,,,,
+B01,A,3,5,3,tThiếu ý Tuấn đâm chủ nhà bị thương và bị bắt, câu cuối cắt dở lửng lơ ("phát giác.")
+B01,B,2,5,3,Bỏ phần đầu (đối tượng, địa điểm), bắt đầu lửng lơ thiếu ngữ cảnh
+B01,C,2,5,3,Chỉ gồm 1 câu ngắn, bỏ hết bối cảnh, bắt đầu bằng từ nối "Khi..."
+B01,D,5,3,5,Nêu trôi chảy, dùng từ "cướp tài sản" sai lệch so với bài gốc là "trộm cắp"
+B04,A,2,3,5,Chỉ nói về MV, thông tin "MV đầu tiên trong 10 năm" không có trong bài gốc
+B04,B,3,5,3,trích trôi chảy đoạn đầu nhưng cắt dở giữa chừng , thiếy ý về con trai Bảo Nam & Jennifer Phạm
+B04,C,1,5,5,Chỉ là 1 câu dẫn tiêu đề, không nêu được nội dung cụ thể
+B04,D,4,5,4,Tổng hợp tốt ý chính về tình cảm hiện tại và sự hài lòng với cuộc sống độc thân
+B09,A,3,5,5,Chỉ nêu chỉ đạo đối với Bộ Công an, thiếu bối cảnh vụ việc và trách nhiệm Bộ GTVT
+B09,B,4,5,5,Nêu đúng trọng tâm quy trách nhiệm người đứng đầu
+B09,C,5,5,5,
+B09,D,3,5,4,Bị cắt ngang trước khi nêu giải pháp / yêu cầu xử lý của Phó Thủ tướng
+B12,A,4,5,5,Nêu được quy mô khảo sát và điều ước lớn nhất (37% sức khỏe)
+B12,B,4,5,5,Tóm tắt ngắn gọn, diễn đạt tự nhiên
+B12,C,4,5,3,Lỗi định dạng dấu câu dư thừa (`"- thông cáo...`) và câu đầu đứng lửng lơ
+B12,D,3,4,5,Gộp sức khỏe (37%) và tiền bạc (9%) thành "phần lớn" làm diễn đạt hơi lệch tỉ lệ
+B17,A,3,5,5,Ngắn, thiếu tên mẫu UAV (LJ-I) và nơi ra mắt
+B17,B,5,5,5,
+B17,C,2,5,5,quá chung chung , bỏ mất ý chính quan trọng là "mô phỏng/khắc chế F-35"
+B17,D,4,5,5,Nêu đúng tính năng mô phỏng F-35 và tên thiết bị LJ-I
+B33,A,4,5,5,Nêu được quyết định giữ nguyên giá và con số chi quỹ xăng E5
+B33,B,5,5,5,
+B33,C,3,5,5,Thiếu ý quan trọng nhất là "giữ ổn định giá bán xăng dầu"
+B33,D,4,5,3,Lỗi cú pháp ngữ pháp: "sau khi dù quyết định..." bị lặp/thừa từ gây vấp
+B34,A,4,5,3,Bị lỗi mất chữ đầu tiên ("àn Novaland..." thay vì "Tập đoàn Novaland...")
+B34,B,4,5,5,Nêu ý nghĩa và thông số trái phiếu, thiếu số tiền 160 triệu USD ở câu đầu
+B34,C,3,5,5,Bỏ sót các con số quy mô đợt phát hành
+B34,D,3,5,5,Nêu được giá chuyển đổi nhưng thiếu con số 160 triệu USD và niêm yết SGX
+B37,A,1,5,3,Dùng đại từ "Đó" ở đầu mà không có ngữ cảnh; không nêu được thông tin gì
+B37,B,3,5,5,Mới nêu sự kiện và khó khăn, chưa nêu các giải pháp / cam kết
+B37,C,2,3,5,Thông tin "6 không gian", "8.500 euro" không hề có trong bài gốc
+B37,D,4,5,5,Tóm tắt rõ bối cảnh, quy mô 140 không gian và các ví dụ điển hình
+B38,A,3,5,5,Chỉ nêu khung giờ xe tải nhẹ, bỏ sót xe tải nặng và các điều chỉnh khác
+B38,B,4,5,5,Nêu rõ quy định mới cho xe tải nhẹ và so sánh khung giờ cũ
+B38,C,5,5,5,
+B38,D,4,5,5,Tóm tắt cô đọng, diễn đạt lại trôi chảy cả hai nhóm xe
+B42,A,4,5,5,Nêu đúng sự việc dừng hoạt động chi nhánh Bỉm Sơn và lý do
+B42,B,4,5,5,Nêu rõ sự việc, lý do và điều kiện mở cửa trở lại
+B42,C,4,5,5,Tổng hợp tốt cả nguyên nhân sâu xa (cán bộ bị đình chỉ) và sự việc
+B42,D,2,2,5,Sai chi tiết quan trọng: Nhầm thành "Trung tâm đăng kiểm Thanh Hóa" ngừng hoạt động (bài gốc chỉ dừng chi nhánh Bỉm Sơn 3602S)
+B43,A,3,5,4,Nêu sự việc kiểm tra ban đầu, thiếu phần giải trình lý do của chủ đầu tư
+B43,B,2,2,5,Sai sự thật: Ghi "nhóm người Trung Quốc xây dựng khu phố" (bài gốc ghi họ là khách du lịch / chuyên gia trà)
+B43,C,4,5,5,Nêu đúng trọng tâm tiêu đề về lý do nhầm lẫn giữa cải tạo và xây dựng
+B43,D,3,5,5,Nêu sự việc và công ty thuê đất, thiếu ý phản hồi lý do xây không phép
+B47,A,4,5,5,Nêu đúng câu phát biểu ấn tượng và bối cảnh thực phẩm bẩn
+B47,B,2,5,3,Chỉ là câu dẫn và dính cụm từ thừa chú thích ảnh "Đại biểu Trần Ngọc Vinh."
+B47,C,4,5,5,Diễn đạt lại tốt ý chính cảnh báo an toàn thực phẩm
+B47,D,3,5,3,Thiếu câu nói trọng tâm "từ dạ dày đến nghĩa địa" và dính chú thích ảnh thừa ở giữa câu

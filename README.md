@@ -1256,9 +1256,13 @@ kèm danh sách `guid` của 102 bài bị lọc. Script tự kiểm lại 26,80
 
 ## Tuần 7 — chấm blind có người thật (câu hỏi 3)
 
-Phiếu đã dựng nhưng **không có người chấm**: điểm hiện có là **hai lượt chấm bằng mô hình
-ngôn ngữ** theo đúng phiếu này — xem mục "Kết quả" cuối phần. Các đoạn thiết kế dưới đây vẫn
-áp dụng nguyên vẹn nếu sau này có người chấm thật điền `cham_nguoi1..3.csv`.
+Phiếu đã dựng nhưng **không có người chấm đủ 50 bài**: điểm hiện có là **hai lượt chấm bằng
+mô hình ngôn ngữ** theo đúng phiếu này — xem mục "Kết quả" cuối phần — và chúng đã được kiểm
+chứng bằng một mẫu 12 bài do 2 người chấm thật, ở mục cuối phần này. Các đoạn thiết kế dưới
+đây vẫn áp dụng nguyên vẹn nếu sau này có người chấm đủ 50 bài.
+
+Phương án "3 người chấm 50 bài" **đã bỏ**, nên ba phiếu trống `cham_nguoi1..3.csv` không còn
+trong cây làm việc; chúng vẫn nằm trong commit `2638a78` nếu cần dựng lại.
 
 ```bash
 .venv/Scripts/python.exe src/eval/human_eval.py prepare    # đã chạy; từ chối chạy lại khi khoa.json đã có
@@ -1426,7 +1430,7 @@ tiền đề.
 - **Tiêu chí trung thực có lợi sẵn cho extractive**: chép nguyên câu thì gần như không thể
   sai. Đọc từng cột thay vì gộp ba tiêu chí thành một điểm.
 
-### Kiểm chứng máy chấm bằng một mẫu người chấm — phiếu đã dựng, chờ người chấm
+### Kiểm chứng máy chấm bằng một mẫu người chấm — đã chấm xong
 
 Hai lượt máy chấm đồng thuận với nhau, nhưng điều đó không chứng minh chúng đồng thuận với
 **người**. Để giữ được chữ "người đọc" trong câu hỏi 3 mà không cần 3 người × 50 bài, 2
@@ -1466,6 +1470,71 @@ chứng trên một mẫu người chấm 12 bài". Nếu người–máy thấp
 về tiêu chí đó chỉ được nêu theo người chấm trên mẫu, và độ lệch ấy tự nó là một phát hiện
 về máy chấm. 12 bài là ít: khoảng tin cậy trên mẫu rộng, nên mẫu dùng để kiểm **chiều** và
 **mức đồng thuận**, không để thay số của 50 bài.
+
+**Kết quả.** 2 người chấm đủ 48/48 bản của 12 bài, độc lập với nhau và với máy chấm. Số
+đầy đủ ở `results/tables/nguoi_vs_may_val.json`.
+
+| Tiêu chí | alpha người–người | alpha máy–máy | alpha người–máy | Spearman người–máy | máy − người | lệch ≤1 |
+|---|---|---|---|---|---|---|
+| `day_du` | 0,747 | 0,773 | **0,789** | +0,822 | −0,21 | 96% |
+| `trung_thuc` | 0,568 | 0,949 | **0,764** | +0,541 | −0,19 | 94% |
+| `troi_chay` | 0,585 | 0,747 | **0,504** | +0,653 | −0,47 | 81% |
+
+**`day_du` và `trung_thuc` đạt chuẩn đã chốt trước.** Alpha người–máy (0,789 và 0,764)
+**cao hơn** alpha người–người (0,747 và 0,568), tức máy chấm gần với trung bình hai người
+hơn là hai người gần nhau. Với hai tiêu chí này, điểm máy trên 50 bài được coi là đã kiểm
+chứng trên mẫu người chấm.
+
+**`troi_chay` không đạt, và chính chỗ không đạt là một phát hiện.** Alpha người–máy 0,504
+thấp hơn người–người 0,585, lệch trung bình lớn nhất (−0,47) và tỷ lệ lệch ≤1 thấp nhất
+(81%). Đáng kể hơn con số alpha: **máy phóng đại khoảng cách trôi chảy giữa các hệ thống**.
+Cả 9 kết luận chính đều **cùng chiều** ở người và máy, nhưng ba trong số đó máy tìm ra
+khác biệt có ý nghĩa còn người thì không — cả ba đều thuộc `troi_chay`:
+
+| Cặp, tiêu chí `troi_chay` | Người chấm | Máy chấm |
+|---|---|---|
+| bartpho − lead3 | +0,12 [−0,38, +0,58] | +0,54 [+0,04, +1,08] |
+| bartpho − `k2` | +0,21 [−0,42, +0,79] | **+1,17 [+0,62, +1,71]** |
+| lead3 − `k2` | +0,08 [−0,17, +0,33] | +0,62 [+0,21, +1,08] |
+
+Chỗ lệch dồn vào `k2`: người cho 4,50 điểm trôi chảy, máy cho 3,42. Máy phạt nặng việc
+ghép hai câu rời nhau, người chấm gần như không bận tâm. **Hệ quả cho báo cáo:** phát biểu
+"BARTpho trôi chảy hơn hẳn extractive" chỉ được nêu **theo máy chấm**; theo người chấm trên
+mẫu, khác biệt trôi chảy giữa bốn hệ thống không đo được.
+
+**Phần lõi của câu hỏi 1 thì đứng vững.** BARTpho kém đầy đủ hơn Lead-3 (−1,38 [−1,83,
+−0,83] theo người; −1,00 [−1,54, −0,50] theo máy) và kém hơn `k2` (−1,08 [−1,58, −0,50]
+theo người), đồng thời kém trung thực hơn cả hai — bốn phát biểu này có ý nghĩa ở **cả**
+người lẫn máy. Kết luận "abstractive trôi chảy hơn nhưng thiếu ý và kém trung thực hơn
+extractive" không phụ thuộc vào việc ai chấm.
+
+**Máy khắt khe hơn người ở cả ba tiêu chí** (−0,19 đến −0,47), nên điểm tuyệt đối trong
+bảng 50 bài nên đọc như cận dưới, không phải mức người đọc thật sự cảm nhận.
+
+**Máy phạt chính bản do người viết.** Xếp hạng bốn hệ thống trùng khít ở `day_du` và
+`troi_chay`; chỉ khác ở `trung_thuc`, và khác đúng tại vị trí của sapo: người xếp sapo
+trên BARTpho (4,42 so với 4,25), máy xếp ngược lại (3,83 so với 4,12). Sapo là tham chiếu
+vàng do nhà báo viết, nên đây là điểm yếu của máy chấm chứ không phải của sapo — cách giải
+thích nhất quán với dữ liệu là máy coi phần sapo **diễn đạt lại** (59,5% bigram của sapo
+vốn không có trong bài) là "thông tin không có trong bài gốc".
+
+**Câu hỏi 3 nay có bằng chứng từ người thật.** Trên 36 bản (bỏ sapo vì nó là tham chiếu),
+Spearman giữa điểm trung bình ba tiêu chí và điểm tự động:
+
+| | ROUGE-1 | BERTScore |
+|---|---|---|
+| Người chấm | −0,02 | −0,12 |
+| Máy chấm | +0,05 | +0,10 |
+
+Cả bốn con số đều quanh 0. Trước đây kết luận "ROUGE không phản ánh cảm nhận người đọc"
+chỉ dựa trên máy chấm (+0,12 trên 50 bài); giờ một mẫu người chấm thật cho cùng câu trả
+lời, và đó là chỗ dựa vững hơn hẳn cho câu hỏi 3.
+
+**Giới hạn phải nêu.** 12 bài, 2 người chấm, khoảng tin cậy trên mẫu rộng. Alpha
+người–người ở `trung_thuc` chỉ 0,568 — chính hai người cũng chưa thống nhất cao, nên
+"máy gần người" ở tiêu chí ấy một phần vì mốc so sánh vốn đã lỏng. Ngược lại alpha máy–máy
+ở `trung_thuc` là 0,949: hai lượt máy giống nhau hơn hai người giống nhau, tức máy **nhất
+quán** chứ chưa chắc **đúng**.
 
 ## Cấu trúc
 
@@ -1579,7 +1648,10 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     tương quan với ROUGE-1 chỉ +0,12
   - [x] phiếu mẫu 12 bài cho người chấm kiểm chứng máy chấm (`prepare-mau`), đã kiểm là một
     phần trùng khít của phiếu 50 bài
-  - [ ] 2 người chấm điền `cham_mau_nguoi1..2.csv` (~45–60 phút mỗi người), rồi chạy `so-sanh`
+  - [x] 2 người chấm điền `cham_mau_nguoi1..2.csv`, đã chạy `so-sanh`: `day_du` và
+    `trung_thuc` đạt chuẩn kiểm chứng (alpha người–máy cao hơn alpha người–người),
+    `troi_chay` không đạt — máy phóng đại khác biệt trôi chảy; 9/9 kết luận chính cùng
+    chiều; người chấm cũng không tương quan với ROUGE-1 (−0,02), củng cố câu hỏi 3
   - [ ] phân tích lỗi định tính — nguyên liệu đã có: cột `ghi_chu` của `llm_judge.csv`
   - [ ] demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập

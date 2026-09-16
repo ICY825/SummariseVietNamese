@@ -1,6 +1,6 @@
 # Nhật ký tiến trình — để làm tiếp mà không phải bắt đầu lại
 
-Cập nhật: 15/09/2026. Số liệu chi tiết và lập luận nằm trong `README.md`; file này chỉ
+Cập nhật: 16/09/2026. Số liệu chi tiết và lập luận nằm trong `README.md`; file này chỉ
 ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**.
 
 ## Đang ở đâu
@@ -20,27 +20,30 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**.
 | Tầng 4 vòng 2 | huấn luyện lại trên đầu vào đã lọc cũng không (hiệu hai hiệu −0,17 [−2,35, +2,00]) |
 | Đối chứng `--no-train` | trùng khít hai bản lọc 898/898 ở nhóm không lọc |
 | Tuần 7, máy chấm | 2 lượt LLM chấm 50 bài × 4 hệ thống, alpha 0,76–0,92; BARTpho trôi chảy nhất nhưng thiếu ý và kém trung thực hơn extractive; tương quan với ROUGE-1 chỉ +0,12 |
+| Tuần 7, người chấm mẫu | 2 người × 12 bài (48 bản); `day_du`/`trung_thuc` kiểm chứng đạt, `troi_chay` không đạt (máy phóng đại); 9/9 kết luận cùng chiều; người vs ROUGE-1 −0,02 |
 
 ## Việc còn dở — theo thứ tự nên làm
 
-### 1. Người chấm mẫu (tuần 7) — **đang chờ người**
+### 1. Người chấm mẫu (tuần 7) — **XONG** 16/09/2026
 
-Phiếu mẫu 12 bài đã dựng và kiểm. Cần 2 người, mỗi người ~45–60 phút.
+Hai người đã chấm đủ 48/48 bản, `so-sanh` đã chạy, kết luận đã viết vào README (mục
+"Kiểm chứng máy chấm bằng một mẫu người chấm" và mục "Tiến độ"). Kết quả ở
+`results/tables/nguoi_vs_may_val.json`. Tóm tắt: `day_du` và `trung_thuc` đạt chuẩn kiểm
+chứng đã chốt trước (alpha người–máy 0,789 và 0,764, **cao hơn** alpha người–người 0,747
+và 0,568); `troi_chay` **không** đạt (0,504 so với 0,585) — máy phóng đại khác biệt trôi
+chảy, ba so cặp máy thấy có ý nghĩa mà người thì không, nên phát biểu về trôi chảy chỉ
+được nêu theo máy chấm. Cả 9 kết luận chính cùng chiều. Người chấm tương quan với ROUGE-1
+−0,02 và BERTScore −0,12 (n = 36), củng cố câu trả lời cho câu hỏi 3.
 
-1. Gửi mỗi người `results/human_eval/phieu_doc_mau.html` và **một** file
-   `results/human_eval/cham_mau_nguoi1.csv` hoặc `cham_mau_nguoi2.csv`.
-   **Không** gửi `khoa.json`, `mau.json`, `llm_judge*.csv`, link repo, điểm ROUGE.
-2. Người chấm chỉ điền số nguyên 1–5 vào `day_du`, `trung_thuc`, `troi_chay`; ghi lý do vào
-   `ghi_chu` khi cho 1–2; lưu **CSV UTF-8**, giữ đúng tên file.
-3. Chép hai file đã điền đè vào `results/human_eval/`, rồi:
+**Ba phiếu `cham_nguoi1..3.csv` đã bỏ có chủ ý** (16/09/2026). Đó là phiếu trống của
+phương án "3 người chấm đủ 50 bài" — phương án không thực hiện, vì 50 bài được chấm bằng
+hai lượt mô hình ngôn ngữ rồi kiểm chứng bằng phiếu mẫu 12 bài nói trên. Hệ quả cần nhớ:
+`human_eval.py analyze` mặc định tìm `cham_nguoi*.csv` nên **không còn đầu vào**. Nếu sau
+này cần, lấy phiếu trống ra từ commit `2638a78`:
 
-   ```bash
-   .venv/Scripts/python.exe src/eval/human_eval.py so-sanh
-   ```
-
-   Ghi `results/tables/nguoi_vs_may_val.json`. Cách đọc kết quả đã ghi sẵn trong README,
-   mục "Kiểm chứng máy chấm bằng một mẫu người chấm".
-4. Viết kết luận kiểm chứng vào README (mục đó và mục "Tiến độ").
+```bash
+git show 2638a78:results/human_eval/cham_nguoi1.csv > results/human_eval/cham_nguoi1.csv
+```
 
 ### 2. Phân tích lỗi định tính (tuần 7)
 

@@ -1,49 +1,49 @@
 ﻿ma_bai,nhan,day_du,trung_thuc,troi_chay,ghi_chu
-B01,A,,,,
-B01,B,,,,
-B01,C,,,,
-B01,D,,,,
-B04,A,,,,
-B04,B,,,,
-B04,C,,,,
-B04,D,,,,
-B09,A,,,,
-B09,B,,,,
-B09,C,,,,
-B09,D,,,,
-B12,A,,,,
-B12,B,,,,
-B12,C,,,,
-B12,D,,,,
-B17,A,,,,
-B17,B,,,,
-B17,C,,,,
-B17,D,,,,
-B33,A,,,,
-B33,B,,,,
-B33,C,,,,
-B33,D,,,,
-B34,A,,,,
-B34,B,,,,
-B34,C,,,,
-B34,D,,,,
-B37,A,,,,
-B37,B,,,,
-B37,C,,,,
-B37,D,,,,
-B38,A,,,,
-B38,B,,,,
-B38,C,,,,
-B38,D,,,,
-B42,A,,,,
-B42,B,,,,
-B42,C,,,,
-B42,D,,,,
-B43,A,,,,
-B43,B,,,,
-B43,C,,,,
-B43,D,,,,
-B47,A,,,,
-B47,B,,,,
-B47,C,,,,
-B47,D,,,,
+B01,A,4,5,5,chưa thấy thông tin về việc ông Lục được đưa đi điều trị và bình phục sau khi được điều trị
+B01,B,3,3,5,"thiếu hầu hết thông tin mà trong bài có, chỉ có hành động của tên trộm bị phát giác và sau đó bắt đầu hành hung chủ nhà dẫn đến bị thương "
+B01,C,2,4,5,chỉ có thông tin chủ nhà hô hoán và sau đó bị đối tượng đâm
+B01,D,3,4,5,"khá trôi chảy, nhưng vẫn thiếu nhiều thông tin liên quan trong bài"
+B04,A,2,2,5,"không đầy đủ thông tin, mới chỉ nói về việc ca sĩ ra MV mới"
+B04,B,3,4,5,thiếu thông tin kể về người con và cuộc sống sau khi li hôn
+B04,C,2,3,5,"thiếu hầu hết thông tin trong bài, có mỗi phần chia sẻ về tình cảm"
+B04,D,4,5,5,thiếu nội dung kể về người con 
+B09,A,4,5,5,
+B09,B,5,5,5,
+B09,C,5,5,5,
+B09,D,4,5,5,thiếu phần đưa ra giải pháp
+B12,A,3,5,5,thiếu nội dung về các % điều ước còn lại
+B12,B,4,5,5,
+B12,C,5,5,5,
+B12,D,3,4,5,thiếu nội dung 
+B17,A,4,5,5,
+B17,B,5,5,5,
+B17,C,2,5,5,Bỏ sót nhiều ý chính
+B17,D,5,5,4,
+B33,A,4,5,5,
+B33,B,5,5,5,
+B33,C,2,2,5,"Bỏ sót ý giữ giá xăng, sai sự thật khi ghi là ""tăng mức trích lập"""
+B33,D,5,5,2,lỗi ngữ pháp ở phần sau khi dù quyết định 
+B34,A,4,5,2,"lỗi mất chữ ở đầu câu ""àn Novaland"""
+B34,B,5,5,5,
+B34,C,3,5,5,
+B34,D,2,5,5,"Quá ngắn, bỏ sót quy mô 160 triệu USD và thị trường SGX"
+B37,A,1,5,2,Bỏ sót hầu như tất cả ý chính của bài
+B37,B,3,5,5,Thiếu nội dung về 3 cam kết hỗ trợ của dự án mới
+B37,C,1,1,5,"Bịa đặt thông tin không có trong bài( 6 không gian, 8,500 euro) và bỏ sót toàn bộ nội dung bài gốc"
+B37,D,3,5,4,"Tập trung nhiều vào phần liệt kê ví dự ở đầu, bỏ sót phần khó khăn và 3 cam kết của dự án "
+B38,A,2,5,5,"Chỉ nêu khung giờ cấm mới của xe tải nhẹ, bỏ sót bối cảnh so sánh cũ và quy định đối với xe tải nặng(giảm 2 giờ cấm)"
+B38,B,3,5,5,"Thiếu phần nội dung điều chỉnh giảm thời gian cấm của xe tải nặng trên 2,5 tấn(giảm từ 6-24h xuống 6-22h)"
+B38,C,4,5,5,
+B38,D,5,5,5,
+B42,A,3,5,5,Thiếu nguyên nhân gốc rễ ( 4 cán bộ bị đình chỉ do sai phạm chuyên môn)
+B42,B,3,5,5,Thiếu nguyên nhân gốc rễ ( 4 cán bộ bị đình chỉ do sai phạm chuyên môn)
+B42,C,5,5,5,
+B42,D,2,5,5,"Thiếu sự kiện chi nhánh Bỉm Sơn dừng hoạt động, sai đối tượng; nhầm chi nhánh Bỉm Sơn thành toàn bộ Trung tâm đăng kiểm xe cơ giới Thanh Hóa"
+B43,A,2,5,5,"chỉ nêu bối cảnh phát hiện, thiếu lý do xây không phép ( nhầm giữa cải tạo và xây dựng và quy mô công trình)"
+B43,B,1,1,5,"Tóm tắt sai sự thật khi ghi nhóm người Trung Quốc ""xây dựng khu phố trái phép"". Bỏ sót nhiều ý chính của bài gốc"
+B43,C,4,5,5,
+B43,D,3,5,5,Mới tóm tắt được đoạn đầu về bối cảnh thuê đất; thiếu phần lý do giải thích xây không phép của chủ đầu tư ở đoạn sau 
+B47,A,3,5,5,"mới nêu phần phát biểu ấn tượng, bỏ sót bối cảnh phiên chất vấn và truy vấn trách nhiệm Bộ trưởng"
+B47,B,2,5,2,"thiếu phần phát biểu trọng tâm, dính cụm từ rác/chú thích ảnh ở cuối câu gây cụt gãy đoạn"
+B47,C,4,5,5,
+B47,D,3,5,3,"mới nêu phần đặt vấn đề, thiếu phát biểu ấn tượng và câu hỏi chất vấn. Bị chèn cụm từ chú thích ảnh giữa hai câu làm đứt mạch văn"
