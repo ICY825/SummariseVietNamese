@@ -89,6 +89,14 @@ def scores_path(split):
 
 
 def cmd_score(args):
+    # Cung ky luat voi vit5.py: `test` chi mo bang mot co TUONG MINH. Cho diem tren test
+    # la mot phan cua lan do cuoi cung, khong phai mot lan chay thu.
+    if args.split == "test" and not args.cho_phep_test:
+        raise SystemExit(
+            "Từ chối cho điểm trên `test`. Tập này dùng MỘT lần ở cuối dự án.\n"
+            "Tuần 8, khi thật sự chấm lần cuối: thêm cờ --cho-phep-test."
+        )
+
     import torch
     from transformers import AutoTokenizer
 
@@ -218,9 +226,14 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("score", help="cho điểm từng câu bằng checkpoint tầng 2 (cần torch)")
     s.add_argument("--model", required=True, help="thư mục final có head.pt")
-    s.add_argument("--split", required=True, choices=["tune", "val"])
+    s.add_argument("--split", required=True, choices=["tune", "val", "test"])
     s.add_argument("--batch", type=int, default=8)
     s.add_argument("--max-len", type=int, default=256)
+    s.add_argument(
+        "--cho-phep-test", action="store_true",
+        help="MỞ khoá `--split test`. Chỉ dùng ở lần chấm cuối của tuần 8: "
+             "tập test dùng đúng MỘT lần",
+    )
     s.set_defaults(fn=cmd_score)
     c = sub.add_parser("select", help="dò quy tắc trên tune, áp quy tắc thắng lên val")
     c.add_argument("--n-boot", type=int, default=10_000)

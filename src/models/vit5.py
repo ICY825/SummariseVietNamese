@@ -262,12 +262,21 @@ def main():
         help="tầng 4: lọc câu từ TOÀN bài cho vừa ngân sách token trước khi đưa vào "
              "mô hình, thay vì lấy phần đầu bài. Chỉ đụng tới bài vượt ngân sách",
     )
+    ap.add_argument(
+        "--cho-phep-test", action="store_true",
+        help="MỞ khoá `--eval-split test`. Chỉ dùng ở lần chấm cuối của tuần 8: "
+             "tập test dùng đúng MỘT lần",
+    )
     args = ap.parse_args()
 
-    if args.eval_split == "test":
+    # Chot chan van giu nguyen; chi mo bang mot co TUONG MINH. Tuan 8 la "cuoi du an"
+    # nen `test` duoc phep cham, nhung phai la mot lua chon co y chu khong phai mot lan
+    # go nham `--eval-split`: chay nham la tieu mat lan do duy nhat cua tap kiem dinh.
+    if args.eval_split == "test" and not args.cho_phep_test:
         raise SystemExit(
             "Từ chối chấm trên `test`. Tập này dùng MỘT lần ở cuối dự án; "
-            "tuần 4-5 theo dõi trên `val`, dò tham số trên `tune`."
+            "tuần 4-5 theo dõi trên `val`, dò tham số trên `tune`.\n"
+            "Tuần 8, khi thật sự chấm lần cuối: thêm cờ --cho-phep-test."
         )
 
     import torch
