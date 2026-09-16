@@ -45,11 +45,16 @@ này cần, lấy phiếu trống ra từ commit `2638a78`:
 git show 2638a78:results/human_eval/cham_nguoi1.csv > results/human_eval/cham_nguoi1.csv
 ```
 
-### 2. Phân tích lỗi định tính (tuần 7)
+### 2. Phân tích lỗi định tính (tuần 7) — **XONG** 16/09/2026
 
-Nguyên liệu đã có: cột `ghi_chu` của `results/human_eval/llm_judge.csv` và
-`llm_judge_2.csv` (ghép với hệ thống qua `khoa.json`). README đã tóm các loại lỗi chính;
-còn thiếu một mục phân loại lỗi có hệ thống, kèm ví dụ.
+Đã viết mục "Phân loại lỗi — bốn họ, phân bố rất khác nhau theo tầng" trong README, dựng
+trên 190 ghi chú (115 của hai lượt máy, 75 của hai người chấm) ghép hệ thống qua
+`khoa.json`. Bốn họ: thiếu ý chính, sai sự thật, mạch văn đứt, rác kế thừa từ dữ liệu.
+Kết quả chính: hồ sơ lỗi của extractive và abstractive **bù trừ nhau** (extractive 0–4%
+sai sự thật nhưng hỏng mạch văn; BARTpho trôi chảy nhưng thiếu ý ở 45–54% số bản và là
+tầng duy nhất hoán đổi chi tiết), nên không được gộp ba tiêu chí thành một điểm. Ba ví dụ
+"bịa" rõ nhất (B31, B11, B37) đều thuộc **sapo**, tức thói thêm thông tin ngoài bài là học
+từ dữ liệu. Mọi số trong mục đều tính lại được từ bốn file phiếu và `khoa.json`.
 
 ### 3. Demo Gradio (tuần 7)
 

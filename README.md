@@ -1430,6 +1430,75 @@ tiền đề.
 - **Tiêu chí trung thực có lợi sẵn cho extractive**: chép nguyên câu thì gần như không thể
   sai. Đọc từng cột thay vì gộp ba tiêu chí thành một điểm.
 
+### Phân loại lỗi — bốn họ, phân bố rất khác nhau theo tầng
+
+Mục trên liệt kê lỗi lẻ; mục này phân loại chúng có hệ thống trên **190 ghi chú**: 115 của
+hai lượt máy chấm (50 bài) và 75 của hai người chấm (mẫu 12 bài), ghép với hệ thống thật
+qua `khoa.json`. Mọi ví dụ đều kèm mã bài để mở phiếu kiểm lại.
+
+**Hồ sơ lỗi theo tầng.** Tỷ lệ bản bị chấm ≤3 điểm, trong ngoặc là ≤2. Cột "máy" gộp hai
+lượt (n = 100 mỗi hệ thống), cột "người" gộp hai người trên mẫu 12 bài (n = 24):
+
+| Hệ thống | đầy đủ (máy) | đầy đủ (người) | trung thực (máy) | trung thực (người) | trôi chảy (máy) | trôi chảy (người) |
+|---|---|---|---|---|---|---|
+| sapo | 49% (17%) | 29% (25%) | 32% (6%) | 21% (8%) | 6% (1%) | 17% (8%) |
+| Lead-3 | 51% (9%) | 46% (0%) | **0% (0%)** | **0% (0%)** | 34% (2%) | 17% (0%) |
+| `k2` | 66% (25%) | 50% (17%) | 2% (0%) | 4% (0%) | 58% (15%) | 17% (4%) |
+| BARTpho | **79% (45%)** | **88% (54%)** | 23% (16%) | 21% (17%) | 15% (3%) | 12% (4%) |
+
+**Họ 1 — thiếu ý chính.** Phổ biến nhất ở mọi tầng và là lỗi nặng nhất của BARTpho: 45%
+số bản bị 1–2 điểm đầy đủ theo máy, 54% theo người. Nguyên nhân cơ học là độ dài — BARTpho
+sinh 34 âm tiết nên thường chỉ giữ được một mệnh đề, bỏ mất thương vong (B48), mức phạt
+(B03), quy mô (B34). Extractive thiếu ý theo cách khác: chọn đúng câu nhưng là câu bối cảnh
+chứ không phải câu kết luận (B30, B21).
+
+**Họ 2 — sai sự thật.** Chia ba loại nhỏ, và **chỉ abstractive cùng sapo mắc phải**;
+Lead-3 đúng 0% ở cả máy lẫn người.
+
+| Loại | Ví dụ | Hệ thống |
+|---|---|---|
+| Gán nhầm chủ thể hoặc phát ngôn | B45 (câu của ông Nguyễn Xuân Anh gán cho ông Dũng), B27 (chồng chị Liễu thành chị Liễu), B15 (đảo tàu định vị và tàu được định vị) | BARTpho |
+| Sai con số, địa điểm, đơn vị | B36 (30 triệu thay cho 450.000 đồng), B05 (quận 12 thay cho huyện Hóc Môn), B42 (cả trung tâm thay cho một chi nhánh), B08 (5h30 trái bài gốc) | BARTpho |
+| Bịa chi tiết không có trong bài | B31 (tivi, sinh tố mít), B11 (Instagram, Twitter), B37 (6 không gian, 8.500 euro) | **cả ba đều là sapo** |
+
+Dòng cuối đáng chú ý: ba ví dụ "bịa" rõ nhất đều thuộc **sapo** — bản do nhà báo viết, tức
+tham chiếu vàng. Đây là bằng chứng trực tiếp cho giả thuyết nêu ở mục trên, rằng thói quen
+thêm thông tin ngoài bài là học được từ dữ liệu huấn luyện chứ không phải tật riêng của mô
+hình. Lỗi sai sự thật của BARTpho thì khác về chất: nó **hoán đổi** chi tiết có sẵn trong
+bài (ai làm gì, bao nhiêu, ở đâu), chứ không thêm chi tiết mới.
+
+**Họ 3 — mạch văn đứt.** Đặc trưng của extractive, vì câu bị bứng khỏi ngữ cảnh:
+
+- **Mất tiền đề** — câu mở đầu bằng từ nối hoặc đại từ không có gì đứng trước: "Theo cách
+  này" (B14), "Tương tự như vậy" (B16), "Do đó, công ty này" (B29), "Kiều" chưa được giới
+  thiệu (B32), "họ" không rõ (B21), "vị trí trên" (B18). Tất cả đều là `k2`.
+- **Ghép hai câu rời** thành một bản tóm tắt không liền mạch (B12, B32).
+
+BARTpho phần lớn miễn nhiễm họ này, nhưng **không tuyệt đối**: B37 mở đầu bằng "Đó là thông
+tin" mà không có tiền đề, B16 để lại "không ngoại lệ" thiếu vế trước — mô hình sinh vẫn học
+được cách mở câu của văn bản gốc.
+
+**Họ 4 — rác kế thừa từ dữ liệu, không phải lỗi của tầng nào.** Chú thích ảnh lọt vào bản
+tóm tắt (B47 ở cả Lead-3 lẫn `k2`, B05, B15, B27), tiêu đề phụ dạng câu hỏi (B11, B32),
+ngoặc kép vỡ (B21, B32, B12), và rõ nhất là **B34: chính sapo bị mất chữ đầu** — "àn
+Novaland" thay vì "Tập đoàn Novaland". Vì lỗi này xuất hiện ngay trong tham chiếu, nó thuộc
+về khâu làm sạch dữ liệu. Extractive hứng nhiều nhất chỉ vì nó chép nguyên văn.
+
+**Hai hồ sơ lỗi bù trừ nhau, và đó là kết quả chính của phân tích này.** Extractive gần như
+không thể sai sự thật (0–4%) nhưng hỏng mạch văn và bỏ sót ý; abstractive đọc trôi chảy
+nhưng thiếu ý nặng nhất và là tầng duy nhất hoán đổi chi tiết. Không tầng nào thắng ở cả ba
+tiêu chí, nên **gộp ba tiêu chí thành một điểm duy nhất sẽ xoá mất chính sự khác biệt này**
+— đọc theo cột, đừng đọc theo tổng.
+
+**Người chấm xác nhận độc lập bốn lỗi cụ thể.** Hai người chấm mẫu, không biết nhãn nào là
+hệ thống nào và không trao đổi với nhau, cùng chỉ ra đúng một chỗ: B37 bịa "8.500 euro"
+(sapo), B42 nhầm chi nhánh Bỉm Sơn thành cả trung tâm Thanh Hoá (BARTpho), B43 gán việc xây
+dựng cho nhóm người Trung Quốc (BARTpho), B34 mất chữ "àn Novaland" (sapo). Trùng khớp ở
+mức từng lỗi như vậy là bằng chứng mạnh hơn nhiều so với trùng khớp ở điểm trung bình.
+
+Ba họ đầu đều là thứ **ROUGE không phạt**, đúng như mục trên đã đo: trùng chữ với sapo
+không đòi hỏi đúng chủ thể, đủ ý, hay liền mạch.
+
 ### Kiểm chứng máy chấm bằng một mẫu người chấm — đã chấm xong
 
 Hai lượt máy chấm đồng thuận với nhau, nhưng điều đó không chứng minh chúng đồng thuận với
@@ -1652,7 +1721,9 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     `trung_thuc` đạt chuẩn kiểm chứng (alpha người–máy cao hơn alpha người–người),
     `troi_chay` không đạt — máy phóng đại khác biệt trôi chảy; 9/9 kết luận chính cùng
     chiều; người chấm cũng không tương quan với ROUGE-1 (−0,02), củng cố câu hỏi 3
-  - [ ] phân tích lỗi định tính — nguyên liệu đã có: cột `ghi_chu` của `llm_judge.csv`
+  - [x] phân tích lỗi định tính — 190 ghi chú của 2 lượt máy và 2 người chấm, phân thành
+    bốn họ lỗi (thiếu ý, sai sự thật, mạch văn đứt, rác kế thừa từ dữ liệu); hai hồ sơ lỗi
+    của extractive và abstractive bù trừ nhau; ba ví dụ "bịa" rõ nhất đều thuộc sapo
   - [ ] demo Gradio
 - [ ] Tuần 8 — Báo cáo, kiểm tra tái lập
 
