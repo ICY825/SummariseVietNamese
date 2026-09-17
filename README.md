@@ -1745,8 +1745,10 @@ các đoạn liền nhau có trong bài, để "Cẩm Lệ Đà Nẵng" không b
 | ViT5 | 31,8 | 48,9 | 7,8% | 33,4 | 1,0 câu, 30 âm tiết |
 | Oracle-3 | 57,7 | 66,8 | 0,1% | 48,1 | 1,7 câu, 50 âm tiết |
 
-Theo tiêu chí mới, bảng xếp hạng **đảo ngược**: hệ thống đứng đầu F1 thiếu ý nhất và có chi
-tiết lạ nhiều nhất. Oracle-3 **không** phải trần của độ phủ chi tiết ở đây (66,8 < 67,6 của
+Theo tiêu chí mới, bảng xếp hạng **đảo ngược**: hệ thống đứng đầu F1 (BARTpho) có chi tiết lạ
+nhiều nhất, và thiếu ý hơn hẳn mọi hệ thống nhiều câu — chỉ đủ ý hơn Lead-1 và ViT5, hai hệ thống
+ngắn cỡ nó (sửa 17/09: bản trước viết "thiếu ý nhất", sai vì Lead-1 và ViT5 còn thấp hơn).
+Oracle-3 **không** phải trần của độ phủ chi tiết ở đây (66,8 < 67,6 của
 Lead-3), vì nó được dựng để tối đa F1 nên dừng sớm ở 1,7 câu.
 
 **Recall tự tăng theo độ dài** — chép nguyên cả bài là đạt 100%. Nên so sánh "đủ ý" chỉ có
@@ -2238,8 +2240,9 @@ sinh lại hệ thống cuối và PhoBERT 3 câu trên `test` trùng từng ch�
 
 Xếp theo F1, BARTpho đứng đầu (sau Oracle); xếp theo đủ ý, **hệ thống cuối đứng đầu** — cao nhất
 về phủ chi tiết trong mọi hệ thống kể cả Oracle-3, và recall chỉ sau Oracle-3 (57,4 so với 58,0).
-BARTpho và tầng 4 thiếu ý nhất trong các hệ thống ~100 âm tiết lẫn ngắn, và **có chi tiết lạ ở
-10%** — gấp gần 70 lần hệ thống cuối. Kết quả `val` lặp lại trên split độc lập.
+BARTpho và tầng 4 thiếu ý hơn hẳn mọi hệ thống nhiều câu (recall kém hệ thống cuối 22 điểm) —
+chỉ đủ ý hơn Lead-1, hệ thống một câu cùng độ dài — và **có chi tiết lạ ở 10%**, gấp gần 70 lần
+hệ thống cuối. Kết quả `val` lặp lại trên split độc lập.
 
 **Theo quy tắc giai đoạn 0 — đạt cả bốn điều:**
 
@@ -2475,7 +2478,8 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     ý sai. Người chấm mới không làm — dùng lại người chấm tuần 7 trong phạm vi đã nêu
   - [x] giai đoạn 4a: chấm thước đo mới trên `test` cho 9 hệ thống, một lần — hệ thống cuối **đạt
     cả bốn điều** (recall +3,39/+1,76, phủ chi tiết +2,77/+3,93 so với Lead-3/PhoBERT 3 câu, p <
-    0,0001; 0,15% chi tiết lạ); BARTpho F1 cao nhất nhưng 10% chi tiết lạ, thiếu ý nhất
+    0,0001; 0,15% chi tiết lạ); BARTpho F1 cao nhất nhưng 10% chi tiết lạ, recall kém hệ thống cuối
+    22 điểm
   - [ ] giai đoạn 4b–c: demo hệ thống
     cuối cạnh BARTpho có tô chi tiết lạ; viết lại mở đầu README/báo cáo theo khung "phát hiện →
     giải quyết", thêm câu hỏi nghiên cứu 4
