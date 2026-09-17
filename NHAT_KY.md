@@ -157,8 +157,20 @@ mặc định gđ1.
 - 3 cờ chi tiết lạ của hệ thống cuối: 2 bộ đo bắt nhầm ở chỗ nối câu, 1 lỗi thật (cắt câu sau
   "TX." mất tên Cai Lậy) — giới hạn đã ghi, không sửa.
 
-**Việc tiếp theo: giai đoạn 4b–c** — (b) demo hệ thống cuối cạnh BARTpho, tô chi tiết lạ;
-(c) viết lại mở đầu README theo khung "phát hiện → giải quyết", thêm câu hỏi nghiên cứu 4.
+**Giai đoạn 4b — demo XONG (17/09).** `app/app.py` hai tab: "Hệ thống cuối và BARTpho" (tô vàng
+chi tiết lạ theo `chi_tiet_la`, kèm giới hạn bộ đo) và "Bốn tầng" (giữ nguyên). `app/pipeline.py`:
+`he_thong_cuoi`, `to_chi_tiet_la`, `so_sanh_cuoi`. Bài mẫu `app/vi_du.json` = B08, B05 (lỗi BARTpho
+đã xác nhận ở tuần 7), lưu kèm dạng tách từ của bộ dữ liệu.
+- Đã kiểm: demo trùng bản báo cáo 25/25 (dạng tách từ bộ dữ liệu); bài mẫu trùng cả hệ thống cuối
+  lẫn BARTpho `val_in1024`; máy chủ HTTP 200.
+- **Bẫy:** bài tự dán tách từ bằng underthesea → hệ thống cuối chỉ trùng 18/40 bản báo cáo (recall
+  59,5 so với 60,4). Không phải lỗi code; giao diện ghi rõ.
+- **Bẫy:** BARTpho có hai bản `val` (sinh ngay sau huấn luyện / nạp từ đĩa, trùng 874/1.000); demo
+  = bản nạp từ đĩa. Đừng so demo với phiếu tuần 7 rồi kết luận demo hỏng.
+- Khi trình bày: bấm thử một bài mẫu trước (nạp PhoBERT + BARTpho mất ~10–20 s lần đầu).
+
+**Việc tiếp theo: giai đoạn 4c** — viết lại mở đầu README theo khung "phát hiện → giải quyết",
+thêm câu hỏi nghiên cứu 4, đặt tầng 4 vào mạch.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.

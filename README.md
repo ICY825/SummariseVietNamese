@@ -2272,17 +2272,43 @@ BARTpho: recall +22,34, phủ chi tiết +22,74, đổi lại F1 −5,83 — đ�
 **Giới hạn khác trên `test`:** 310/2.000 bản (15,5%) có câu treo — cùng tỷ lệ `val` (152/1.000);
 9 bản vượt 110 âm tiết, dài nhất 181 (câu đầu dài hơn ngân sách).
 
-## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
+## Demo Gradio — hệ thống cuối cạnh BARTpho, và bốn tầng
 
-Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
+Chạy hoàn toàn trên CPU.
 
 ```bash
 ~/.venvs/demo/Scripts/python.exe app/app.py     # mở http://127.0.0.1:7860
 ```
 
-Demo cố ý **không có ô "kết quả tốt nhất"**: mục đích của nó là cho thấy hai hồ sơ lỗi
-bù trừ nhau đúng như mục phân loại lỗi ở trên — extractive gần như không sai sự thật
-nhưng đứt mạch và bỏ sót ý, abstractive trôi chảy nhưng thiếu ý và có thể hoán đổi chi tiết.
+**Tab "Hệ thống cuối và BARTpho" (giai đoạn 4b, 17/09).** Kể đúng câu chuyện phát hiện → giải
+quyết: hai bản tóm tắt cạnh nhau, **tên riêng/con số không có trong bài gốc được tô vàng** theo
+đúng bộ đo `chi_tiet_la` dùng để chấm, kèm số âm tiết và số chi tiết lạ. Dưới kết quả luôn có
+đoạn giới hạn của bộ đo (bắt thừa ở chỗ nối câu, không bắt gán nhầm đối tượng) và của hệ thống
+cuối (không bịa, nhưng ghép câu có thể mất ngữ cảnh) — demo không hứa nhiều hơn số liệu. Cấu hình
+hệ thống cuối đọc thẳng từ `chon_cau_tune_do.json`.
+
+Hai bài mẫu (`app/vi_du.json`) là bài `val` mà lỗi BARTpho **đã được xác nhận** ở tuần 7, mô tả
+lỗi đối chiếu lại với bài gốc: B08 "khoảng 5h30 sáng nay" (bài: "đến khoảng 5 giờ ngọn lửa đã được
+dập tắt"), B05 "quận 12" (bài: "đường Bà Triệu (huyện Hóc Môn, TP. HCM)").
+
+**Demo ra đúng hệ thống đã báo cáo không — đã kiểm:**
+
+| Kiểm | Kết quả |
+|---|---|
+| Hệ thống cuối trong demo, đầu vào dạng tách từ của bộ dữ liệu, 25 bài `val` | trùng bản đã chấm **25/25**; điểm PhoBERT CPU lệch Kaggle ≤ 2×10⁻⁵ |
+| Hai bài mẫu | hệ thống cuối trùng bản báo cáo; BARTpho trùng bản `val_in1024` 2/2, tô vàng đúng "5h30", "12"; hệ thống cuối 0 chi tiết lạ |
+| Bài tự dán (tách từ bằng underthesea), 40 bài `val` | trùng 18/40; recall 59,5 so với 60,4 — **lệch do bộ tách từ**: chỉ 4/40 bài hai bộ tách ra cùng câu, và cả 4 đều trùng |
+| Máy chủ | chạy, HTTP 200, đủ hai tab |
+
+Vì dòng thứ ba, bài mẫu được lưu **kèm dạng tách từ của bộ dữ liệu** và demo dùng thẳng dạng đó;
+bài tự dán thì giao diện ghi rõ "có thể lệch nhẹ so với số liệu báo cáo". BARTpho có hai bản `val`
+từ cùng checkpoint: sinh ngay sau huấn luyện (phiếu tuần 7) và nạp từ đĩa (`val_in1024`, cùng đường
+với `test`) — trùng 874/1.000 (README, "Đối chứng sạch"); demo nạp từ đĩa nên trùng bản sau. Ở B08
+hai bản chỉ khác chữ "địa bàn", cùng lỗi "5h30".
+
+**Tab "Bốn tầng (phần phân tích)"** giữ nguyên demo tuần 7, cố ý **không có ô "kết quả tốt nhất"**:
+cho thấy hai hồ sơ lỗi bù trừ nhau — extractive gần như không sai sự thật nhưng đứt mạch và bỏ
+sót ý, abstractive trôi chảy nhưng thiếu ý và có thể hoán đổi chi tiết.
 
 **Môi trường riêng** `~/.venvs/demo`, để `.venv` chính vẫn sạch `torch` đúng thiết kế:
 `requirements.txt` + torch (CPU) + `transformers==5.0.0` + `sentencepiece` + `gradio` +
@@ -2480,9 +2506,10 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     cả bốn điều** (recall +3,39/+1,76, phủ chi tiết +2,77/+3,93 so với Lead-3/PhoBERT 3 câu, p <
     0,0001; 0,15% chi tiết lạ); BARTpho F1 cao nhất nhưng 10% chi tiết lạ, recall kém hệ thống cuối
     22 điểm
-  - [ ] giai đoạn 4b–c: demo hệ thống
-    cuối cạnh BARTpho có tô chi tiết lạ; viết lại mở đầu README/báo cáo theo khung "phát hiện →
-    giải quyết", thêm câu hỏi nghiên cứu 4
+  - [x] giai đoạn 4b: demo tab "Hệ thống cuối và BARTpho", tô vàng chi tiết lạ, hai bài mẫu có lỗi
+    BARTpho đã xác nhận; demo trùng hệ thống đã báo cáo 25/25 trên dạng tách từ của bộ dữ liệu
+  - [ ] giai đoạn 4c: viết lại mở đầu README/báo cáo theo khung "phát hiện → giải quyết", thêm câu
+    hỏi nghiên cứu 4
 
 ### Rà soát tuần 5 — đã lấp và còn nợ
 

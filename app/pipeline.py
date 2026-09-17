@@ -182,6 +182,70 @@ def tang4(seg, chien_luoc="lead_lexrank"):
     return _sinh(filter_article(seg, dem, MAX_INPUT, chien_luoc))
 
 
+# --------------------------------------------------------------------------
+# He thong cuoi (huong moi): chon cau co chu dich — cau hinh doc tu file do tren tune
+# --------------------------------------------------------------------------
+
+def cau_hinh_cuoi():
+    """Cấu hình thắng trên `tune` — đọc từ file dò, không gõ tay, để demo không lệch báo cáo."""
+    import json
+
+    th = json.loads((ROOT / "results" / "tables" / "chon_cau_tune_do.json").read_text(encoding="utf-8"))["thang"]
+    return [th[k] for k in ("ngan_sach", "w_vt", "w_lex", "lam", "noi_tien_de", "loc_rac")]
+
+
+def diem_phobert(seg):
+    """Logit PhoBERT từng câu nhìn thấy được — đúng đường tính điểm đã lưu cho `val`/`test`."""
+    from models.phobert_sent import encode_rows, score_examples
+
+    tok, model = _tang2()
+    vd = encode_rows([{"article": seg}], tok, with_labels=False)
+    return None if vd[0] is None else score_examples(model, vd, tok.pad_token_id, "cpu")[0]
+
+
+def he_thong_cuoi(seg):
+    from models.chon_cau import chon, chuan_bi_bai, van_ban
+
+    b = chuan_bi_bai(seg, diem_phobert(seg))
+    return van_ban(b, chon(b, *cau_hinh_cuoi()))
+
+
+def to_chi_tiet_la(tom_tat, seg):
+    """(HTML tô vàng chi tiết lạ, số chi tiết lạ) — chi tiết lạ theo đúng bộ đo `chi_tiet_la`.
+
+    Bộ đo trả về chuỗi âm tiết đã hạ chữ thường; ở đây tìm lại chúng trong văn bản gốc của bản
+    tóm tắt, cho phép dấu câu/khoảng trắng xen giữa các âm tiết ("5h30", "TP. HCM").
+    """
+    import html
+    import re
+
+    from eval.chinh_xac import chi_tiet_la
+
+    la = chi_tiet_la(tom_tat, seg)
+    ra = html.escape(tom_tat)
+    for cum in sorted(la, key=lambda c: -sum(map(len, c))):
+        mau = r"(?<![^\W_])" + r"[\W_]*".join(re.escape(html.escape(s)) for s in cum) + r"(?![^\W_])"
+        ra = re.sub(mau, lambda m: f"<mark>{m.group(0)}</mark>", ra, flags=re.IGNORECASE)
+    return ra, len(la)
+
+
+def so_sanh_cuoi(tho, seg=None):
+    """{hệ thống cuối, BARTpho}: bản tóm tắt, HTML tô chi tiết lạ, số chi tiết lạ, số âm tiết.
+
+    `seg` là dạng tách từ có sẵn (bài mẫu lấy từ bộ dữ liệu); không có thì tách bằng underthesea.
+    """
+    from data.text import syllables
+
+    if seg is None:
+        seg, _ = chuan_bi(tho)
+    ra = {}
+    for ten, ham in (("cuoi", lambda: he_thong_cuoi(seg)), ("bartpho", lambda: tang3(tho))):
+        t = ham()
+        html_, n = to_chi_tiet_la(t, seg)
+        ra[ten] = {"van_ban": t, "html": html_, "so_la": n, "am_tiet": len(syllables(t))}
+    return ra
+
+
 # Ten va thu tu cac tang, dung chung cho ca giao dien. Mot nguon su that duy nhat:
 # chep tay o hai noi thi lech mot ky tu la giao dien hien o trong ma khong bao gi.
 TEN_TANG = (
