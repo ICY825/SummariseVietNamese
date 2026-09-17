@@ -1,0 +1,18 @@
+{
+ "tag": "chon-cau_test",
+ "split": "test",
+ "cau_hinh": {
+  "ngan_sach": 110,
+  "w_vt": 1.0,
+  "w_lex": 0.5,
+  "lam": 1.0,
+  "noi_tien_de": false,
+  "loc_rac": true,
+  "w_treo": 0.0,
+  "bo_noi": false
+ },
+ "chon_tren": "tune",
+ "diem_phobert": "phobert-sent-train_20k_test_len256_scores.json",
+ "giay": 10.8,
+ "ban_rong": 0
+}

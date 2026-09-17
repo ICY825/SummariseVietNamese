@@ -2213,7 +2213,61 @@ có; bộ chấm sau khi thêm khoá ra trùng khít bảng giai đoạn 1 trên
     phobert-sent-train_20k_test_len256:phobert-sent phobert-sent-train_20k_test_len256_k2 \
     bartpho-syllable-train_20k_test_in1024 bartpho-syllable-train_20k_test_in1024_loc-lexrank:bartpho-syllable-train_20k=tang4 \
     baselines_test:Oracle-3
+.venv/Scripts/python.exe src/eval/so_cap_chinh_xac.py chinh_xac_test chon-cau Lead-3 phobert-sent \
+    bartpho-syllable-train_20k
 ```
+
+#### Kết quả trên `test` — chấm một lần (17/09/2026)
+
+`results/tables/chinh_xac_test.json`, so cặp: `chinh_xac_test_so_cap.json`. Đã kiểm sau khi chấm:
+sinh lại hệ thống cuối và PhoBERT 3 câu trên `test` trùng từng chữ file đã chấm.
+
+**Bảng đảo chiều trên `test`** (2.000 bài):
+
+| Hệ thống | ROUGE-1 F1 | ROUGE-1 recall | Phủ chi tiết | Có chi tiết lạ | Độ dài |
+|---|---|---|---|---|---|
+| Oracle-3 (trần F1) | 48,1 | 58,0 | 66,5 | 0,15% | 1,7 câu, 50 âm tiết |
+| **BARTpho (tầng 3)** | **34,6** | 35,1 | 48,4 | **10,0%** | 1,1 câu, 34 âm tiết |
+| Tầng 4 (lọc rồi viết lại) | 34,6 | 35,2 | 48,5 | 10,3% | 1,1 câu, 34 âm tiết |
+| PhoBERT `k2` (tầng 2) | 31,4 | 46,6 | 58,8 | 0,05% | 2,0 câu, 67 âm tiết |
+| PhoBERT 3 câu | 28,9 | 55,7 | 67,2 | 0,25% | 3,0 câu, 98 âm tiết |
+| **Hệ thống cuối** | 28,7 | **57,4** | **71,1** | 0,15% | 3,4 câu, 100 âm tiết |
+| Lead-3 | 27,2 | 54,0 | 68,4 | 0,0% | 3,0 câu, 102 âm tiết |
+| Lead-1 | 27,0 | 28,6 | 47,0 | 0,0% | 1,0 câu, 36 âm tiết |
+| LexRank | 24,8 | 52,0 | 60,8 | 0,30% | 3,1 câu, 112 âm tiết |
+
+Xếp theo F1, BARTpho đứng đầu (sau Oracle); xếp theo đủ ý, **hệ thống cuối đứng đầu** — cao nhất
+về phủ chi tiết trong mọi hệ thống kể cả Oracle-3, và recall chỉ sau Oracle-3 (57,4 so với 58,0).
+BARTpho và tầng 4 thiếu ý nhất trong các hệ thống ~100 âm tiết lẫn ngắn, và **có chi tiết lạ ở
+10%** — gấp gần 70 lần hệ thống cuối. Kết quả `val` lặp lại trên split độc lập.
+
+**Theo quy tắc giai đoạn 0 — đạt cả bốn điều:**
+
+| Điều | Kết quả |
+|---|---|
+| (1) có chi tiết lạ ≤ 1,0% | 0,15% (3/2.000) ✅ |
+| (2) ≤ 110 âm tiết TB, ≤ 4 câu | 100,4 âm tiết; tối đa 4 đơn vị câu theo cấu trúc ✅ |
+| (3) recall hơn Lead-3 / PhoBERT 3 câu | **+3,39** [+2,76, +4,03] / **+1,76** [+1,18, +2,33], p < 0,0001 ✅ |
+| (3) phủ chi tiết hơn Lead-3 / PhoBERT 3 câu | **+2,77** [+1,82, +3,75] / **+3,93** [+2,93, +4,93], p < 0,0001 ✅ |
+| (4) F1 (báo kèm) | hơn Lead-3 +1,49; ngang PhoBERT 3 câu −0,20 (p = 0,18); kém BARTpho −5,83 |
+
+Phần hơn Lead-3 về phủ chi tiết — chỗ **mỏng** trên `val` (cận dưới +0,19, p = 0,021) — trên `test`
+chắc hơn nhiều (cận dưới +1,82) và qua được cả hiệu chỉnh Bonferroni cho bốn phép so. So với
+BARTpho: recall +22,34, phủ chi tiết +22,74, đổi lại F1 −5,83 — đúng sự đánh đổi đã nêu từ giai
+đoạn 0.
+
+**Soi 3 bản có chi tiết lạ của hệ thống cuối** (không sửa gì — `test` đã mở):
+
+- 2 bản là **bộ đo bắt nhầm ở chỗ nối câu**: "…hồi tháng 4. 5 tháng sau vụ cháy…" và "…năm 1998.
+  2016 là năm…" — bộ đo ghép hai con số hai bên dấu chấm thành một cụm không có trong bài. Cùng
+  loại với 5 cờ của PhoBERT 3 câu và 6 của LexRank, vốn chép nguyên câu.
+- 1 bản là **lỗi thật, cùng họ với lỗi "TS." đã sửa ở giai đoạn 1**: bộ tách câu cắt sau chữ viết
+  tắt "TX." (thị xã), bản tóm tắt nhận mảnh cụt "…vừa qua khỏi địa phận TX." và mất tên "Cai Lậy",
+  rồi câu sau "Tại đây…" không còn chỗ dựa. Danh sách ghép chữ viết tắt (`VIET_TAT_TEN`) chưa có
+  "TX", "TP", "Q." — **giới hạn đã biết, không sửa sau khi thấy `test`**.
+
+**Giới hạn khác trên `test`:** 310/2.000 bản (15,5%) có câu treo — cùng tỷ lệ `val` (152/1.000);
+9 bản vượt 110 âm tiết, dài nhất 181 (câu đầu dài hơn ngân sách).
 
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
@@ -2419,7 +2473,10 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     bằng tác tử con — **hệ thống cuối là giai đoạn 1**; trung thực hơn BARTpho +0,55 (p < 0,0001);
     `day_du`/`troi_chay` so chéo đợt chỉ tham khảo (trôi vượt ngưỡng); ghép câu vẫn có thể tạo hàm
     ý sai. Người chấm mới không làm — dùng lại người chấm tuần 7 trong phạm vi đã nêu
-  - [ ] giai đoạn 4: chấm thước đo mới trên `test` cho mọi hệ thống (một lần); demo hệ thống
+  - [x] giai đoạn 4a: chấm thước đo mới trên `test` cho 9 hệ thống, một lần — hệ thống cuối **đạt
+    cả bốn điều** (recall +3,39/+1,76, phủ chi tiết +2,77/+3,93 so với Lead-3/PhoBERT 3 câu, p <
+    0,0001; 0,15% chi tiết lạ); BARTpho F1 cao nhất nhưng 10% chi tiết lạ, thiếu ý nhất
+  - [ ] giai đoạn 4b–c: demo hệ thống
     cuối cạnh BARTpho có tô chi tiết lạ; viết lại mở đầu README/báo cáo theo khung "phát hiện →
     giải quyết", thêm câu hỏi nghiên cứu 4
 

@@ -147,9 +147,18 @@ mặc định gđ1.
   không được) ghi ở README, mục "Quyết định: không chấm người mới".
 - **Giai đoạn 3 — XONG. Hệ thống cuối: giai đoạn 1** (`chon_cau.py sinh --gd 1`).
 
-**Việc tiếp theo: giai đoạn 4** — (1) chấm thước đo mới trên `test` cho mọi hệ thống, một lần:
-cần mở khoá `test` trong `cham_chinh_xac.py` và sinh gđ1 trên `test` (`--cho-phep-test`);
-(2) demo hệ thống cuối cạnh BARTpho, tô chi tiết lạ; (3) viết lại mở đầu README, câu hỏi 4.
+**Giai đoạn 4a — `test` ĐÃ CHẤM, MỘT LẦN (17/09). KHÔNG chấm lại, không sửa hệ thống theo `test`.**
+- 9 hệ thống, `results/tables/chinh_xac_test.json` + `_so_cap.json`. Hệ thống cuối: recall 57,4,
+  phủ chi tiết 71,1 (cao nhất, kể cả Oracle-3), 0,15% chi tiết lạ, 100 âm tiết, F1 28,7.
+- **Đạt cả bốn điều của quy tắc**: hơn Lead-3 +3,39 recall / +2,77 phủ, hơn PhoBERT 3 câu +1,76 /
+  +3,93, mọi p < 0,0001. Chỗ mỏng trên `val` (phủ hơn Lead-3) giờ chắc (cận dưới +1,82).
+- Đảo chiều lặp lại: BARTpho F1 34,6 cao nhất (sau Oracle) nhưng recall 35,1, phủ 48,4, **10,0%
+  chi tiết lạ**.
+- 3 cờ chi tiết lạ của hệ thống cuối: 2 bộ đo bắt nhầm ở chỗ nối câu, 1 lỗi thật (cắt câu sau
+  "TX." mất tên Cai Lậy) — giới hạn đã ghi, không sửa.
+
+**Việc tiếp theo: giai đoạn 4b–c** — (b) demo hệ thống cuối cạnh BARTpho, tô chi tiết lạ;
+(c) viết lại mở đầu README theo khung "phát hiện → giải quyết", thêm câu hỏi nghiên cứu 4.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.
