@@ -80,7 +80,11 @@ sách âm tiết, điểm = PhoBERT + ưu tiên vị trí + LexRank + thưởng 
   nối tiền đề, có lọc rác.
 - `val`: recall 57,2, phủ chi tiết 69,1, **0,0% chi tiết lạ**, 100 âm tiết, F1 28,6. Hơn
   Lead-3 (+2,79 recall, +1,47 phủ) và PhoBERT 3 câu (+1,61, +2,75), mọi khoảng tin cậy không
-  chứa 0 → **đạt quy tắc**. Hơn Lead-3 về phủ chi tiết mỏng (cận dưới +0,19).
+  chứa 0 → **đạt quy tắc**. Hơn Lead-3 về phủ chi tiết mỏng (cận dưới +0,19, p = 0,021 —
+  không qua nếu hiệu chỉnh Bonferroni cho 4 phép so; phải nói rõ khi báo cáo).
+- Review 17/09: kiểm lại gán điểm PhoBERT đúng câu, chấm nhanh khớp bộ chấm chính thức,
+  22 lần ghép học hàm đều đúng, không rò rỉ nội dung giữa các split — đều đạt.
+- `val` đã chấm hai lần; từ giai đoạn 2 chỉ soi lỗi và sửa trên `tune`.
 - Lỗi phát hiện trên `val` (guid 14423): cắt câu sau học hàm "TS ." làm mất tên chuyên gia.
   Đã sửa ghép mảnh (TS, GS, PGS, ThS, TSKH, St; cố ý không ghép NSND/NSƯT/CN), selftest
   `models` mục 12, rồi **chạy lại từ `tune`**: cấu hình thắng không đổi, 5/1.000 bản `val` đổi.

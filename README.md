@@ -1824,6 +1824,13 @@ So cặp (`paired_bootstrap`, 10.000 lần; phủ chi tiết trên 957 bài có 
 về phủ chi tiết mỏng** (cận dưới +0,19): Lead-3 là mốc rất mạnh về tên riêng và con số, vì
 tin tức dồn chúng vào đầu bài.
 
+**Phần hơn đó nhạy với cách kiểm.** Quy tắc đã chốt xét từng phép so riêng (khoảng tin cậy
+95% không chứa 0) và giữ nguyên như vậy — không đổi quy tắc sau khi thấy kết quả. Nhưng có
+**bốn** phép so cùng lúc; nếu hiệu chỉnh Bonferroni (ngưỡng 0,05 / 4 = 0,0125) thì ba phép
+vẫn qua, còn **phủ chi tiết hơn Lead-3 (p = 0,021) thì không**. Khi trình bày phải nói đúng
+như vậy: chắc chắn hơn cả hai mốc về recall, hơn PhoBERT 3 câu về phủ chi tiết, còn hơn Lead-3
+về phủ chi tiết chỉ ở mức gợi ý.
+
 **Một lỗi phát hiện trên `val`, đã sửa và chạy lại.** Lần chấm `val` đầu tiên cho 0,1% chi
 tiết lạ — 1/1.000, vô lý với hệ thống chép nguyên câu. Soi bài đó (guid 14423): không phải
 bịa, mà bộ tách câu cắt sau học hàm ở dạng tách từ ("trao đổi nhanh với TS . Đào_Trọng_Tứ"),
@@ -1851,6 +1858,14 @@ sửa: recall 57,15, phủ chi tiết 69,03, 0,1% chi tiết lạ — mọi kế
   khi ghép mảnh. Bộ chấm (`sentences_raw`) tách mịn hơn — ở "...", ở chữ viết tắt đã ghép —
   nên đếm > 4 câu ở 23/1.000 bản, tối đa 7. Không phải vi phạm: chính Lead-3, luôn đúng 3 đơn
   vị, cũng bị bộ chấm đếm > 4 câu ở 8/1.000 bài, tối đa 7.
+- **Ngân sách 110 âm tiết không chặn câu đầu tiên**: câu được chọn đầu tiên luôn được giữ,
+  kể cả khi một mình nó đã dài hơn ngân sách — thà một câu dài còn hơn bản rỗng. Trên `val`
+  có 5/1.000 bản vượt 110 âm tiết, dài nhất 145; không vi phạm vì ràng buộc là **trung bình**
+  (100). Phân bố vẫn chặt hơn hẳn hai mốc: trung vị 103 và p95 110, so với Lead-3 p95 167,
+  tối đa 406, và PhoBERT 3 câu p95 170, tối đa 252 (340 và 319 bản vượt 110).
+- **`val` đã được chấm hai lần** (trước và sau khi sửa lỗi học hàm). Cấu hình thắng không
+  đổi nên rủi ro thấp, nhưng từ giai đoạn 2, lỗi nhìn thấy trên `val` không nên dẫn tới sửa
+  hệ thống nữa — dò và soi lỗi trên `tune`.
 - Bản tóm tắt `val` **không commit**, cùng chính sách với baseline: sinh lại tất định trong
   5 giây trên CPU từ điểm PhoBERT đã commit (đã kiểm: sinh lại trùng khít 1.000/1.000).
 

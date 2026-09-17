@@ -6,8 +6,8 @@
 Chép nguyên câu nên **không thể sai sự thật**; việc còn lại là chọn câu cho đủ ý. Bốn khuyết
 tật của các tầng cũ, và cách xử lý — mỗi cái đều dựa trên dữ liệu `tune` chứ không phỏng đoán:
 
-- **Câu ngoài cửa sổ PhoBERT không có điểm.** 49% số câu nằm ngoài 256 token đầu, và ở 16%
-  số bài câu khớp sapo nhất nằm từ vị trí 10 trở đi. Điểm câu vì vậy cộng thêm độ trung tâm
+- **Câu ngoài cửa sổ PhoBERT không có điểm.** 49% số câu nằm ngoài 256 token đầu, và ở 20%
+  số bài câu khớp sapo nhất (ROUGE-1 F1 của từng câu với sapo) nằm từ vị trí 10 trở đi. Điểm câu vì vậy cộng thêm độ trung tâm
   LexRank và ưu tiên vị trí, hai thứ có cho MỌI câu.
 - **Lặp ý.** Chọn tham lam, cộng điểm cho phần âm tiết CHƯA được phủ, bỏ câu gần như trùng
   ý đã chọn — lỗi của bài "trốn thuế" trong demo, nơi hai câu cùng nói "không kê khai, nộp
