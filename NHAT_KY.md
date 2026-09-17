@@ -9,8 +9,8 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**, cùng n
 - **Tuần 1–7: xong, đã commit và push.**
 - **Tuần 8: phần đo đạc xong.** Mọi tầng đã chấm trên `test` (ROUGE và BERTScore), đã
   commit và push ở `1cea014`.
-- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0–3 xong, hệ thống cuối là giai đoạn 1; không dùng
-  BARTpho trong hệ thống cuối; tiếp theo giai đoạn 4 (xem mục "HƯỚNG MỚI" bên dưới).
+- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0–4 xong, hệ thống cuối là giai đoạn 1; không dùng
+  BARTpho trong hệ thống cuối; `test` đã chấm, demo và mở đầu README đã theo khung mới.
 - **Còn lại:** báo cáo và slide (bạn đã chọn để sau), kiểm tra tái lập trên máy sạch.
 - Demo Gradio chạy đầu-cuối được trên máy này (kiểm lại lần cuối 16/09 sau mọi thay đổi
   của tuần 8).
@@ -169,8 +169,15 @@ chi tiết lạ theo `chi_tiet_la`, kèm giới hạn bộ đo) và "Bốn tần
   = bản nạp từ đĩa. Đừng so demo với phiếu tuần 7 rồi kết luận demo hỏng.
 - Khi trình bày: bấm thử một bài mẫu trước (nạp PhoBERT + BARTpho mất ~10–20 s lần đầu).
 
-**Việc tiếp theo: giai đoạn 4c** — viết lại mở đầu README theo khung "phát hiện → giải quyết",
-thêm câu hỏi nghiên cứu 4, đặt tầng 4 vào mạch.
+**Giai đoạn 4c — XONG (17/09).** Mở đầu README viết lại theo khung "phát hiện → giải quyết":
+tóm tắt một đoạn, câu chuyện hai phần (tầng 4 nằm trong phần phát hiện: lọc rồi viết lại không cứu
+được việc cắt bài), **bốn câu hỏi nghiên cứu kèm câu trả lời** (câu 4 mới: hệ thống đủ ý hơn mà
+không bịa, deep learning góp gì), bảng kết quả chính trên `test` gộp thước đo cũ và mới, bảng đọc
+README. Mọi số đối chiếu với `chinh_xac_test.json`, bảng BERTScore và các mục tuần 7–8.
+
+**Hướng mới: giai đoạn 0–4 XONG.** Việc còn lại của cả dự án: báo cáo và slide (dùng đúng khung
+và bảng ở đầu README; cách nói đúng mức bằng chứng ở mục "Quyết định: không chấm người mới"),
+kiểm tra tái lập trên máy sạch, và nợ cũ không bắt buộc.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.

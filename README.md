@@ -2,23 +2,88 @@
 
 Tóm tắt tin tức tiếng Việt — bài tập lớn môn Deep Learning.
 
-So sánh có kiểm soát giữa hướng **extractive** (chọn câu có sẵn) và **abstractive**
-(sinh câu mới) trên bộ tin tức VietNews/VNDS, cùng một pipeline lai kết hợp hai hướng.
-Toàn bộ thiết kế chạy được trong giới hạn của Google Colab bản miễn phí.
+**Điểm cao nhất chưa chắc là bản tóm tắt tốt nhất.** Trên bộ tin tức VietNews/VNDS, mô hình sinh
+BARTpho đã fine-tune đứng đầu ROUGE và BERTScore — nhưng 10% bản tóm tắt của nó có tên riêng hoặc
+con số không có trong bài, và nó thiếu ý hơn hẳn các hệ thống chọn câu. Dự án đi từ phát hiện đó
+tới một hệ thống cuối **đủ ý hơn và không bịa chi tiết**: PhoBERT chọn câu có chủ đích.
 
-> **Câu chuyện của dự án (từ 17/09/2026): phát hiện → giải quyết.** Tuần 1–8 là phần
-> **phát hiện**: mô hình sinh (BARTpho) đứng đầu ROUGE, nhưng người chấm thấy nó thiếu ý và
-> kém trung thực, và ROUGE gần như không tương quan với người đọc. Mục "Hướng mới" là phần
-> **giải quyết**: đổi tiêu chí thành *đủ ý và không sai sự thật*, bảng xếp hạng đảo ngược, hai
-> lần dùng BARTpho có kiểm soát đều thất bại, và hệ thống cuối là PhoBERT chọn câu có chủ đích.
-> Phần mở đầu này sẽ được viết lại theo khung đó ở giai đoạn 4; kế hoạch ở mục
-> "Giai đoạn 3–4 — kế hoạch".
+Huấn luyện chạy trên GPU miễn phí (Kaggle); hệ thống cuối, mọi phép chấm và demo chạy trên CPU.
 
-## Câu hỏi nghiên cứu
+## Câu chuyện: phát hiện → giải quyết
 
-1. Mô hình abstractive được fine-tune có thực sự vượt baseline extractive không, và vượt ở khía cạnh nào?
-2. Việc cắt bài theo giới hạn token gây mất mát bao nhiêu, và pipeline lai có bù lại được không?
-3. ROUGE có phản ánh đúng cảm nhận của người đọc không?
+**Phần 1 — phát hiện (tuần 1–8).** So sánh có kiểm soát năm tầng: không học (Lead-k), không giám
+sát (TextRank, LexRank), có giám sát (PhoBERT chọn câu), sinh văn bản (ViT5, BARTpho) và lai (lọc
+câu rồi viết lại). Trên `test`, BARTpho đứng đầu cả ROUGE lẫn BERTScore. Nhưng khi đọc bản tóm tắt:
+người chấm thấy BARTpho **thiếu ý hơn và kém trung thực hơn** extractive; ROUGE gần như **không
+tương quan** với người chấm; và việc cắt bài ở 1.024 token có giá thật mà lọc câu trước khi sinh
+**không** lấy lại được.
+
+**Phần 2 — giải quyết (hướng mới).** Đổi tiêu chí thành *đủ ý và không sai sự thật*, chốt thước đo
+và quy tắc quyết định **trước** khi thử (giai đoạn 0) — bảng xếp hạng **đảo ngược**. Hai lần dùng
+BARTpho có kiểm soát đều thất bại: ghép câu sinh vào làm giảm độ đủ ý; cho viết lại câu treo thì
+33% câu có chi tiết lạ, kèm lỗi đảo chủ thể bộ đo không bắt được. Hệ thống cuối chọn câu bằng điểm
+PhoBERT cộng vị trí, độ trung tâm và thưởng ý mới, trong ngân sách ~100 âm tiết — dò trên `tune`,
+xác nhận trên `val`, chấm `test` đúng một lần, và **đạt mọi điều kiện đã chốt**.
+
+## Câu hỏi nghiên cứu — và câu trả lời
+
+1. **Mô hình abstractive được fine-tune có thực sự vượt baseline extractive không, và vượt ở khía
+   cạnh nào?** Vượt **trên thước đo tự động**: BARTpho hơn Lead-3 +7,33 ROUGE-1 và +1,71 BERTScore
+   trên `test`, p < 0,0001. Nhưng **không** vượt ở chỗ người đọc cần: kém đầy đủ hơn Lead-3 (−1,38
+   theo người chấm, −1,00 theo máy chấm) và kém trung thực hơn cả Lead-3 lẫn PhoBERT `k2` — có ý
+   nghĩa ở cả người lẫn máy. "Trôi chảy hơn" chỉ thấy ở máy chấm, người chấm không đo được.
+   *Mục: Tuần 8, Tuần 7.*
+2. **Việc cắt bài theo giới hạn token gây mất mát bao nhiêu, và pipeline lai có bù lại được không?**
+   Khoảng **4 điểm ROUGE-1** [0,8; 7,3] ở 10,2% số bài bị cắt (BARTpho, `val`), tức ~0,4 điểm toàn
+   tập — không còn là nhiễu. Pipeline lai **không** bù được: lọc câu lúc suy luận +0,06 trên `test`
+   (p = 0,50), huấn luyện lại trên đầu vào đã lọc cũng không. *Mục: Câu hỏi 2, Tầng 4.*
+3. **ROUGE có phản ánh đúng cảm nhận của người đọc không?** **Không.** Spearman giữa điểm người
+   chấm và ROUGE-1 là −0,02, với BERTScore −0,12 (2 người, 12 bài); máy chấm cho cùng câu trả lời.
+   *Mục: Tuần 7.*
+4. **Có dựng được một hệ thống đủ ý hơn mà không bịa chi tiết không — và deep learning góp gì
+   vào đó?** **Có.** Trên `test` (2.000 bài): recall 57,4, phủ chi tiết 71,1 (cao nhất trong mọi
+   hệ thống), 0,15% bản có chi tiết lạ so với 10,0% của BARTpho; hơn Lead-3 +3,39 recall / +2,77 phủ
+   chi tiết và hơn PhoBERT 3 câu +1,76 / +3,93, mọi p < 0,0001. Máy chấm (tiêu chí đã kiểm chứng với
+   người): **trung thực hơn BARTpho** +0,55, p < 0,0001. PhoBERT là thành phần góp độ đủ ý lớn nhất
+   (+2,37 recall trên `tune` so với dò lại khi tắt nó). **Cái giá:** F1 kém BARTpho 5,83 điểm; ghép
+   câu vẫn có thể làm mất ngữ cảnh — hệ thống **không bịa**, chứ không phải "không thể sai".
+   *Mục: Hướng mới, giai đoạn 0–4.*
+
+## Kết quả chính trên `test` — chấm một lần
+
+2.000 bài. Thước đo cũ: ROUGE-1 F1, BERTScore. Thước đo mới: ROUGE-1 recall (đủ ý), phủ chi tiết
+(tên riêng và con số của sapo có trong bản tóm tắt), có chi tiết lạ (tên riêng/con số không có
+trong bài gốc).
+
+| Hệ thống | ROUGE-1 F1 | BERTScore | Recall | Phủ chi tiết | Có chi tiết lạ | Âm tiết |
+|---|---|---|---|---|---|---|
+| Lead-3 | 27,22 | 85,51 | 54,0 | 68,4 | 0,0% | 102 |
+| LexRank | 24,81 | 85,23 | 52,0 | 60,8 | 0,3% | 112 |
+| PhoBERT `k2` (tầng 2) | 31,43 | 86,40 | 46,6 | 58,8 | 0,05% | 67 |
+| PhoBERT 3 câu | 28,92 | — | 55,7 | 67,2 | 0,25% | 98 |
+| **BARTpho (tầng 3)** | **34,55** | **87,21** | 35,1 | 48,4 | **10,0%** | 34 |
+| Tầng 4 — lọc rồi viết lại | 34,61 | 87,22 | 35,2 | 48,5 | 10,3% | 34 |
+| **Hệ thống cuối** | 28,72 | — | **57,4** | **71,1** | 0,15% | 100 |
+| Oracle-3 (trần F1) | 48,14 | 89,05 | 58,0 | 66,5 | 0,15% | 50 |
+
+Chi tiết lạ của các hệ thống chép nguyên câu (0,05–0,3%) phần lớn là bộ đo bắt nhầm ở chỗ nối câu —
+xem mục Giai đoạn 4. Giới hạn của chính bộ đo: không bắt được lỗi gán nhầm đối tượng.
+
+## Đọc README này thế nào
+
+| Muốn xem | Mục |
+|---|---|
+| Dữ liệu, cách chia tập, các bẫy | Dữ liệu · Tập con cố định |
+| Phần phát hiện, theo thời gian | Kết quả baseline · Kết quả tầng 3 · BERTScore · Câu hỏi 2 · Tầng 2 · Tầng 4 · Tuần 7 · Tuần 8 |
+| Phần giải quyết | Hướng mới (giai đoạn 0–4) |
+| Chạy demo | Demo Gradio |
+| Đã làm gì, còn gì | Tiến độ |
+
+```bash
+~/.venvs/demo/Scripts/python.exe app/app.py      # demo: hệ thống cuối cạnh BARTpho, http://127.0.0.1:7860
+.venv/Scripts/python.exe src/models/selftest.py  # tự kiểm, không cần mạng
+.venv/Scripts/python.exe src/eval/selftest.py
+```
 
 ## Dữ liệu
 
@@ -265,6 +330,7 @@ phải được trình bày là ràng buộc ngân sách GPU, không phải là 
 | 2 | PhoBERT phân loại câu, kiểu BERTSum | Có giám sát |
 | 3 | Fine-tune ViT5-base; đối chứng BARTpho-syllable | Sinh văn bản |
 | 4 | Extractive lọc trước, abstractive viết lại | Lai |
+| **Cuối** | PhoBERT chọn câu có chủ đích: điểm PhoBERT + vị trí + LexRank + thưởng ý mới, ngân sách âm tiết (`chon_cau.py`) | Có giám sát, chép nguyên câu |
 
 ## Đánh giá
 
@@ -2375,15 +2441,20 @@ src/data/          text.py (3 phép biến đổi dùng chung), splits.py (nạp
 src/models/        extractive.py (tầng 0-1), phobert_sent.py (tầng 2, cần GPU),
                    phobert_select.py (tầng 2 chọn số câu linh hoạt),
                    vit5.py (tầng 3, cần GPU), hybrid.py (tầng 4), run_baselines.py
-                   (chạy + chấm), measure_tokens.py (đo độ dài cắt), selftest.py
+                   (chạy + chấm), measure_tokens.py (đo độ dài cắt), selftest.py,
+                   chon_cau.py (hệ thống cuối, hướng mới giai đoạn 1–2),
+                   viet_lai.py (hai thử nghiệm âm với BARTpho, giai đoạn 2)
 src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    report.py (khung chấm điểm), bertscore.py, selftest.py,
                    truncation.py (câu hỏi 2, cần transformers),
                    run_bertscore.py (chấm BERTScore, cần torch),
                    tang4_sosanh.py (tầng 4 vòng 1/2 và đối chứng, cần sentencepiece),
                    human_eval.py (tuần 7: dựng phiếu chấm blind, phân tích phiếu,
-                   phiếu mẫu cho người chấm và so người với máy chấm)
-app/               demo Gradio
+                   phiếu mẫu cho người chấm và so người với máy chấm),
+                   chinh_xac.py + cham_chinh_xac.py (thước đo đủ ý / chi tiết lạ),
+                   so_cap_chinh_xac.py (so cặp trên bảng đã chấm),
+                   cham_gd3.py (giai đoạn 3: chấm blind, dùng lại điểm tuần 7)
+app/               demo Gradio (app.py, pipeline.py, vi_du.json)
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
 ```
@@ -2508,8 +2579,11 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     22 điểm
   - [x] giai đoạn 4b: demo tab "Hệ thống cuối và BARTpho", tô vàng chi tiết lạ, hai bài mẫu có lỗi
     BARTpho đã xác nhận; demo trùng hệ thống đã báo cáo 25/25 trên dạng tách từ của bộ dữ liệu
-  - [ ] giai đoạn 4c: viết lại mở đầu README/báo cáo theo khung "phát hiện → giải quyết", thêm câu
-    hỏi nghiên cứu 4
+  - [x] giai đoạn 4c: viết lại mở đầu README theo khung "phát hiện → giải quyết": tóm tắt dự án,
+    câu chuyện hai phần, bốn câu hỏi nghiên cứu kèm câu trả lời (thêm câu hỏi 4), bảng kết quả
+    chính trên `test` gộp thước đo cũ và mới, bảng đọc README; thêm hệ thống cuối vào bảng tầng
+    và cấu trúc thư mục. Mọi số đã đối chiếu với file kết quả
+  - [ ] báo cáo và slide theo cùng khung (chưa làm — bạn đã chọn để sau)
 
 ### Rà soát tuần 5 — đã lấp và còn nợ
 
