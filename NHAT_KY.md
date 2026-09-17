@@ -1,6 +1,6 @@
 # Nhật ký tiến trình — để làm tiếp mà không phải bắt đầu lại
 
-Cập nhật: 16/09/2026. Số liệu chi tiết và lập luận nằm trong `README.md`; file này chỉ
+Cập nhật: 17/09/2026. Số liệu chi tiết và lập luận nằm trong `README.md`; file này chỉ
 ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**, cùng những quyết định và cái bẫy
 đã gặp để phiên sau không phải hỏi lại.
 
@@ -9,6 +9,8 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**, cùng n
 - **Tuần 1–7: xong, đã commit và push.**
 - **Tuần 8: phần đo đạc xong.** Mọi tầng đã chấm trên `test` (ROUGE và BERTScore), đã
   commit và push ở `1cea014`.
+- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0 và 1 xong; tiếp theo
+  giai đoạn 2 (xem mục "HƯỚNG MỚI" bên dưới).
 - **Còn lại:** báo cáo và slide (bạn đã chọn để sau), kiểm tra tái lập trên máy sạch.
 - Demo Gradio chạy đầu-cuối được trên máy này (kiểm lại lần cuối 16/09 sau mọi thay đổi
   của tuần 8).
@@ -72,8 +74,23 @@ phân tích dẫn tới hệ thống đó. Kế hoạch 5 giai đoạn và quy t
   lẫn PhoBERT 3 câu về độ phủ chi tiết và recall, có ý nghĩa. Dò trên `tune`, xác nhận `val`,
   `test` một lần.
 
-**Việc tiếp theo: giai đoạn 1** — extractive có chủ đích trên `tune`, dùng điểm PhoBERT đã có
-sẵn (`results/predictions/phobert-sent-train_20k_{tune,val}_len256_scores.json`), không cần GPU.
+**Giai đoạn 1 — XONG (17/09/2026):** `src/models/chon_cau.py`, chọn câu tham lam theo ngân
+sách âm tiết, điểm = PhoBERT + ưu tiên vị trí + LexRank + thưởng phủ ý mới.
+- Dò 216 cấu hình trên `tune`; thắng: ngân sách 110, `w_vt` 1, `w_lex` 0,5, `lam` 1, không
+  nối tiền đề, có lọc rác.
+- `val`: recall 57,2, phủ chi tiết 69,1, **0,0% chi tiết lạ**, 100 âm tiết, F1 28,6. Hơn
+  Lead-3 (+2,79 recall, +1,47 phủ) và PhoBERT 3 câu (+1,61, +2,75), mọi khoảng tin cậy không
+  chứa 0 → **đạt quy tắc**. Hơn Lead-3 về phủ chi tiết mỏng (cận dưới +0,19).
+- Lỗi phát hiện trên `val` (guid 14423): cắt câu sau học hàm "TS ." làm mất tên chuyên gia.
+  Đã sửa ghép mảnh (TS, GS, PGS, ThS, TSKH, St; cố ý không ghép NSND/NSƯT/CN), selftest
+  `models` mục 12, rồi **chạy lại từ `tune`**: cấu hình thắng không đổi, 5/1.000 bản `val` đổi.
+- Giới hạn mang sang: 152/1.000 bản có câu treo (câu nối thiếu tiền đề); bộ chấm đếm > 4 câu
+  ở 23 bản do tách câu mịn hơn (Lead-3 cũng bị, 8 bản) — không phải vi phạm.
+- Bản tóm tắt `val` không commit: sinh lại tất định trong 5 giây (đã kiểm trùng khít).
+
+**Việc tiếp theo: giai đoạn 2** — cho BARTpho viết lại có kiểm soát trên nền bản chọn câu,
+câu sinh nào không qua `chi_tiet_la` thì lùi về câu gốc. Cần giữ ≤ 1,0% chi tiết lạ; chú ý
+câu treo là chỗ viết lại có thể thắng thật. Chưa bắt đầu — chờ review giai đoạn 1.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.

@@ -1765,6 +1765,102 @@ là hai hệ thống ở đúng ngân sách ấy.
     baselines_val:Oracle-3
 ```
 
+### Giai đoạn 1 — chọn câu có chủ đích
+
+`src/models/chon_cau.py`. Chép nguyên câu của bài nên **không thể bịa**; việc còn lại là
+chọn câu cho đủ ý trong ngân sách độ dài. Chạy trên CPU, không cần GPU: điểm câu PhoBERT của
+tầng 2 đã lưu sẵn (`phobert-sent-train_20k_{tune,val}_len256_scores.json`).
+
+**Cách chọn.** Mỗi câu có điểm = xác suất PhoBERT + `w_vt` × ưu tiên vị trí (1/(1+k)) +
+`w_lex` × độ trung tâm LexRank. Hai thành phần sau có cho **mọi** câu, còn PhoBERT chỉ thấy
+256 token đầu (49% số câu nằm ngoài). Chọn tham lam, cộng `lam` × tỷ lệ âm tiết **chưa**
+được phủ, bỏ câu mới < 30% âm tiết mới; dừng khi hết ngân sách âm tiết hoặc đủ 4 câu. Tuỳ
+chọn: kéo câu đứng trước cho câu mở đầu bằng "Tuy nhiên", "Theo đó"... (`noi_tien_de`);
+loại chú thích ảnh, "Xem thêm", mảnh câu (`loc_rac`). Câu bị cắt nhầm ở chữ viết tắt
+("chị Th.", "TS.", "GS.TS.", "St.") được **ghép** với câu sau.
+
+**Dò trên `tune`** (500 bài, 216 cấu hình = ngân sách {90, 100, 110} × `w_vt` {0; 0,5; 1} ×
+`w_lex` {0; 0,5} × `lam` {0; 0,5; 1} × `noi_tien_de` × `loc_rac`), mục tiêu chốt trước khi dò:
+tối đa phủ chi tiết + recall, với ≤ 110 âm tiết trung bình và ≤ 4 câu. Thắng: **ngân sách
+110, `w_vt` 1, `w_lex` 0,5, `lam` 1, không nối tiền đề, có lọc rác**
+(`results/tables/chon_cau_tune_do.json`). Bỏ từng thành phần khỏi cấu hình thắng, trên `tune`:
+
+| Cấu hình | Phủ chi tiết | ROUGE-1 recall | Âm tiết |
+|---|---|---|---|
+| **Thắng** | **70,4** | **58,0** | 100,9 |
+| bỏ ưu tiên vị trí (`w_vt` 0) | 69,2 | 57,7 | 100,8 |
+| bỏ LexRank (`w_lex` 0) | 69,9 | 56,8 | 100,2 |
+| bỏ thưởng phủ ý mới (`lam` 0) | 70,0 | 57,6 | 100,9 |
+| bật nối tiền đề | 69,5 | 57,6 | 100,7 |
+| bỏ lọc rác | 70,4 | 57,9 | 100,9 |
+| chỉ PhoBERT + tham lam theo ngân sách | 67,9 | 56,2 | 99,0 |
+| *mốc:* Lead-3 / PhoBERT 3 câu | 67,2 / 65,9 | 52,8 / 55,3 | 102,4 / 99,4 |
+
+Mỗi thành phần góp ít (≤ 1,2 điểm) và các chênh lệch trên `tune` **chưa kiểm ý nghĩa**; nhận
+xét chắc chắn được là không có "một mẹo" nào — phần hơn đến từ cộng dồn. Nối tiền đề **làm
+giảm** cả hai chỉ số (tốn ngân sách cho câu ít thông tin), nên bị tắt. Lọc rác gần như không
+đổi chỉ số, giữ vì là cấu hình thắng và bản tóm tắt sạch hơn. Cấu hình thắng được chọn giữa
+216 cấu hình trên chính `tune`, nên số `tune` lạc quan — `val` dưới đây là con số thật.
+
+**Xác nhận trên `val`** (1.000 bài, `results/tables/chinh_xac_val_gd1.json`, khoảng tin
+cậy 95% bootstrap):
+
+| Hệ thống | ROUGE-1 recall | Phủ chi tiết | Có chi tiết lạ | ROUGE-1 F1 | Độ dài |
+|---|---|---|---|---|---|
+| **Chọn câu (giai đoạn 1)** | **57,2** [56,0, 58,3] | **69,1** [67,1, 71,1] | **0,0%** | 28,6 | 3,4 câu, 100 âm tiết |
+| Lead-3 | 54,4 [53,2, 55,6] | 67,6 [65,6, 69,7] | 0,0% | 27,5 | 3,0 câu, 102 âm tiết |
+| PhoBERT 3 câu | 55,6 [54,4, 56,8] | 66,3 [64,3, 68,4] | 0,0% | 28,7 | 3,0 câu, 100 âm tiết |
+
+So cặp (`paired_bootstrap`, 10.000 lần; phủ chi tiết trên 957 bài có sapo chứa chi tiết):
+
+| So sánh | Recall | Phủ chi tiết | F1 (báo kèm) |
+|---|---|---|---|
+| hơn Lead-3 | +2,79 [+1,94, +3,64], p < 0,0001 | +1,47 [+0,19, +2,74], p = 0,021 | +1,16 [+0,74, +1,57] |
+| hơn PhoBERT 3 câu | +1,61 [+0,80, +2,40], p = 0,0002 | +2,75 [+1,31, +4,20], p = 0,0004 | −0,09 [−0,50, +0,33], p = 0,66 |
+
+**Theo quy tắc đã chốt: đạt cả bốn điều** — 0,0% chi tiết lạ (≤ 1,0%), 100 âm tiết và tối đa
+4 câu, hơn cả hai mốc ở cả hai chỉ số đủ ý với khoảng tin cậy không chứa 0. F1 ngang PhoBERT
+3 câu, vẫn thấp xa BARTpho (35,2) — đúng sự đánh đổi đã nêu ở giai đoạn 0. **Phần hơn Lead-3
+về phủ chi tiết mỏng** (cận dưới +0,19): Lead-3 là mốc rất mạnh về tên riêng và con số, vì
+tin tức dồn chúng vào đầu bài.
+
+**Một lỗi phát hiện trên `val`, đã sửa và chạy lại.** Lần chấm `val` đầu tiên cho 0,1% chi
+tiết lạ — 1/1.000, vô lý với hệ thống chép nguyên câu. Soi bài đó (guid 14423): không phải
+bịa, mà bộ tách câu cắt sau học hàm ở dạng tách từ ("trao đổi nhanh với TS . Đào_Trọng_Tứ"),
+bản tóm tắt nhận mảnh cụt "...trao đổi nhanh với TS." rồi nối sang câu khác, và bộ đo đọc
+"TS Chuyện" thành tên lạ. Tức bộ đo đúng khi nghi ngờ, và lỗi thật là **mất tên chuyên gia**
+— chính chi tiết sapo cần. Ghép mảnh câu trước đó chỉ biết chữ viết tắt tên người ("Tr.",
+"N."); nay thêm `TS`, `GS`, `PGS`, `ThS`, `TSKH` và `St` ("St. Petersburg"). **Cố ý không
+ghép** `NSND`, `NSƯT`, `CN`: trên `tune`/`val` chúng thường đứng cuối câu thật ("...danh hiệu
+NSƯT." rồi "Trong đó, ..."). `models/selftest.py` mục 12 kiểm cả hai chiều.
+
+Vì lỗi thấy trên `val`, việc sửa là **sửa tiền xử lý, không chỉnh cấu hình theo `val`**, và
+toàn bộ quy trình được chạy lại đúng thứ tự: dò lại 216 cấu hình trên `tune` (chỉ 2/500 bài
+`tune` dính lỗi này, số liệu đổi ≤ 0,06, cấu hình thắng giữ nguyên), sinh lại và chấm lại
+`val`. Bản tóm tắt đổi ở đúng 5/1.000 bài, cả 5 đều là bài có học hàm hoặc "St.". Trước khi
+sửa: recall 57,15, phủ chi tiết 69,03, 0,1% chi tiết lạ — mọi kết luận như sau khi sửa.
+
+**Giới hạn đã biết, mang sang giai đoạn sau:**
+
+- **Câu treo.** 152/1.000 bản `val` có một câu mở đầu bằng từ nối/đại từ ("Tuy nhiên",
+  "Trong đó", "Họ"...) mà câu đứng trước nó không được chọn; ở 43 bản đó là câu đầu tiên.
+  Danh sách từ rộng nên đây là cận trên, nhưng chắc chắn có ca đọc khó hiểu. Nối tiền đề giải
+  quyết được nhưng thua về chỉ số (ở trên). Đây là việc giai đoạn 2 (viết lại) và giai đoạn 3
+  (`day_du`/`trung_thuc` do người/máy chấm) phải đo — ROUGE và độ phủ không thấy lỗi mạch văn.
+- **"Tối đa 4 câu" tính theo đơn vị câu của hệ thống**, tức câu của bộ tách câu dữ liệu sau
+  khi ghép mảnh. Bộ chấm (`sentences_raw`) tách mịn hơn — ở "...", ở chữ viết tắt đã ghép —
+  nên đếm > 4 câu ở 23/1.000 bản, tối đa 7. Không phải vi phạm: chính Lead-3, luôn đúng 3 đơn
+  vị, cũng bị bộ chấm đếm > 4 câu ở 8/1.000 bài, tối đa 7.
+- Bản tóm tắt `val` **không commit**, cùng chính sách với baseline: sinh lại tất định trong
+  5 giây trên CPU từ điểm PhoBERT đã commit (đã kiểm: sinh lại trùng khít 1.000/1.000).
+
+```bash
+.venv/Scripts/python.exe src/models/chon_cau.py do                 # dò trên tune, ~2 phút
+.venv/Scripts/python.exe src/models/chon_cau.py sinh --split val   # đọc cấu hình thắng từ file dò
+.venv/Scripts/python.exe src/eval/cham_chinh_xac.py --split val --ten gd1 \
+    chon-cau_val baselines_val:Lead-3 phobert-sent-train_20k_val_len256:phobert-sent
+```
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
@@ -1957,7 +2053,9 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
 - [ ] Hướng mới — một hệ thống duy nhất: đủ ý và không sai sự thật
   - [x] giai đoạn 0: chốt thước đo (`eval/chinh_xac.py`), kiểm chứng bằng đối chứng âm/dương
     và soi tay, đo mốc trên `val`, chốt quy tắc quyết định trước khi thử
-  - [ ] giai đoạn 1: extractive có chủ đích (phủ ý mới, bỏ lặp, nối tiền đề, lọc rác)
+  - [x] giai đoạn 1: chọn câu có chủ đích (`models/chon_cau.py`) — trên `val` recall 57,2 và
+    phủ chi tiết 69,1, hơn cả Lead-3 lẫn PhoBERT 3 câu có ý nghĩa, 0,0% chi tiết lạ, 100 âm
+    tiết; sửa lỗi cắt câu ở học hàm (phát hiện trên `val`) rồi chạy lại từ `tune`
   - [ ] giai đoạn 2: cho BARTpho viết lại có kiểm soát, lùi về extractive khi không qua kiểm
   - [ ] giai đoạn 3: chấm theo tiêu chí `day_du`/`trung_thuc` trên mẫu `val`
   - [ ] giai đoạn 4: chấm `test` một lần, demo một ô, viết lại khung báo cáo

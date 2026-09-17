@@ -315,5 +315,16 @@ check_true("pT luôn giữ ít nhất câu điểm cao nhất",
 check_true("pT không chọn hai bản sao", pick_rule([0, 9, 0, 0, 9, 0], N6, "p0.9") == [1])
 check_true("mọi quy tắc trong lưới đều chạy", all(pick_rule([1.0, 0.0, 2.0], MS, r) for r in RULES))
 
+print("\n12. Hướng mới, giai đoạn 1 — ghép mảnh câu bị cắt nhầm ở chữ viết tắt")
+from models.chon_cau import VIET_TAT_TEN, don_vi  # noqa: E402
+
+# Dang tach tu nhu du lieu that: chi o dang nay bo tach cau moi cat nham sau "TS ."
+check_true("học hàm 'TS.' được ghép với tên phía sau",
+           [i for i, _ in don_vi("PV trao đổi với TS . Đào_Trọng_Tứ , giám_đốc . Ông nói .")] == [[0, 1], [2]])
+for duoi in ("với TS.", "ông GS.TS.", "bà PGS.TS.", "chị ThS.", "tại St.", "cháu Tr.", "anh N.V."):
+    check_true(f"'{duoi}' là mảnh cần ghép", bool(VIET_TAT_TEN.search(duoi)))
+for duoi in ("danh hiệu NSƯT.", "được phong NSND.", "vào ngày CN.", "ở Hoàng Sa.", "tại Hòa An.", "vậy."):
+    check_true(f"'{duoi}' là cuối câu thật, không ghép", not VIET_TAT_TEN.search(duoi))
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

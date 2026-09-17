@@ -1,0 +1,16 @@
+{
+ "tag": "chon-cau_val",
+ "split": "val",
+ "cau_hinh": {
+  "ngan_sach": 110,
+  "w_vt": 1.0,
+  "w_lex": 0.5,
+  "lam": 1.0,
+  "noi_tien_de": false,
+  "loc_rac": true
+ },
+ "chon_tren": "tune",
+ "diem_phobert": "phobert-sent-train_20k_val_len256_scores.json",
+ "giay": 5.3,
+ "ban_rong": 0
+}
