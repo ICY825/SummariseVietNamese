@@ -9,8 +9,8 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**, cùng n
 - **Tuần 1–7: xong, đã commit và push.**
 - **Tuần 8: phần đo đạc xong.** Mọi tầng đã chấm trên `test` (ROUGE và BERTScore), đã
   commit và push ở `1cea014`.
-- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0, 1, 2 xong; không dùng
-  BARTpho trong hệ thống cuối; tiếp theo giai đoạn 3 (xem mục "HƯỚNG MỚI" bên dưới).
+- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0–3 xong, hệ thống cuối là giai đoạn 1; không dùng
+  BARTpho trong hệ thống cuối; tiếp theo giai đoạn 4 (xem mục "HƯỚNG MỚI" bên dưới).
 - **Còn lại:** báo cáo và slide (bạn đã chọn để sau), kiểm tra tái lập trên máy sạch.
 - Demo Gradio chạy đầu-cuối được trên máy này (kiểm lại lần cuối 16/09 sau mọi thay đổi
   của tuần 8).
@@ -124,7 +124,7 @@ mục "Giai đoạn 3–4 — kế hoạch"):
 3. Gđ 4: demo hệ thống cuối cạnh BARTpho, tô màu chi tiết lạ.
 4. Gđ 4: viết lại mở đầu README/báo cáo, thêm câu hỏi nghiên cứu 4, đặt tầng 4 vào mạch.
 
-**Giai đoạn 3 — ĐANG LÀM (17/09).** Bạn quyết: **dùng lại 50 bài tuần 7** (không rút phiếu mới),
+**Giai đoạn 3 — XONG (17/09).** Bạn quyết: **dùng lại 50 bài tuần 7** (không rút phiếu mới),
 máy chấm hai lượt bằng tác tử con, hai người chấm mẫu cũ chấm tiếp; mẫu nhỏ thì giữ quy tắc,
 mặc định gđ1.
 - `src/eval/cham_gd3.py prepare` đã chạy, phiếu đã commit (`754cd9c`): máy 46 bài / 69 bản
@@ -141,8 +141,15 @@ mặc định gđ1.
     thành 13/3) → không được nói "không thể sai sự thật", chỉ "không bịa".
   - Chưa giải: máy chấm cho gđ1 kém Lead-3 về đầy đủ (−0,25, nhưng trôi −0,55) trái với chỉ số
     tự động.
-- **Còn chờ:** hai người chấm `gd3/phieu_doc_mau.html` + `gd3/cham_mau_nguoi1..2.csv` (19 bản,
-  ~20–30 phút) → chạy lại `analyze`, phần 4 tự bổ sung.
+- **Bạn quyết: không chấm người mới.** Dùng lại người chấm tuần 7 chỉ cho phần phát hiện và
+  làm chỗ dựa cho kết luận trung thực (chuỗi người → máy cũ → máy mới). Phiếu 19 bản vẫn để trống
+  trong repo, có người chấm thì bổ sung, `analyze` tự thêm phần 4. Cách nói khi trình bày (được /
+  không được) ghi ở README, mục "Quyết định: không chấm người mới".
+- **Giai đoạn 3 — XONG. Hệ thống cuối: giai đoạn 1** (`chon_cau.py sinh --gd 1`).
+
+**Việc tiếp theo: giai đoạn 4** — (1) chấm thước đo mới trên `test` cho mọi hệ thống, một lần:
+cần mở khoá `test` trong `cham_chinh_xac.py` và sinh gđ1 trên `test` (`--cho-phep-test`);
+(2) demo hệ thống cuối cạnh BARTpho, tô chi tiết lạ; (3) viết lại mở đầu README, câu hỏi 4.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.

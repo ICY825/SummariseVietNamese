@@ -2089,7 +2089,7 @@ lại 50 bài tuần 7 trùng khít phiếu và khoá đã phát; `analyze` ch�
 .venv/Scripts/python.exe src/eval/cham_gd3.py analyze    # sau khi thu llm_judge_1..2.csv (và cham_mau_nguoi1..2.csv)
 ```
 
-#### Kết quả phần máy chấm (người chấm: còn chờ phiếu)
+#### Kết quả phần máy chấm (người chấm mới: không làm — xem cuối mục)
 
 Hai tác tử con chấm đủ 69/69 bản mỗi lượt (`gd3/llm_judge_1.csv`, `_2.csv`), không lượt nào thấy
 lượt kia. Lượt 2 có ghi một script tạm ra thư mục cha của thư mục chấm để viết file; theo báo cáo
@@ -2154,6 +2154,34 @@ cán bộ này" treo nên dễ hiểu nhầm đối tượng; B16 "ông nói", "
 chi tiết (0% chi tiết lạ), nhưng sắp đặt câu vẫn tạo được hàm ý sai. Bộ nhận diện câu treo (chỉ
 nhìn đầu câu) không bắt được "cùng ngày" nằm giữa câu. Phải nói đúng như vậy khi trình bày:
 hệ thống cuối **không bịa**, chứ không phải "không thể sai" (docstring `chon_cau.py` đã sửa theo).
+
+#### Quyết định: không chấm người mới, dùng lại người chấm tuần 7 trong phạm vi của nó
+
+Người chấm mới **không làm** (quyết định 17/09); phiếu 19 bản `gd3/phieu_doc_mau.html` và
+`cham_mau_nguoi1..2.csv` vẫn để trống trong repo, có người chấm thì bổ sung sau và `analyze` tự
+thêm phần 4. Phiếu người tuần 7 **không thay được**: nó chấm sapo, Lead-3, `k2`, BARTpho — chỉ 3/12
+bài có bản giai đoạn 1 trùng chữ với một bản đã chấm. Nó được dùng lại đúng trong phạm vi sau:
+
+| Dùng lại cho | Vì sao được |
+|---|---|
+| Phần **phát hiện**: BARTpho trôi chảy nhưng thiếu ý và kém trung thực hơn extractive; ROUGE không phản ánh người đọc | chính là kết quả người chấm tuần 7 |
+| Chỗ dựa cho **"hệ thống cuối trung thực hơn BARTpho"** | chuỗi kiểm chứng: máy tuần 7 khớp người ở `trung_thuc` (alpha người–máy 0,76) → máy giai đoạn 3 khớp máy tuần 7 trên bản mốc (alpha 0,96, trôi −0,25 trong ngưỡng) |
+
+| Không dùng lại được cho | Vì sao |
+|---|---|
+| "Người đọc chấm hệ thống cuối" | 3 bài, không tính được gì |
+| `day_du`, `troi_chay` của hệ thống cuối | chuỗi đứt: máy mới lệch máy cũ vượt ngưỡng (−0,55, +0,35) |
+| Mâu thuẫn "kém Lead-3 về đầy đủ" (máy) với recall/phủ chi tiết hơn Lead-3 (tự động) | không có điểm người để phân xử — **để mở**, nêu khi trình bày |
+
+**Cách nói khi trình bày — đúng mức bằng chứng:**
+
+- ✅ "Người chấm (tuần 7) xác nhận BARTpho kém trung thực và thiếu ý; ROUGE không phản ánh người đọc."
+- ✅ "Hệ thống cuối trung thực hơn BARTpho (máy chấm, p < 0,0001); tiêu chí này của máy chấm đã
+  được kiểm chứng với người chấm."
+- ⚠️ "Máy chấm cho thấy hệ thống cuối đầy đủ hơn nhưng kém trôi chảy hơn BARTpho — chưa kiểm chứng
+  bằng người, và hai đợt chấm lệch nhau ở hai tiêu chí này."
+- ❌ Không nói "người đọc đánh giá hệ thống cuối tốt hơn".
+- ❌ Không nói "không thể sai sự thật" — chỉ "không bịa chi tiết".
 
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
@@ -2355,8 +2383,10 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     hình sinh; thay bằng bỏ từ nối + trừ điểm câu treo: câu treo `val` 152 → 21, nhưng phủ chi
     tiết hơn Lead-3 không còn có ý nghĩa (p = 0,08) → giữ cả hai, giai đoạn 3 chọn. PhoBERT góp
     +2,37 recall (tune, p < 0,0001)
-  - [ ] giai đoạn 3: chấm blind `day_du`/`trung_thuc`/`troi_chay` trên mẫu `val` cho giai đoạn
-    1, giai đoạn 2, BARTpho, Lead-3 — chọn phiên bản cuối và xác nhận cú đảo chiều bằng người đọc
+  - [x] giai đoạn 3: chấm blind trên 50 bài tuần 7 (dùng lại điểm cũ, 10 bản mốc), hai lượt máy
+    bằng tác tử con — **hệ thống cuối là giai đoạn 1**; trung thực hơn BARTpho +0,55 (p < 0,0001);
+    `day_du`/`troi_chay` so chéo đợt chỉ tham khảo (trôi vượt ngưỡng); ghép câu vẫn có thể tạo hàm
+    ý sai. Người chấm mới không làm — dùng lại người chấm tuần 7 trong phạm vi đã nêu
   - [ ] giai đoạn 4: chấm thước đo mới trên `test` cho mọi hệ thống (một lần); demo hệ thống
     cuối cạnh BARTpho có tô chi tiết lạ; viết lại mở đầu README/báo cáo theo khung "phát hiện →
     giải quyết", thêm câu hỏi nghiên cứu 4
