@@ -326,5 +326,30 @@ for duoi in ("với TS.", "ông GS.TS.", "bà PGS.TS.", "chị ThS.", "tại St.
 for duoi in ("danh hiệu NSƯT.", "được phong NSND.", "vào ngày CN.", "ở Hoàng Sa.", "tại Hòa An.", "vậy."):
     check_true(f"'{duoi}' là cuối câu thật, không ghép", not VIET_TAT_TEN.search(duoi))
 
+print("\n13. Hướng mới, giai đoạn 2 — câu treo")
+from models.chon_cau import bo_tu_noi, chon, la_treo, so_cau_treo  # noqa: E402
+
+check_true("bỏ từ nối, viết hoa chữ đầu", bo_tu_noi("Tuy nhiên, nạn nhân tử vong.") == "Nạn nhân tử vong.")
+check_true("giữ dấu ngoặc kép mở đầu", bo_tu_noi('"Tuy nhiên, công ty đã sai.') == '"Công ty đã sai.')
+check_true("không có dấu phẩy thì không bỏ",
+           bo_tu_noi("Bên cạnh đó từng địa phương rà soát.") == "Bên cạnh đó từng địa phương rà soát.")
+check_true("'Cụ thể hoá' không phải từ nối",
+           bo_tu_noi("Cụ thể hoá chỉ đạo, Hội tổ chức thi.") == "Cụ thể hoá chỉ đạo, Hội tổ chức thi.")
+for giu in ("Trước đó, trên mảnh đất có 4 doanh nghiệp.", "Sau đó, Kiên bàn với Thanh.",
+            "Trong khi đó, khu đất hết hạn thuê.", "Trong đó, có 2 cặp vợ chồng.", "Đây là lần đầu tiên."):
+    check_true(f"giữ nguyên và vẫn là câu treo: '{giu[:24]}...'", bo_tu_noi(giu) == giu and la_treo(giu))
+check_true("câu đã bỏ từ nối không còn là câu treo", not la_treo(bo_tu_noi("Ngoài ra, công an thu giữ 2 xe máy.")))
+
+# Bai gia 3 cau: cau 2 treo cung ("Day la"), diem cao nhat. w_treo = 0 chon no; phat du nang thi thoi.
+B3 = {"dv": [([0], "An đi chợ ."), ([1], "Đây là việc lớn ."), ([2], "Bình ở nhà ngủ .")],
+      "p": np.array([0.5, 0.9, 0.1]), "lex": np.zeros(3), "vt": np.zeros(3), "am": np.array([4, 5, 5]),
+      "tu": [{"an", "đi", "chợ"}, {"đây", "là", "việc", "lớn"}, {"bình", "ở", "nhà", "ngủ"}],
+      "rac": np.zeros(3, dtype=bool), "treo": np.array([False, True, False]),
+      "treo_cung": np.array([False, True, False])}
+check_true("w_treo = 0 giữ nguyên hành vi giai đoạn 1", chon(B3, 5, 0, 0, 0, False, True) == [1])
+check_true("phạt câu treo thì chọn câu khác", chon(B3, 5, 0, 0, 0, False, True, w_treo=1.0) == [0])
+check_true("câu treo có câu trước được chọn thì không tính là treo", so_cau_treo(B3, [0, 1]) == 0)
+check_true("câu treo thiếu câu trước thì tính", so_cau_treo(B3, [1, 2]) == 1)
+
 print("\n" + ("THẤT BẠI: " + ", ".join(fails) if fails else "TẤT CẢ ĐỀU ĐẠT."))
 raise SystemExit(1 if fails else 0)

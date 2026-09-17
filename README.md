@@ -1876,6 +1876,147 @@ sửa: recall 57,15, phủ chi tiết 69,03, 0,1% chi tiết lạ — mọi kế
     chon-cau_val baselines_val:Lead-3 phobert-sent-train_20k_val_len256:phobert-sent
 ```
 
+**PhoBERT góp bao nhiêu** — câu hỏi "deep learning nằm ở đâu" khi hệ thống cuối là chọn câu.
+Lưới 216 cấu hình luôn bật điểm PhoBERT, nên đối chứng là **tắt PhoBERT rồi dò lại cả lưới**
+(công bằng cho bên không có nó), so cặp trên 500 bài `tune`
+(`results/tables/chon_cau_phobert_dong_gop.json`):
+
+| | Có PhoBERT | Tắt PhoBERT, dò lại | Hiệu [KTC 95%] |
+|---|---|---|---|
+| ROUGE-1 recall | 58,03 | 55,66 | **+2,37** [+1,37, +3,40], p < 0,0001 |
+| Phủ chi tiết | 70,44 | 69,17 | +1,27 [−0,51, +3,09], p = 0,16 |
+
+PhoBERT là thành phần góp recall **lớn nhất** (các thành phần khác ≤ 1,2 điểm khi bỏ riêng);
+không có nó, hệ thống chỉ ngang PhoBERT 3 câu (recall 55,7 so với 55,3). Về phủ chi tiết thì
+chưa thấy đóng góp có ý nghĩa — vị trí câu đã mang phần lớn tín hiệu tên riêng và con số.
+
+```bash
+.venv/Scripts/python.exe src/models/chon_cau.py do --khong-phobert   # ~2 phút
+.venv/Scripts/python.exe src/models/chon_cau.py so-phobert
+```
+
+### Giai đoạn 2 — câu treo: hai thử nghiệm BARTpho thất bại, thay bằng luật tất định
+
+Chỗ hụt của giai đoạn 1 là **mạch văn**, không phải ý: 152/1.000 bản `val` có câu mở đầu bằng
+từ nối/đại từ mà câu đứng trước không được chọn. Kế hoạch ban đầu là cho BARTpho viết lại có
+kiểm soát. Cả hai cách thử đều thất bại, và đó là kết quả cần báo cáo.
+
+**Thử nghiệm âm 1 — ghép câu BARTpho vào đầu bản chọn câu** (`tune`, dùng bản BARTpho đã sinh
+từ tuần 5; ngân sách còn lại lấp bằng chọn câu):
+
+| | Recall | Phủ chi tiết | Có chi tiết lạ | Âm tiết |
+|---|---|---|---|---|
+| **Chọn câu (giai đoạn 1)** | **58,0** | 70,4 | 0,0% | 101 |
+| Chỉ BARTpho | 35,6 | 50,7 | 11,8% | 34 |
+| BARTpho + chọn câu | 56,6 | **71,7** | 12,2% | 105 |
+| BARTpho + chọn câu, bỏ câu BARTpho có chi tiết lạ | 55,6 | 69,2 | 0,4% | 104 |
+
+Câu BARTpho chiếm ~34 âm tiết ngân sách mà phần lớn lặp ý các câu chọn đã có: không lọc thì
+bịa, lọc thì thua cả hai chỉ số. Và lọc bằng chính `chi_tiet_la` là tự chấm mình — ràng buộc
+≤ 1% gần như đạt theo cấu trúc, trong khi bộ đo đã biết là bắt 0/5 lỗi gán nhầm đối tượng.
+
+**Thử nghiệm âm 2 — BARTpho viết lại câu treo** (`src/models/viet_lai.py`): đầu vào là câu
+đứng trước + câu treo. Trước khi sinh đã kiểm BARTpho trên CPU máy này tái lập **đúng từng ký
+tự** 6/6 bản `tune` đã sinh trên Kaggle. 67 câu treo trên `tune`, 8,7 phút CPU:
+
+| Trên 67 câu viết lại | |
+|---|---|
+| có chi tiết lạ | **22** (33%) |
+| giữ được ý câu treo (ROUGE-1 recall so với câu treo ≥ 70) | 15 |
+| qua cả ba (không chi tiết lạ, không còn treo, giữ ý) | 13 |
+
+BARTpho được huấn luyện để viết sapo cho cả bài, nên với hai câu nó vẫn viết **một câu mở đầu
+bản tin mới** chứ không viết lại câu treo. Nguy hiểm hơn là lỗi bộ đo **không bắt được**:
+"Iran tuyên bố cắt đứt quan hệ với Qatar" (bài: Saudi, UAE... cắt quan hệ, Iran thì không — #27);
+đảo chủ thể "máy bay ném bom tân tiến của nước này [Trung Quốc]" khi bài nói của Nga (#17 —
+**nằm trong 13 câu "qua cả ba"**); "Tuyền và Lắm được bổ nhiệm làm Giám đốc Công an TP HCM" —
+bịa hoàn toàn (#63). 13 câu qua được phần lớn chỉ là **bỏ từ nối** ("Tuy nhiên, giới quan sát
+nhận định..." → "Giới quan sát nhận định...") — việc một luật làm được mà không thể bịa.
+
+**Kết luận: không dùng mô hình sinh trong hệ thống cuối.** BARTpho vẫn là một phần của dự án —
+nó thắng ROUGE F1 (tuần 5–8) — nhưng với tiêu chí đủ ý và không sai sự thật, nó hỏng đúng ở chỗ
+quan trọng nhất, và hai lần thử dùng nó có kiểm soát đều không qua.
+
+**Cách làm thay thế — hai luật tất định** (`chon_cau.py`, soi trên `tune`):
+
+1. **Bỏ từ nối** (`bo_noi`) khi câu mở đầu bằng "Tuy nhiên, ", "Ngoài ra, ", "Bên cạnh đó, ",
+   "Như vậy, ", "Cụ thể, ", "Do đó, ", "Vì vậy, ", "Vì thế, ", "Theo đó, ", "Hơn nữa, ",
+   "Thậm chí, " — chỉ khi có dấu phẩy ngay sau, để không cắt nhầm "Cụ thể hoá...". **Cố ý
+   không bỏ** "Trước đó", "Sau đó", "Trong khi đó", "Khi đó", "Lúc đó": tiếng Việt không chia
+   thì, nhiều khi đó là dấu thời gian duy nhất — "Trước đó, trên mảnh đất có 4 doanh nghiệp" bỏ
+   đi thành nói về hiện tại, tức **sai**. "Trong đó", "Tương tự", "Cũng theo" và đại từ cũng
+   giữ. Soi cả 98 câu bị bỏ từ nối trên `tune`: đọc tự nhiên, không đổi nghĩa sự kiện.
+2. **Trừ điểm câu treo còn lại** (`w_treo`) khi chọn câu, để bộ chọn ưu tiên câu tự đứng được.
+
+**Quy tắc chọn, chốt trước khi dò:** trong các cấu hình mà phủ chi tiết và recall mỗi thứ giảm
+không quá 0,5 điểm so với giai đoạn 1 trên `tune` (vẫn ≤ 110 âm tiết, ≤ 4 câu), lấy cấu hình ít
+bản còn câu treo nhất. Dò `w_treo` {0; 0,25; 0,5; 1; 2; 5} × bỏ từ nối có/không
+(`results/tables/chon_cau_gd2_tune_do.json`):
+
+| `w_treo` | Bỏ từ nối | Phủ chi tiết | Recall | Bản có câu treo (/500) |
+|---|---|---|---|---|
+| 0 | không (giai đoạn 1) | 70,44 | 58,03 | 82 |
+| 0 | có | 70,44 | 57,98 | 40 |
+| 0,5 | có | 70,06 | 57,80 | 15 |
+| **1** | **có** | **70,09** | **57,54** | **8** |
+| 2 | có | 70,09 | 57,47 | 5 — loại: recall −0,56 |
+
+Thắng: `w_treo` 1, bỏ từ nối — recall −0,49, sát ngưỡng 0,5.
+
+**Xác nhận trên `val`, một lần** (`results/tables/chinh_xac_val_gd2.json`):
+
+| Hệ thống | Recall | Phủ chi tiết | Chi tiết lạ | F1 | Bản có câu treo |
+|---|---|---|---|---|---|
+| Giai đoạn 1 | 57,2 [56,0, 58,3] | 69,1 [67,1, 71,1] | 0,0% | 28,6 | 152 |
+| **Giai đoạn 2** | 56,9 [55,8, 58,1] | 68,8 [66,8, 70,8] | 0,0% | 28,6 | **21** |
+| Lead-3 | 54,4 | 67,6 | 0,0% | 27,5 | — |
+| PhoBERT 3 câu | 55,6 | 66,3 | 0,0% | 28,7 | — |
+
+| Giai đoạn 2 so với | Recall | Phủ chi tiết |
+|---|---|---|
+| giai đoạn 1 | −0,21 [−0,50, +0,07], p = 0,14 | −0,29 [−0,81, +0,23], p = 0,28 |
+| Lead-3 | +2,58 [+1,71, +3,45], p < 0,0001 | **+1,18 [−0,14, +2,52], p = 0,08** |
+| PhoBERT 3 câu | +1,40 [+0,58, +2,20], p = 0,001 | +2,46 [+1,00, +3,93], p = 0,0006 |
+
+Câu treo giảm **152 → 21**, không mất chi tiết lạ nào, độ dài giữ 100 âm tiết (6 bản > 110,
+dài nhất 145). Nhưng **giai đoạn 2 trượt một điều của quy tắc giai đoạn 0**: phủ chi tiết hơn
+Lead-3 không còn có ý nghĩa (khoảng tin cậy chứa 0) — đúng chỗ đã mỏng từ giai đoạn 1 (p = 0,021).
+So với giai đoạn 1, mức giảm nhỏ và không có ý nghĩa, nhưng đủ để chạm 0.
+
+**Quyết định: giữ cả hai, không đổi quy tắc sau khi thấy kết quả.** Giai đoạn 1 là hệ thống đạt
+quy tắc; giai đoạn 2 là biến thể dễ đọc hơn, trượt một điều kiện. Giai đoạn 3 chấm cả hai và
+chọn theo quy tắc chốt trước dưới đây.
+
+**Ghi nhận cho minh bạch:** sau khi đã thấy kết quả `val`, có đếm trên `val` biến thể *chỉ bỏ từ
+nối, không trừ điểm* — nó giữ nguyên lựa chọn câu của giai đoạn 1 nên không mất phủ chi tiết, và
+câu treo còn 87/1.000. Con số này tìm ra **sau** khi nhìn `val`, nên **không** được chọn làm cấu
+hình; ghi lại để giai đoạn 3 biết có phương án đó.
+
+**Quy tắc chọn giữa giai đoạn 1 và 2 ở giai đoạn 3 — chốt trước khi chấm:** chấm cả hai trên
+cùng một mẫu `val` theo `day_du`, `trung_thuc`, `troi_chay` (thang 1–5, blind, so cặp theo bài).
+Chọn **giai đoạn 2** nếu `troi_chay` cao hơn có ý nghĩa **và** `day_du`, `trung_thuc` không kém
+hơn quá 0,25 điểm (cận dưới khoảng tin cậy 95% của hiệu > −0,25); ngược lại chọn **giai đoạn 1**.
+Lưu ý từ tuần 7: `troi_chay` do LLM chấm **không** khớp người chấm (máy phóng đại) — tiêu chí này
+cần người chấm, hoặc phải kiểm máy chấm lại trên mẫu người trước khi dùng.
+
+**Giới hạn đã biết:**
+
+- Bộ nhận diện câu treo chỉ nhìn **từ đầu câu**. Câu cần ngữ cảnh kiểu khác vẫn lọt, ví dụ gặp
+  khi soi `tune`: "- Theo tôi vì nhiều lý do." (trích phỏng vấn, không rõ "tôi"), "...- ông nói."
+  (không rõ "ông"). Số 21 là cận dưới của số bản hụt mạch.
+- 21 bản còn câu treo là loại không bỏ được: "Đó là...", "Sau đó...", "Trước đó...".
+- Bản tóm tắt `val` không commit — sinh lại tất định trong 6 giây.
+
+```bash
+.venv/Scripts/python.exe src/models/viet_lai.py thu-ghep                   # thử nghiệm âm 1, tune
+~/.venvs/demo/Scripts/python.exe src/models/viet_lai.py ung-vien --split tune  # thử nghiệm âm 2, ~9 phút CPU
+.venv/Scripts/python.exe src/models/viet_lai.py phan-tich --split tune     # đếm lại, --in-het để xem từng câu
+.venv/Scripts/python.exe src/models/chon_cau.py do-treo                    # dò trên tune
+.venv/Scripts/python.exe src/models/chon_cau.py sinh --gd 2 --split val
+.venv/Scripts/python.exe src/eval/cham_chinh_xac.py --split val --ten gd2 \
+    chon-cau-gd2_val chon-cau_val baselines_val:Lead-3 phobert-sent-train_20k_val_len256:phobert-sent
+```
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
@@ -2071,7 +2212,11 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
   - [x] giai đoạn 1: chọn câu có chủ đích (`models/chon_cau.py`) — trên `val` recall 57,2 và
     phủ chi tiết 69,1, hơn cả Lead-3 lẫn PhoBERT 3 câu có ý nghĩa, 0,0% chi tiết lạ, 100 âm
     tiết; sửa lỗi cắt câu ở học hàm (phát hiện trên `val`) rồi chạy lại từ `tune`
-  - [ ] giai đoạn 2: cho BARTpho viết lại có kiểm soát, lùi về extractive khi không qua kiểm
+  - [x] giai đoạn 2: hai thử nghiệm BARTpho có kiểm soát đều thất bại (ghép câu giảm chỉ số;
+    viết lại câu treo 33% có chi tiết lạ, có lỗi đảo chủ thể bộ đo không bắt) → không dùng mô
+    hình sinh; thay bằng bỏ từ nối + trừ điểm câu treo: câu treo `val` 152 → 21, nhưng phủ chi
+    tiết hơn Lead-3 không còn có ý nghĩa (p = 0,08) → giữ cả hai, giai đoạn 3 chọn. PhoBERT góp
+    +2,37 recall (tune, p < 0,0001)
   - [ ] giai đoạn 3: chấm theo tiêu chí `day_du`/`trung_thuc` trên mẫu `val`
   - [ ] giai đoạn 4: chấm `test` một lần, demo một ô, viết lại khung báo cáo
 

@@ -1,0 +1,857 @@
+{
+ "split": "tune",
+ "cau_hinh_gd1": [
+  110,
+  1.0,
+  0.5,
+  1.0,
+  false,
+  true
+ ],
+ "checkpoint": "C:/Users/TUF/.cache/dl-summarisevn/xuat/ckpt/bartpho",
+ "gen": {
+  "num_beams": 4,
+  "no_repeat_ngram_size": 3,
+  "early_stopping": true
+ },
+ "max_target": 80,
+ "torch": "2.14.0+cpu",
+ "giay": 521.0,
+ "ung_vien": [
+  {
+   "guid": "219",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    10
+   ],
+   "truoc": "Theo điều tra ban đầu, ngày 25/4, Phạm Trung Kiên (ngụ ấp Tân Nghĩa, xã Rạch Chèo, huyện Phú Tân, tỉnh Cà Mau) nhận điện thoại của Lê Hoàng Trúc (ngụ huyện Tam Bình, tỉnh Vĩnh Long) nhờ tìm độ đá gà ăn tiền.",
+   "treo": "Sau đó, Kiên bàn với Lê Hoài Thanh (ngụ cùng địa phương) tìm cách gian lận để đá gà thắng nhóm của Trúc.",
+   "viet_lai": "Công an huyện Phú Tân, tỉnh Cà Mau đang tạm giữ hình sự Phạm Trung Kiên để điều tra hành vi gian lận chiếm đoạt tài sản."
+  },
+  {
+   "guid": "228",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    5,
+    8
+   ],
+   "truoc": "Ngay sau khi nhận được tin báo, tiến hành rà soát các đối tượng nghi vấn trên địa bàn, kết hợp với các biện pháp nghiệp vụ, chưa đầy 20 giờ sau, Công an huyện Lâm Thao đã bắt được nhóm đối tượng gây ra 2 vụ cướp táo tợn trên gồm: Phan Văn Cường (SN 1994), Cao Bảo Đức (SN 2002) đều trú huyện Lâm Thao, tỉnh Phú Thọ, Quàng Văn Trung (SN 2000), Quàng Văn Cương (SN 1994) và Lò Văn Tiến (SN 2000), cùng trú huyện Thuận Châu, tỉnh Sơn La.",
+   "treo": "Ngoài ra, cơ quan công an còn thu giữ tang vật gồm: 1 điện thoại di động, 2 xe máy các đối tượng sử dụng để đi gây án.",
+   "viet_lai": "Công an huyện Lâm Thao, tỉnh Phú Thọ vừa triệt phá thành công 2 vụ cướp tài sản táo tợn trên địa bàn."
+  },
+  {
+   "guid": "327",
+   "don_vi": 10,
+   "chon": [
+    0,
+    5,
+    6,
+    10
+   ],
+   "truoc": "Vợ anh T. là chị N. cùng nhiều người ngay lập tức đưa anh này đi bệnh viện cấp cứu.",
+   "treo": "Tuy nhiên, nạn nhân tử vong vì vết thương nặng, mất nhiều máu.",
+   "viet_lai": "Sau khi xảy ra mâu thuẫn, anh T. đã được người dân đưa đi bệnh viện cấp cứu nhưng nạn nhân đã tử vong."
+  },
+  {
+   "guid": "949",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2
+   ],
+   "truoc": "Đồng thời, sở cũng chưa nhận được đơn khiếu nại hay đơn khởi kiện hành chính của ông Luyện đối với quyết định xử phạt \".",
+   "treo": "Vì thế, căn cứ vào luật Xử phạt vi phạm hành chính, sở Thông tin và Truyền thông tỉnh Bà Rịa – Vũng Tàu sẽ ra quyết định cưỡng chế để buộc ông Nguyễn Thái Luyện phải thi hành quyết định xử phạt.",
+   "viet_lai": "Ông Nguyễn Thái Luyện, Giám đốc sở Thông tin và Truyền thông tỉnh Bà Rịa – Vũng Tàu, vừa bị xử phạt vi phạm hành chính 15 triệu đồng."
+  },
+  {
+   "guid": "1683",
+   "don_vi": 4,
+   "chon": [
+    0,
+    4,
+    5
+   ],
+   "truoc": "Trong vòng cuối cùng, Giao Linh đã được 76/100 giám khảo nhận ra, đồng nghĩa với việc thí sinh có số bình chọn xếp thứ nhì chỉ nhận được số tiền thưởng tương ứng bằng số bình chọn nhân với 1 triệu đồng.",
+   "treo": "Như vậy, tấm vé thứ 7 bước vào Bán kết của Ca sĩ giấu mặt mùa 3 đã thuộc về thí sinh Quế Nương.",
+   "viet_lai": "Tấm vé thứ 7 bước vào Bán kết của Ca sĩ giấu mặt mùa 3 đã thuộc về thí sinh Quế Nương."
+  },
+  {
+   "guid": "1687",
+   "don_vi": 4,
+   "chon": [
+    0,
+    2,
+    4,
+    21
+   ],
+   "truoc": "Nhìn đại thể, con người Sa Tăng trung hậu, thành thật và toát lên nhân cách một người chính trực.",
+   "treo": "Tuy nhiên, trên cổ của Sa Tăng lại có một chiếc \"dây chuyền\" vô cùng kỳ lạ.",
+   "viet_lai": "Trên cổ của Sa Tăng có một chiếc \"dây chuyền\" vô cùng kỳ lạ."
+  },
+  {
+   "guid": "2081",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    6
+   ],
+   "truoc": "Vậy nên, cô đã dốc toàn lực cho \"đứa con\" tinh thần này.",
+   "treo": "Theo đó, trong suốt quá trình làm phim, Ngô Thanh Vân phải vượt qua rất nhiều trở ngại, thử thách, thậm chí còn gặp những chấn thương nguy hiểm mới hoàn thành được vai diễn của mình.",
+   "viet_lai": "Mới đây, Ngô Thanh Vân đã có những chia sẻ thú vị về vai diễn trong bộ phim \"Đứa con\" của mình."
+  },
+  {
+   "guid": "2102",
+   "don_vi": 9,
+   "chon": [
+    0,
+    1,
+    7,
+    9
+   ],
+   "truoc": "Ông Nhân cũng cho rằng cần tập trung vào các giải pháp công trình và phi công trình, xem xét tới cả vùng trong điều kiện biến đổi khí hậu, đặc biệt lưu ý việc trồng cây rừng ven biển nếu còn tác dụng tốt thì cần triển khai quyết liệt.",
+   "treo": "Bên cạnh đó từng địa phương cũng quy hoạch công trình chống ngập cục bộ, những công trình này cũng cần rà soát lại phù hợp với quy hoạch vùng.",
+   "viet_lai": "Đó là ý kiến của Phó Thủ tướng thường trực Trương Hoà Bình tại hội nghị đánh giá công tác ứng phó với biến đổi khí hậu và phát triển bền vững vùng Đồng bằng sông Cửu Long."
+  },
+  {
+   "guid": "3011",
+   "don_vi": 6,
+   "chon": [
+    0,
+    6,
+    7,
+    8
+   ],
+   "truoc": "\"Không hiểu sao đường đang làm còn có mấy chục mét lại chừa không làm nữa khiến người dân khổ mỗi khi triều cường, mưa ngập, thật kì cục\", cô Sáu nói.",
+   "treo": "Tương tự tại khu Thảo Điền, quận 2 như Quốc Hương, Nguyễn Văn Hưởng cũng bị ngập nước do ảnh hưởng của triều cường.",
+   "viet_lai": "Cô Nguyễn Thị Sáu, ngụ quận 2, TP HCM, bức xúc trước tình trạng ngập nước tại khu Thảo Điền, quận 2."
+  },
+  {
+   "guid": "3816",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    4
+   ],
+   "truoc": "Giải nhì thuộc về liên danh viện Quy hoạch đô thị & nông thôn Quốc gia (VIUP) - Nikken Sekkei Civi Engineering LTD (NSC) - Nikken Sekkei Reseach Institute (NSRI) với trị giá giải thưởng là 100.000 USD.",
+   "treo": "Ngoài ra, 5 đơn vị khác lọt vào vòng chung khảo cũng đã được nhận số tiền hỗ trợ là 25.000 USD.",
+   "viet_lai": "Giải nhì thuộc về liên danh viện Quy hoạch đô thị & nông thôn Quốc gia (VIUP) - Nikken Sekkei Civi Engineering LTD."
+  },
+  {
+   "guid": "4220",
+   "don_vi": 4,
+   "chon": [
+    0,
+    1,
+    4
+   ],
+   "truoc": "Hiện lưu lượng phương tiện ra vào cảng Cát Lái lại rất lớn, việc đóng luồng ảnh hưởng nhiều đến hoạt động kinh doanh của các doanh nghiệp cũng như khả năng khai thác tại cảng Cát Lái.",
+   "treo": "Do đó, phương án mà đơn vị đưa ra là giãn tiến độ thi công nhằm giảm ảnh hưởng đến tình hình giao thông tại khu vực nên cầu vượt Mỹ Thuỷ.",
+   "viet_lai": "Sở Giao thông vận tải TP. HCM vừa có văn bản đề nghị đơn vị thi công cầu vượt Mỹ Thuỷ (quận 2) giãn tiến độ thi công để giảm ảnh hưởng đến tình hình giao thông."
+  },
+  {
+   "guid": "4586",
+   "don_vi": 6,
+   "chon": [
+    0,
+    3,
+    6
+   ],
+   "truoc": "Ông Thaler cũng chứng minh được rằng nỗi sợ mất mát sẽ khiến chúng ta coi một vật là có giá trị hơn khi chúng ta sở hữu chúng, so với khi ta không có nó.",
+   "treo": "Đây là hiện tượng được gọi là \"hiệu ứng của sự sở hữu\" (endowment effect).",
+   "viet_lai": "Một nhà khoa học người Mỹ đã chứng minh được rằng nỗi sợ mất mát sẽ khiến chúng ta coi một vật là có giá trị hơn khi chúng ta sở hữu chúng, so với khi ta không có nó."
+  },
+  {
+   "guid": "4801",
+   "don_vi": 4,
+   "chon": [
+    0,
+    4,
+    6
+   ],
+   "truoc": "Bà Tammy Duckworth là cựu phi công lái trực thăng trong quân đội Mỹ và bị mất cả hai chân trong một vụ tai nạn ở Iraq năm 2004.",
+   "treo": "Trước đó, bà cũng được ghi nhận là người phụ nữ bị khuyết tật đầu tiên được bầu vào Thượng viện Mỹ.",
+   "viet_lai": "Bà Tammy Duckworth là người phụ nữ bị khuyết tật đầu tiên được bầu vào Thượng viện Mỹ."
+  },
+  {
+   "guid": "5173",
+   "don_vi": 5,
+   "chon": [
+    0,
+    3,
+    5,
+    20
+   ],
+   "truoc": "Dựa trên \"các tài liệu tình báo\", quan chức này cho biết một nhóm 15 người Saudi đã vào bên trong lãnh sự quán, chuốc thuốc mê và bắt cóc ông Khashoggi.",
+   "treo": "Tuy nhiên, khi bị phản kháng, những người nói trên đã siết cổ ông này tới chết.",
+   "viet_lai": "Một quan chức cấp cao của Saudi Arabia hôm nay cho biết một nhóm 15 người Saudi đã vào lãnh sự quán nước này ở Istanbul, chuốc thuốc mê và bắt cóc ông Khashoggi."
+  },
+  {
+   "guid": "5261",
+   "don_vi": 3,
+   "chon": [
+    0,
+    3,
+    6
+   ],
+   "truoc": "Ngoài ra luật cũng bao gồm các điều khoản bảo vệ những người lớn dễ bị tổn thương.",
+   "treo": "Đây là lần đầu tiên Vatican công bố một chính sách chi tiết và thống nhất về cách bảo vệ trẻ em trong nội bộ Vatican và các đại sứ quán cùng các trường đại học của Vatican bên ngoài quốc gia này.",
+   "viet_lai": "Giáo hoàng Francis đã thông qua luật bảo vệ trẻ em trong nội bộ Vatican và các sứ quán cùng các trường đại học của Vatican bên ngoài quốc gia này."
+  },
+  {
+   "guid": "5997",
+   "don_vi": 6,
+   "chon": [
+    0,
+    1,
+    6
+   ],
+   "truoc": "Bài báo của ông nhằm nâng cao nhận thức về tính mong manh của trái đất và được tạp chí BioScience chấp nhận xuất bản.",
+   "treo": "Sau đó, giáo sư Ripple nảy ra sáng kiến kêu gọi các nhà khoa học kí tên vào cảnh báo tập thể gửi nhân loại lần thứ hai trên tài khoản Twitter của mình.",
+   "viet_lai": "Một nhà khoa học người Mỹ đã viết một bài báo về tính mong manh của trái đất trên tạp chí BioScience."
+  },
+  {
+   "guid": "6550",
+   "don_vi": 8,
+   "chon": [
+    0,
+    8
+   ],
+   "truoc": "Hội đồng Bảo an Liên Hợp Quốc đã lên án bạo lực sau phiên họp khẩn.",
+   "treo": "Ngoài ra, thông tin thống đốc lâu năm vùng Kemerovo từ chức sau vụ hoả hoạn tại trung tâm thương mại Kemerovo ở Siberia (Nga); khách sạn 4 tầng ở thành phố Indore của Ấn Độ bị sập… cũng là những tin đáng chú ý trong ngày 1/4.",
+   "viet_lai": "Hội đồng Bảo an Liên Hợp Quốc đã lên án bạo lực sau phiên họp khẩn; thống đốc lâu năm vùng Kemerovo từ chức sau vụ hoả hoạn tại trung tâm thương mại Kemerovo ở Siberia... là những tin đáng chú ý trong ngày 1/4."
+  },
+  {
+   "guid": "6817",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    5
+   ],
+   "truoc": "\"Rất khó để biết được khoảng cách về năng lực giữa máy bay Trung Quốc và máy bay của các lực lượng nước ngoài nếu không cho chúng tham gia các cuộc tập trận ở nước ngoài như thế này\", ông Yue nói.",
+   "treo": "Ngoài ra, cựu sĩ quan cũng cho hay Bắc Kinh sẽ có cơ hội được đọ sức với các máy bay ném bom tân tiến của Nga.",
+   "viet_lai": "Một cựu sĩ quan quân đội Trung Quốc cho hay các máy bay ném bom tân tiến của nước này sẽ có cơ hội được đọ sức với máy bay của các lực lượng Nga."
+  },
+  {
+   "guid": "7271",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3
+   ],
+   "truoc": "Bắc Kinh đang công kích trực tiếp đối với New Delhi, điều chưa từng có trong suốt 30 năm qua.",
+   "treo": "Bên cạnh đó, dường như đã đến lúc Ấn Độ sẽ gạt tình cảm tốt đẹp giữa cả hai sang một bên để đáp lại sự khiêu khích đến từ người láng giềng khổng lồ, cây bút Chidanand Rajghatta viết trên Times of India.",
+   "viet_lai": "Cây bút Chidanand Rajghatta viết trên Times of India rằng Ấn Độ sẽ gạt tình cảm tốt đẹp giữa hai nước sang một bên để đáp lại sự khiêu khích đến từ người láng giềng khổng lồ."
+  },
+  {
+   "guid": "7533",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2,
+    26
+   ],
+   "truoc": "Phần lớn bài phát biểu của ông tập trung vào vấn đề tiếp tục những nỗ lực của bản thân, nhằm khôi phục nền kinh tế Nhật Bản.",
+   "treo": "Tuy nhiên, trong phần thảo luận về việc sửa đổi Hướng dẫn Chương trình Quốc phòng (NDPG) trong thời gian tới, ông Abe đưa ra tuyên bố chưa từng có: Sửa đổi NDPG vẫn duy trì định hướng quốc phòng độc lập và các nguyên tắc cơ bản khác, nhưng sẽ không dựa trên tiến trình phát triển chính sách quốc phòng trong quá khứ của Nhật Bản.",
+   "viet_lai": "Thủ tướng Nhật Bản Shinzo Abe đã có bài phát biểu quan trọng trước Quốc hội, trong đó ông đưa ra tuyên bố chưa từng có về việc sửa đổi Hướng dẫn Chương trình Quốc phòng."
+  },
+  {
+   "guid": "7651",
+   "don_vi": 7,
+   "chon": [
+    1,
+    4,
+    7
+   ],
+   "truoc": "Sau đó, qua thực hành, học sinh áp dụng những kiến thức đó vào kinh nghiệm sống thực tế.",
+   "treo": "Đây là một hướng giáo dục rất tốt.",
+   "viet_lai": "Giáo dục học sinh bằng hình thức thực hành, học sinh áp dụng những kiến thức đó vào kinh nghiệm sống thực tế."
+  },
+  {
+   "guid": "7723",
+   "don_vi": 4,
+   "chon": [
+    0,
+    1,
+    4,
+    18
+   ],
+   "truoc": "Theo Washington Post, hành động \"trấn an tổng thống\" như vậy của một ngoại trưởng Mỹ đương chức là chưa từng có tiền lệ.",
+   "treo": "Tuy nhiên, theo 19 quan chức và cựu quan chức cấp cao Mỹ giấu tên, nỗ lực đó của Tillerson vẫn là quá ít và quá muộn để ông có thể đảm bảo tương lai dài hạn cho mình trong chính quyền của Trump.",
+   "viet_lai": "Ngoại trưởng Mỹ Rex Tillerson hôm qua tuyên bố sẽ \"trấn an\" tổng thống Donald Trump về những gì ông đã làm được trong năm đầu nhiệm kỳ."
+  },
+  {
+   "guid": "7785",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    6
+   ],
+   "truoc": "\"Cả hai đều an toàn.",
+   "treo": "Họ không phải nhân viên đại sứ quán Malaysia.",
+   "viet_lai": "Đại sứ quán Malaysia tại Việt Nam hôm nay cho biết hai người đàn ông bị bắt tại sân bay quốc tế Kuala Lumpur."
+  },
+  {
+   "guid": "8537",
+   "don_vi": 5,
+   "chon": [
+    0,
+    3,
+    5,
+    7
+   ],
+   "truoc": "Cơ quan này cũng xác nhận Trump sẽ tới Paris vào tháng 11 để dự lễ kỷ niệm 100 năm ngày kết thúc Thế chiến I để \"làm nổi bật những hy sinh của người Mỹ không chỉ trong Thế chiến I mà còn ở những thế kỷ về sau\".",
+   "treo": "Sau đó, Tổng thống Mỹ sẽ thăm Ireland để \"làm mới mối quan hệ sâu sắc lâu đời\" giữa hai đất nước.",
+   "viet_lai": "Tổng thống Mỹ Donald Trump sẽ tới Pháp vào tháng 11 để dự lễ kỷ niệm 100 năm ngày kết thúc Thế chiến I."
+  },
+  {
+   "guid": "8900",
+   "don_vi": 7,
+   "chon": [
+    1,
+    2,
+    3,
+    7
+   ],
+   "truoc": "Trump nhiều lần đề cập đến khả năng đưa quân xâm lược Venezuela, tuyên bố vào tháng 8/2017 rằng Mỹ \"có nhiều biện pháp với Venezuela, bao gồm cả biện pháp quân sự nếu cần thiết\".",
+   "treo": "Tuy nhiên, giới quan sát nhận định Mỹ có nhiều khả năng bị sa lầy vào một cuộc chiến tốn kém nếu đưa quân can thiệp vào Venezuela.",
+   "viet_lai": "Giới quan sát nhận định Mỹ có nhiều khả năng bị sa lầy vào một cuộc chiến tốn kém nếu đưa quân can thiệp vào Venezuela."
+  },
+  {
+   "guid": "9122",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    4
+   ],
+   "truoc": "Theo một tình huống diễn tập, các nhóm bạo loạn chôn 10 thiết bị nổ điều khiển từ xa dọc con đường hành quân của đơn vị tên lửa Novosibirsk.",
+   "treo": "Tuy nhiên, robot Listva đã kịp thời phát hiện và kích nổ tất cả những quả mìn từ khoảng cách 50 m, trước khi những hệ thống Yars đến gần.",
+   "viet_lai": "Robot Listva đã kịp thời phát hiện và kích nổ tất cả những quả mìn từ khoảng cách 50 m, trước khi những hệ thống Yars đến gần."
+  },
+  {
+   "guid": "9139",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2,
+    4,
+    8
+   ],
+   "truoc": "Ảnh: AFP Tổng thống Barack Obama cùng hai con gái, Malia và Sasha, tận hưởng kỳ nghỉ ở Hawaii hôm 24/12.",
+   "treo": "Họ tới cửa hàng Island Snow mua đá bào trộn siro để giải khát, đây là món ăn vặt phổ biến ở Hawaii, theo BuzzFeed News.",
+   "viet_lai": "Tổng thống Barack Obama cùng hai con gái thưởng thức đá bào trộn siro trong kỳ nghỉ ở Hawaii."
+  },
+  {
+   "guid": "9298",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    2,
+    5
+   ],
+   "truoc": "Động thái của Iran diễn ra khi Arab Saudi, Bahrain, Các tiểu vương quốc Arab thống nhất (UAE), Ai Cập và Yemen, hôm 5/6 tuyên bố cắt đứt tất cả các quan hệ với Qatar, cáo buộc nước này ủng hộ khủng bố.",
+   "treo": "Đây là cuộc khủng hoảng ngoại giao lớn nhất ở khu vực gần đây.",
+   "viet_lai": "Iran tuyên bố cắt đứt tất cả các quan hệ ngoại giao với Qatar, cáo buộc nước này ủng hộ khủng bố."
+  },
+  {
+   "guid": "10065",
+   "don_vi": 6,
+   "chon": [
+    0,
+    1,
+    3,
+    6
+   ],
+   "truoc": "Chúng tôi cũng ủng hộ mọi bước đi để chấm dứt cuộc chiến \", một quan chức bộ Ngoại giao Iran tuyên bố.",
+   "treo": "Tuy nhiên, đại diện lực lượng đối lập có vũ trang đã rời khỏi cuộc họp với thái độ giận dữ do phản đối sự tham dự của Iran.",
+   "viet_lai": "Bộ Ngoại giao Iran đã triệu tập đại diện lực lượng đối lập có vũ trang tham dự một cuộc họp ở thủ đô Tehran."
+  },
+  {
+   "guid": "10572",
+   "don_vi": 3,
+   "chon": [
+    0,
+    3,
+    4
+   ],
+   "truoc": "Hồi tháng 3, truyền thông Mỹ dẫn nguồn tin giấu tên cho biết chính quyền Tổng thống Donald Trump đã âm thầm chấp nhận yêu cầu của Đài Loan mua 60 tiêm kích F -16 V \"Viper\" trị giá 13 tỷ USD.",
+   "treo": "Tuy nhiên, thương vụ này không được nhắc đến trong thông báo hôm 8/7 của Bộ Ngoại giao Mỹ, sau khi Trung Quốc tuyên bố việc chuyển giao tiêm kích F -16 cho Đài Loan là \"lằn ranh đỏ\" mà Mỹ không được phép vượt qua.",
+   "viet_lai": "Chính quyền Tổng thống Donald Trump đã âm thầm chấp nhận yêu cầu của Đài Loan mua 60 tiêm kích F -16 V \"Viper\" trị giá 13 tỷ USD."
+  },
+  {
+   "guid": "11123",
+   "don_vi": 6,
+   "chon": [
+    0,
+    1,
+    4,
+    6
+   ],
+   "truoc": "Là thành viên của khối quân sự này kể từ năm 1952, Thổ Nhĩ Kỳ được coi là tiền đồn quan trọng của phương Tây do nằm gần biên giới Nga.",
+   "treo": "Tuy nhiên, điều này đang dần thay đổi vì căng thẳng gần đây giữa Thổ Nhĩ Kỳ và phương Tây.",
+   "viet_lai": "Thổ Nhĩ Kỳ được coi là tiền đồn quan trọng của phương Tây do nằm gần biên giới Nga. Tuy nhiên, điều này đang dần thay đổi vì căng thẳng gần đây."
+  },
+  {
+   "guid": "11160",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    4
+   ],
+   "truoc": "Theo ước tính của Forbes, Tổng thống Mỹ hiện có tổng tài sản khoảng 3,1 tỷ USD, không thay đổi so với năm trước.",
+   "treo": "Tuy nhiên, vị trí xếp hạng của ông tăng trong năm qua do có gần 1.000 tỷ phú bị giảm giá trị tài sản ròng và bị tụt hạng, con số kỷ lục mà Forbes từng ghi nhận.",
+   "viet_lai": "Theo ước tính của Forbes, Tổng thống Mỹ Donald Trump có tổng tài sản khoảng 3,1 tỷ USD, không thay đổi so với năm trước."
+  },
+  {
+   "guid": "11737",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    2,
+    5
+   ],
+   "truoc": "Sự xuất hiện của Tu -22 M3 khiến hải quân Mỹ cảm thấy bất an, do chúng được thiết kế để mang theo những tên lửa diệt hạm tầm xa với kích thước lớn, trong khi Washington không sở hữu loại vũ khí nào có tính năng kỹ chiến thuật tương đương.",
+   "treo": "Điều này khiến Tu -22 M3 được gọi là \"sát thủ tàu sân bay\".",
+   "viet_lai": "Sự xuất hiện của Tu -22 M3 khiến hải quân Mỹ cảm thấy bất an do chúng được thiết kế để mang theo những tên lửa diệt hạm tầm xa với kích thước lớn, trong khi Washington không sở hữu loại vũ khí nào có tính năng kỹ chiến thuật tương đương."
+  },
+  {
+   "guid": "11978",
+   "don_vi": 10,
+   "chon": [
+    0,
+    1,
+    3,
+    10
+   ],
+   "truoc": "Vết máu dẫn các nhà điều tra tới cái giếng gần đó, nơi nghi phạm vứt xác 5 mẹ con.",
+   "treo": "Họ đã bắt giữ 5 người đàn ông và thầy lang với cáo buộc giết người, âm mưu phạm tội và săn lùng phù thuỷ.",
+   "viet_lai": "Các nhà điều tra đã bắt giữ 5 người đàn ông và thầy lang với cáo buộc giết người, âm mưu phạm tội và săn lùng phù thuỷ."
+  },
+  {
+   "guid": "12637",
+   "don_vi": 9,
+   "chon": [
+    0,
+    1,
+    2,
+    9
+   ],
+   "truoc": "Không quân Mỹ chưa đưa ra nhận định về nguyên nhân tai nạn, cho biết cuộc điều tra đang được tiến hành.",
+   "treo": "Đây là vụ tai nạn thứ 4 với dòng T -38 C trong 11 tháng qua, cũng là sự cố nghiêm trọng thứ 9 của không quân Mỹ từ đầu năm 2018.",
+   "viet_lai": "Không quân Mỹ cho biết một chiếc T -38 C của không quân nước này đã gặp tai nạn nghiêm trọng trong quá trình huấn luyện."
+  },
+  {
+   "guid": "12759",
+   "don_vi": 6,
+   "chon": [
+    0,
+    3,
+    6,
+    9
+   ],
+   "truoc": "Người cha hai con hiện rửa bát trong khi vợ ông nấu phở bán ở một quán ăn vỉa hè nhỏ với thu nhập khoảng 200.000 đồng mỗi ngày.",
+   "treo": "Tuy nhiên, cuộc sống túng thiếu không ngăn được ông quay lại với niềm đam mê cá độ, và Euro 2016 không phải là ngoại lệ.",
+   "viet_lai": "Một người đàn ông ở Hà Nội làm nghề rửa bát ở một quán ăn vỉa hè với thu nhập khoảng 200.000 đồng mỗi ngày."
+  },
+  {
+   "guid": "12879",
+   "don_vi": 4,
+   "chon": [
+    0,
+    2,
+    4
+   ],
+   "truoc": "Ai ai cũng thành tâm khấn nguyện để mong ước của mình thành hiện thực.",
+   "treo": "Tuy nhiên, không giống như không khí lễ chùa ngày xưa của cha ông, hiện nay, trong không khí trang nghiêm nơi cửa phật có rất nhiều bạn trẻ ăn mặc khá phản cảm như váy ngắn, áo dây, vẫn thản nhiên lễ bái.",
+   "viet_lai": "Trong không khí trang nghiêm nơi cửa phật có rất nhiều bạn trẻ ăn mặc khá phản cảm như váy ngắn, áo dây."
+  },
+  {
+   "guid": "12958",
+   "don_vi": 4,
+   "chon": [
+    0,
+    2,
+    4
+   ],
+   "truoc": "Trong phạm vi bài này, chúng tôi không muốn đề cập đến những nội dung đó, mà qua nội dung trả lời báo chí, ông Tài cho dư luận biết nội tình vụ việc: Ngay từ đầu, pháp luật không được thực thi.",
+   "treo": "Trước đó, trên mảnh \"đất vàng\" này có 4 doanh nghiệp của bộ Công Thương.",
+   "viet_lai": "Trao đổi với PV báo Người Đưa Tin, ông Nguyễn Văn Tài, cục trưởng cục Quản lý thị trường (bộ Công Thương) cho biết: Ngay từ đầu, pháp luật không được thực thi. Trước đó, trên mảnh đất vàng này có 4 doanh nghiệp của bộ Công Thương."
+  },
+  {
+   "guid": "13203",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2,
+    4
+   ],
+   "truoc": "Để đảm bảo trật tự an toàn giao thông, lực lượng CSGT, CSCĐ, công an địa phương được điều động đến trạm thu phí để hỗ trợ khi có sự cố xảy ra.",
+   "treo": "Tuy nhiên, tình trạng tắc nghẽn vẫn xảy ra khi nhiều tài xế xe ô tô sử dụng tiền lẻ để mua vé.",
+   "viet_lai": "Trạm thu phí BOT Quốc lộ 1A đoạn qua địa bàn huyện Văn Giang, Hưng Yên đã xảy ra tình trạng ùn tắc giao thông nghiêm trọng."
+  },
+  {
+   "guid": "13579",
+   "don_vi": 5,
+   "chon": [
+    0,
+    5,
+    6,
+    18
+   ],
+   "truoc": "Đoàn kiểm tra đánh giá hồ sơ nhập khẩu của công ty hợp lệ theo các quy định của pháp luật về thủ tục hàng hoá nhập khẩu.",
+   "treo": "\"Tuy nhiên, công ty CP Con Cưng cũng đã có những hành vi chưa tuân thủ pháp luật hiện hành.",
+   "viet_lai": "Đoàn kiểm tra đánh giá hồ sơ nhập khẩu của công ty CP Con Cưng hợp lệ theo các quy định của pháp luật về thủ tục hàng hoá nhập khẩu."
+  },
+  {
+   "guid": "13820",
+   "don_vi": 4,
+   "chon": [
+    0,
+    4,
+    12
+   ],
+   "truoc": "Liên quan đến sai phạm của Phó Bí thư thường trực Thành uỷ UBND TP. Hồ Chí Minh, công ty Cổ phần Quốc Cường Gia Lai (QCGL) vừa trải qua một năm đã khó khăn lại thêm tai tiếng.",
+   "treo": "Cụ thể, ngày 5/6/2017 công ty Tân Thuận ký hợp đồng chuyển nhượng phần đất nói trên cho công ty Quốc Cường Gia Lai với giá chuyển nhượng trên hợp đồng là 1.290.000 đồng / m2.",
+   "viet_lai": "Ngày 5/6/2017 công ty Tân Thuận ký hợp đồng chuyển nhượng phần đất của công ty Quốc Cường Gia Lai với giá 1.290.000 đồng / m2."
+  },
+  {
+   "guid": "13973",
+   "don_vi": 7,
+   "chon": [
+    0,
+    1,
+    2,
+    7
+   ],
+   "truoc": "Loài ốc thường sống bám trên những tảng đá ven biển.",
+   "treo": "Do đó, để bắt được những con ốc đầu ngỗng thì người thợ phải đi tàu ra biển rồi lặn tìm những con ốc đầu ngỗng đang bám chặt trên các tảng đá.",
+   "viet_lai": "Để bắt được những con ốc đầu ngỗng thì người thợ phải đi tàu ra biển rồi lặn tìm."
+  },
+  {
+   "guid": "14036",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2,
+    4,
+    6
+   ],
+   "truoc": "Hệ thống của Vietlott chưa xác định được vé số may mắn trùng khớp với bộ 6 số trên.",
+   "treo": "Như vậy, giải jackpot đã tăng lên gần 25 tỷ đồng và tiếp tục tích luỹ sang kỳ sau.",
+   "viet_lai": "Kết quả xổ số Vietlott Power 6/5 loại hình điện toán tự chọn (MEGA 6/5) hôm nay cho thấy giải jackpot đã tăng lên gần 25 tỷ đồng và tiếp tục tích luỹ sang kỳ sau."
+  },
+  {
+   "guid": "14281",
+   "don_vi": 8,
+   "chon": [
+    0,
+    3,
+    8
+   ],
+   "truoc": "Giá vàng luôn nhạy cảm với các động thái điều chỉnh lãi suất của Mỹ, bởi lãi suất tăng sẽ giúp đồng USD mạnh lên song lại khiến sức hấp dẫn của các tài sản như vàng giảm.",
+   "treo": "Vì vậy, đến trong thời gian tới, quyết định của Fed cũng phần nào sẽ quyết định đến sự lên xuống của giá vàng.",
+   "viet_lai": "Trong thời gian tới, quyết định của Fed cũng phần nào sẽ quyết định đến sự lên xuống của giá vàng."
+  },
+  {
+   "guid": "14505",
+   "don_vi": 1,
+   "chon": [
+    1,
+    2,
+    8,
+    9
+   ],
+   "truoc": "Ngày 19/12, ông Huỳnh Đức Thơ, Chủ tịch UBND TP Đà Nẵng cho biết, trong 2 năm 2017 và 2018, UBND TP vừa chịu trách nhiệm điều hành kinh tế xã hội, vừa tập trung kiểm điểm, xử lý cán bộ theo kết luận của Uỷ ban kiểm tra Trung ương và tập trung khắc phục các sai phạm về quản lý đất đai theo kết luận của Thanh tra Chính phủ.",
+   "treo": "Đây là việc làm mất thời gian, công sức và ẩn chứa nhiều rủi ro.",
+   "viet_lai": "Ông Huỳnh Đức Thơ, Chủ tịch UBND TP Đà Nẵng cho biết, trong 2 năm 2017 và 2018, UBND TP vừa chịu trách nhiệm điều hành kinh tế xã hội, vừa tập trung kiểm điểm, xử lý cán bộ theo kết luận của Uỷ ban kiểm tra Trung ương."
+  },
+  {
+   "guid": "14505",
+   "don_vi": 8,
+   "chon": [
+    1,
+    2,
+    8,
+    9
+   ],
+   "truoc": "\"Chúng tôi hy vọng, với những sự thay đổi mạnh mẽ này sẽ có sự thay đổi ở sự tham mưu, chấp hành kỷ luật và xông xáo hơn trong mọi công việc\", ông Thơ nói.",
+   "treo": "Ngoài ra, ông Thơ cho biết thêm, sang năm 2019, UBND TP Đà Nẵng sẽ tiếp tục đề xuất thay đổi nhiều vị trí lãnh đạo, cán bộ nữa.",
+   "viet_lai": "Ông Huỳnh Đức Thơ - chủ tịch UBND TP Đà Nẵng cho biết, năm 2019, UBND TP sẽ tiếp tục đề xuất thay đổi nhiều vị trí lãnh đạo, cán bộ nữa."
+  },
+  {
+   "guid": "14814",
+   "don_vi": 3,
+   "chon": [
+    0,
+    3
+   ],
+   "truoc": "Đại diện sở Công thương TP. HCM cũng cho biết, Sở đã kiểm tra việc dự trữ nguồn hàng, kế hoạch kinh doanh của các đơn vị tham gia chương trình Bình ổn thị trường với mặt hàng thịt gia súc trong thời gian tới.",
+   "treo": "Theo đó, các doanh nghiệp cam kết đảm bảo cung ứng đầy đủ nguồn hàng với sản lượng mỗi ngày là 147 tấn thịt heo, 400 tấn thịt gia cầm các loại... Công ty Vissan cam kết, nếu dịch bệnh xảy ra, sẽ thu mua dự trữ 3.600 tấn trong 45 ngày; nhập khẩu thịt từ các nước.",
+   "viet_lai": "Sở Công thương TP. HCM đã kiểm tra việc dự trữ nguồn hàng, kế hoạch kinh doanh của các đơn vị tham gia chương trình Bình ổn thị trường với mặt hàng thịt gia súc trong thời gian tới."
+  },
+  {
+   "guid": "15664",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2,
+    4
+   ],
+   "truoc": "Thường trực UBND TP nhận thấy hiện nay quỹ đất dành cho giáo dục trên địa bàn quận 10 còn thiếu so với quy định và quy hoạch được duyệt, đặc biệt là quỹ đất dành cho trường trung học cơ sở còn thấp, không đáp ứng được nhu cầu phục vụ học sinh trong thời gian tới.",
+   "treo": "Trong khi đó, khu đất số 419 đường Lê Hồng Phong đến hết năm 2020 là hết thời hạn cho thuê đất.",
+   "viet_lai": "Thường trực UBND TP. HCM vừa có buổi làm việc với UBND quận 10 về việc quản lý, sử dụng đất dành cho giáo dục trên địa bàn quận 10."
+  },
+  {
+   "guid": "15664",
+   "don_vi": 4,
+   "chon": [
+    0,
+    2,
+    4
+   ],
+   "truoc": "UBND TP đồng ý chủ trương sau khi khu đất trên hết hợp đồng thuê đất sẽ thu hồi và bàn giao toàn bộ diện tích khu đất cho UBND quận 10 để đầu tư xây dựng trường trung học cơ sở đạt chuẩn theo quy định bằng nguồn kinh phí từ ngân sách nhà nước.",
+   "treo": "Việc này nhằm bổ sung vào quỹ đất giáo dục phục vụ nhân dân quận 10.",
+   "viet_lai": "UBND TP. HCM vừa có văn bản chấp thuận chủ trương thu hồi và bàn giao toàn bộ diện tích khu đất của Công ty TNHH MTV Phát triển công nghiệp Tân Thuận cho UBND quận 10 để xây dựng trường trung học cơ sở."
+  },
+  {
+   "guid": "15847",
+   "don_vi": 4,
+   "chon": [
+    0,
+    2,
+    4,
+    8
+   ],
+   "truoc": "Mặc dù tốc độ tăng trưởng năm 2017 có chững lại so với các năm trước nhưng dự báo năm 2018 sẽ là năng phát triển bùng nổ của ngành công nghiệp ôtô.",
+   "treo": "Do đó, sinh viên ngành ôtô đang theo học một ngành rất tiềm năng và có nhiều cơ hội phát triển \"- ông DJ Choi, Giám đốc điều hành khối xe du lịch Mercedes Benz Vietnam - chia sẻ.",
+   "viet_lai": "\"Ngành công nghiệp ôtô đang theo học một ngành rất tiềm năng và có nhiều cơ hội phát triển\" - ông DJ Choi, Giám đốc điều hành khối xe du lịch Mercedes Benz Vietnam - chia sẻ"
+  },
+  {
+   "guid": "16958",
+   "don_vi": 6,
+   "chon": [
+    0,
+    6
+   ],
+   "truoc": "Qua điều tra, cơ quan công an xác định, từ ngày 14-3-2018 đến ngày 1-9-2018, lợi dụng công việc của mình, Hải, Long, Vương thu của chị Nga số tiền 35,66 triệu đồng.",
+   "treo": "Trong đó, chỉ có 7,57 triệu đồng là tiền công trả nhân viên bốc dỡ, còn hơn 28 triệu đồng là tiền \"bãi\", tức là không phải tiền công bốc dỡ mà là số tiền chị Nga bị ép phải nộp.",
+   "viet_lai": "Cơ quan CSĐT Công an TP Hà Nội vừa khởi tố vụ án hình sự để điều tra hành vi cưỡng đoạt tài sản đối với Nguyễn Văn Hải, SN 1979, trú tại phường Thanh Xuân Bắc, quận Thanh Xuân, Hà Nội."
+  },
+  {
+   "guid": "17188",
+   "don_vi": 4,
+   "chon": [
+    2,
+    4
+   ],
+   "truoc": "Do ít có cơ hội tiếp cận với thị trường vũ khí chính thống trên thế giới nên các nhóm, lực lượng khủng bố thường tự chế ra các vũ khí riêng.",
+   "treo": "Tuy nhiên, trong trường hợp của IS, tổ chức khủng bố này đã nâng việc tự sản xuất vũ khí lên một trình độ mới, khi luôn cho ra mắt các loại vũ khí khác với tất cả những gì mà người ta từng thấy, theo khẳng định của ông Solomon H.Black, quan chức bộ Ngoại giao Mỹ sau khi nhận được kết quả phân tích các loại vũ khí của IS sản xuất.",
+   "viet_lai": "Tổ chức Nhà nước Hồi giáo tự xưng (IS) đã nâng việc tự sản xuất vũ khí lên một trình độ mới, khi luôn cho ra mắt các loại vũ khí khác với tất cả những gì mà người ta từng thấy."
+  },
+  {
+   "guid": "17383",
+   "don_vi": 14,
+   "chon": [
+    0,
+    6,
+    14
+   ],
+   "truoc": "Nhân viên làm việc hiệu suất cao, những người luôn thành công trong công việc và góp phần phát triển công ty là những người có tư duy bình đẳng, tinh thần rộng lượng, biết cầu thị, giàu cảm xúc, biết tôn trọng người khác, không áp đảo hay gây áp lực lên đồng nghiệp.",
+   "treo": "Đó là kỹ năng mềm.",
+   "viet_lai": "Nhân viên làm việc hiệu suất cao, những người luôn thành công trong công việc và góp phần phát triển công ty là những người có tư duy bình đẳng, tinh thần rộng lượng."
+  },
+  {
+   "guid": "17529",
+   "don_vi": 3,
+   "chon": [
+    0,
+    3,
+    8
+   ],
+   "truoc": "Gia tăng giá trị cho cây sả Nhiều lần đi công tác ở một số địa phương, anh Dinh thường đến những nơi có thổ nhưỡng giống quê mình để tham quan, học hỏi các mô hình sản xuất rồi nghiên cứu nhiều tư liệu, các dự án trong nước, cũng như tham khảo ý kiến bạn bè và các nhà khoa học.",
+   "treo": "Sau đó, anh quyết định chọn mô hình sản xuất tinh dầu sả để khởi nghiệp, cũng là khát vọng có thể thay đổi kinh tế những vùng quê chịu ảnh hưởng bởi hạn hán, xâm nhập mặn.",
+   "viet_lai": "Đó là chia sẻ của anh Nguyễn Văn Dinh, chủ một doanh nghiệp chuyên sản xuất tinh dầu sả trên địa bàn tỉnh Bình Phước."
+  },
+  {
+   "guid": "17661",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    3,
+    5
+   ],
+   "truoc": "Mỗi người góp một tay, họ đã lật nghiêng được chiếc xe sang một bên, giúp tài xế chui ra qua cửa kính bị đập vỡ.",
+   "treo": "Sau đó anh này được đưa tới viện.",
+   "viet_lai": "Một chiếc xe tải đã bị lật nghiêng khi tài xế cố chui qua cửa kính bị đập vỡ."
+  },
+  {
+   "guid": "17788",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    5
+   ],
+   "truoc": "Hiện tại, số thành viên hội đồng quản trị của BIDV có 8 người.",
+   "treo": "Như vậy, với quyết định này, BIDV vẫn chưa có chủ tịch hội đồng quản trị chính thức sau khi ông Trần Bắc Hà về hưu vào tháng 9-2016.",
+   "viet_lai": "Ngân hàng TMCP Đầu tư và Phát triển Việt Nam (BIDV) vừa có quyết định thay đổi thành viên hội đồng quản trị."
+  },
+  {
+   "guid": "18518",
+   "don_vi": 4,
+   "chon": [
+    0,
+    1,
+    4
+   ],
+   "truoc": "Dự kiến, hơn 600 chuyên gia kinh tế, các nhà khoa học, nhà quản lý, doanh nghiệp... trong và ngoài nước cùng thảo luận, chia sẻ các kinh nghiệm, bài học từ các nước cũng như những giải pháp để xây dựng đô thị sáng tạo thông qua các phiên toạ đàm chuyên sâu về các chủ đề: Cuộc cách mạng công nghiệp 4.0 và xu hướng phát triển đô thị sáng tạo; Xu hướng, các mô hình, vai trò, tác động của các đô thị sáng tạo đối với việc tăng tốc phát triển kinh tế xã hội của các quốc gia, địa phương theo hướng phát triển nhanh và bền vững; Vai trò của doanh nghiệp trong quá trình kiến tạo đô thị sáng tạo và giới thiệu chủ trương xây dựng khu vực phía Đông TP theo hướng đô thị sáng tạo để thu hút đầu tư.",
+   "treo": "Ngoài ra, các sản phẩm công nghệ, khởi nghiệp sáng tạo của các doanh nghiệp trong và ngoài nước cũng sẽ được giới thiệu trong khuôn khổ diễn đàn.",
+   "viet_lai": "Đây là một trong những hoạt động nằm trong khuôn khổ Diễn đàn đô thị sáng tạo Việt Nam 2018 do UBND TP. HCM tổ chức."
+  },
+  {
+   "guid": "19076",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    27
+   ],
+   "truoc": "Mục đích xây dựng cầu nhằm phục vụ cho việc đi lại của người dân xã Quang Trung khi ngành đường sắt thực hiện đóng chắn nút giao đầu quốc lộ 217B.",
+   "treo": "Tuy nhiên, ngay khi cầu hoàn thành thì người dân địa phương phản ứng gay gắt do có nhiều điểm bất hợp lý.",
+   "viet_lai": "Sau khi ngành đường sắt đóng chắn nút giao đầu quốc lộ 217B, người dân xã Quang Trung, huyện Thường Tín (Hà Nội) phản ứng gay gắt do có nhiều điểm bất hợp lý."
+  },
+  {
+   "guid": "19448",
+   "don_vi": 10,
+   "chon": [
+    0,
+    1,
+    10,
+    12
+   ],
+   "truoc": "Phó chủ tịch HĐND TP Đà Nẵng, ông Nguyễn Nho Trung cho biết, việc thu hồi đất mở rộng công viên liên quan đến pháp lý, nên phải có thời gian giải quyết phù hợp với quy định pháp luật.",
+   "treo": "\"Đây là nỗ lực của chính quyền và doanh nghiệp.",
+   "viet_lai": "Ông Nguyễn Nho Trung cho biết, việc thu hồi đất mở rộng công viên liên quan đến pháp lý, nên phải có thời gian giải quyết phù hợp với quy định pháp luật."
+  },
+  {
+   "guid": "19552",
+   "don_vi": 7,
+   "chon": [
+    0,
+    2,
+    3,
+    7
+   ],
+   "truoc": "Ông nói, các cán bộ, đảng viên nói chung về cơ bản là rất tốt rồi, nhưng không phải không có người \"cậy mình chút công lao để sinh ra kiêu ngạo, muốn nói gì thì nói, nói trái Điều lệ, nói trái Cương lĩnh.",
+   "treo": "Như vậy người đó có còn là đảng viên nữa không?",
+   "viet_lai": "Trả lời báo Người Đưa Tin, Thủ tướng Chính phủ Nguyễn Xuân Phúc cho rằng, không phải không có người \"cậy mình chút công lao để sinh ra kiêu ngạo\"."
+  },
+  {
+   "guid": "19907",
+   "don_vi": 3,
+   "chon": [
+    0,
+    1,
+    3,
+    7
+   ],
+   "truoc": "\"Người dân địa phương chôn hai con cá heo này vào khu cồn cát ở Tĩnh Hải để đảm bảo vệ sinh môi trường\", ông Dũng nói.",
+   "treo": "Trước đó chiều 12/2, một số ngư dân địa phương trên đường đi đánh cá đã phát hiện hai con cá heo chết trôi dạt vào bờ biển, mỗi con cá heo nặng khoảng 30 - 40 kg.",
+   "viet_lai": "Chiều 13/2, ông Nguyễn Văn Dũng, phó chủ tịch UBND huyện Tĩnh Hải (Thanh Hoá) cho biết đã chôn hai con cá heo chết trôi dạt vào bờ biển."
+  },
+  {
+   "guid": "20002",
+   "don_vi": 3,
+   "chon": [
+    0,
+    3
+   ],
+   "truoc": "Hiện các cấp có thẩm quyền chưa thông tin về nhân sự sẽ thay ông Triệu Tài Vinh giữ chức Bí thư Tỉnh uỷ Hà Giang.",
+   "treo": "Trước đó tháng 9/2016, thông tin việc hàng loạt người thân của ông Triệu Tài Vinh giữ nhiều vị trí lãnh đạo các cơ quan ở tỉnh Hà Giang lan truyền trên mạng xã hội.",
+   "viet_lai": "Ông Triệu Tài Vinh, Uỷ viên Bộ Chính trị, Bí thư Tỉnh uỷ Hà Giang, vừa được điều động giữ chức Bí thư Thành uỷ TP Hà Giang."
+  },
+  {
+   "guid": "20025",
+   "don_vi": 2,
+   "chon": [
+    0,
+    2,
+    3,
+    4
+   ],
+   "truoc": "Trong hai ngày làm việc, Đại hội đã bầu Ban chấp hành mới.",
+   "treo": "Trong đó ông Nguyễn Duy Minh đã được bầu làm Bí thư Thành đoàn Đà Nẵng nhiệm kỳ 2017 - 2022.",
+   "viet_lai": "Ngày 24/3, Thành đoàn Đà Nẵng đã tổ chức Đại hội đại biểu lần thứ X nhiệm kỳ 2017 - 2022."
+  },
+  {
+   "guid": "20608",
+   "don_vi": 7,
+   "chon": [
+    0,
+    1,
+    3,
+    7
+   ],
+   "truoc": "Riêng các ông Nguyễn Long Tuyền - Chánh thanh tra Thành phố, Trương Văn Lắm - Giám đốc Sở Nội vụ, Nguyễn Phước Trung - Giám đốc Sở Nông nghiệp và Phát triển Nông thôn, Nguyễn Tấn Bỉnh - Giám đốc Sở Y tế, Lê Thái Hỷ - Giám đốc Sở Thông tin và Truyền Thông sẽ giữ chức cho đến khi có quyết định nghỉ hưu.",
+   "treo": "Trong khi đó, Giám đốc Sở Văn hoá Thể thao Phan Nguyễn Như Khuê và Giám đốc Sở Du lịch Văn Thị Bạch Tuyết được bổ nhiệm làm Phó trưởng đoàn Đại biểu Quốc hội TP HCM nên không tái bổ nhiệm chức danh giám đốc Sở.",
+   "viet_lai": "Ông Nguyễn Long Tuyền - Chánh thanh tra Thành phố và ông Trương Văn Lắm - Giám đốc Sở Nội vụ được bổ nhiệm làm Giám đốc Công an TP HCM."
+  },
+  {
+   "guid": "21147",
+   "don_vi": 5,
+   "chon": [
+    0,
+    1,
+    5,
+    11
+   ],
+   "truoc": "Tham dự và phát biểu chỉ đạo đại hội, Tổng Bí thư, Chủ tịch nước Nguyễn Phú Trọng đã gợi mở thêm một số vấn đề.",
+   "treo": "Theo đó, đầu tiên là các cấp Hội Nông dân cần tiếp tục đổi mới nội dung, phương thức hoạt động.",
+   "viet_lai": "Đó là chỉ đạo của Tổng Bí thư, Chủ tịch nước Nguyễn Phú Trọng tại Đại hội đại biểu toàn quốc Hội Nông dân Việt Nam lần thứ VI, nhiệm kỳ 2016-2021."
+  },
+  {
+   "guid": "21561",
+   "don_vi": 3,
+   "chon": [
+    0,
+    3,
+    9
+   ],
+   "truoc": "Ông Mạnh cũng mong con cháu họ Vương sau khi nhận được sổ đỏ khu dinh thự sẽ tiếp tục phối hợp với chính quyền trong quản lý, bảo vệ di tích; đồng thời cung cấp giấy uỷ quyền đại diện 16 hộ gia đình (đã được cấp sổ đỏ) để có cơ sở pháp lý xây dựng quy chế quản lý khu di tích và tổ chức thực hiện quy chế sau này.",
+   "treo": "Điều này được hiểu là ông Vương Duy Bảo muốn phân chia tiền thu phí tham quan dinh vua Mèo, thì phải trình giấy uỷ quyền của các thành viên đồng sở hữu sổ đỏ di tích.",
+   "viet_lai": "Ông Vương Duy Bảo, Phó chủ tịch UBND tỉnh Điện Biên, vừa trao sổ đỏ khu dinh thự vua Mèo cho 16 hộ gia đình đồng sở hữu."
+  },
+  {
+   "guid": "21667",
+   "don_vi": 6,
+   "chon": [
+    0,
+    1,
+    6
+   ],
+   "truoc": "Mặt bằng phương án đường trên cao số 1 và đường nối vào phía Bắc sân bay Tân Sơn Nhất.",
+   "treo": "Theo đó, tuyến đường sẽ được làm theo hai giai đoạn.",
+   "viet_lai": "Thủ tướng Nguyễn Xuân Phúc vừa phê duyệt chủ trương đầu tư dự án đường trên cao số 1 và đường nối vào phía Bắc sân bay Tân Sơn Nhất."
+  }
+ ]
+}

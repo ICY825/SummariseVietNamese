@@ -1,0 +1,19 @@
+{
+ "tag": "chon-cau-gd2_val",
+ "split": "val",
+ "cau_hinh": {
+  "ngan_sach": 110,
+  "w_vt": 1.0,
+  "w_lex": 0.5,
+  "lam": 1.0,
+  "noi_tien_de": false,
+  "loc_rac": true,
+  "w_treo": 1.0,
+  "bo_noi": true
+ },
+ "chon_tren": "tune",
+ "diem_phobert": "phobert-sent-train_20k_val_len256_scores.json",
+ "giay": 6.5,
+ "ban_rong": 0,
+ "ban_co_cau_treo": 21
+}

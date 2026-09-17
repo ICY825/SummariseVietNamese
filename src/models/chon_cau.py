@@ -1,19 +1,24 @@
-"""Hướng mới, giai đoạn 1: chọn câu có chủ đích — đủ ý, không sai sự thật.
+"""Hướng mới, giai đoạn 1 và 2: chọn câu có chủ đích — đủ ý, không sai sự thật.
 
-    .venv/Scripts/python.exe src/models/chon_cau.py do               # dò cấu hình trên tune
-    .venv/Scripts/python.exe src/models/chon_cau.py sinh --split val # sinh bằng cấu hình đã chốt
+    .venv/Scripts/python.exe src/models/chon_cau.py do                        # gđ 1: dò trên tune
+    .venv/Scripts/python.exe src/models/chon_cau.py do --khong-phobert        # gđ 1: đối chứng tắt PhoBERT
+    .venv/Scripts/python.exe src/models/chon_cau.py so-phobert                # gđ 1: PhoBERT góp bao nhiêu
+    .venv/Scripts/python.exe src/models/chon_cau.py do-treo                   # gđ 2: dò xử lý câu treo trên tune
+    .venv/Scripts/python.exe src/models/chon_cau.py sinh --gd 2 --split val   # sinh bằng cấu hình đã chốt
 
 Chép nguyên câu nên **không thể sai sự thật**; việc còn lại là chọn câu cho đủ ý. Bốn khuyết
 tật của các tầng cũ, và cách xử lý — mỗi cái đều dựa trên dữ liệu `tune` chứ không phỏng đoán:
 
 - **Câu ngoài cửa sổ PhoBERT không có điểm.** 49% số câu nằm ngoài 256 token đầu, và ở 20%
-  số bài câu khớp sapo nhất (ROUGE-1 F1 của từng câu với sapo) nằm từ vị trí 10 trở đi. Điểm câu vì vậy cộng thêm độ trung tâm
-  LexRank và ưu tiên vị trí, hai thứ có cho MỌI câu.
+  số bài câu khớp sapo nhất (ROUGE-1 F1 của từng câu với sapo) nằm từ vị trí 10 trở đi.
+  Điểm câu vì vậy cộng thêm độ trung tâm LexRank và ưu tiên vị trí, hai thứ có cho MỌI câu.
 - **Lặp ý.** Chọn tham lam, cộng điểm cho phần âm tiết CHƯA được phủ, bỏ câu gần như trùng
   ý đã chọn — lỗi của bài "trốn thuế" trong demo, nơi hai câu cùng nói "không kê khai, nộp
   thuế" còn việc bị bắt tạm giam thì mất.
-- **Câu treo.** Câu mở đầu bằng "Tuy nhiên", "Theo đó", "Điều này"... (hàng trăm câu trên
-  `tune`) được kéo kèm câu đứng trước; không đủ ngân sách thì bỏ.
+- **Câu treo** — câu mở đầu bằng "Tuy nhiên", "Theo đó", "Điều này"... (827 câu trên `tune`)
+  mà câu đứng trước không được chọn. Giai đoạn 1 thử kéo kèm câu đứng trước (`noi_tien_de`)
+  nhưng thua về chỉ số nên tắt. Giai đoạn 2: câu mở đầu bằng TỪ NỐI bỏ được thì bỏ từ nối
+  (`bo_noi`); câu treo còn lại bị trừ điểm khi chọn (`w_treo`). Không dùng mô hình sinh.
 - **Rác và mảnh câu.** Chú thích ảnh, "Xem thêm", dòng tên tác giả bị loại; câu bị cắt nhầm
   ở chữ viết tắt tên người ("...đưa cháu Tr.") được GHÉP với câu sau thay vì bỏ.
 
@@ -49,6 +54,14 @@ TREO = ("tuy nhiên", "theo đó", "ngoài ra", "trước đó", "sau đó", "tr
         "điều này", "đó là", "trong đó", "cụ thể", "bên cạnh đó", "do đó", "vì vậy", "vì thế",
         "tương tự", "theo cách này", "việc này", "hơn nữa", "thậm chí", "như vậy", "khi đó",
         "lúc đó", "cũng theo", "họ ", "nó ")
+# Giai doan 2: tu noi BO DUOC ma khong doi nghia su kien — chi mat sac thai noi cau. Chi bo khi
+# ngay sau la dau phay, de khong cat nham "Cu the hoa...". CO Y GIU (khong bo, chi tru diem):
+# "truoc do", "sau do", "trong khi do", "khi do", "luc do" — tieng Viet khong chia thi, nhieu khi
+# day la dau thoi gian duy nhat: "Truoc do, tren manh dat co 4 doanh nghiep" bo di thanh noi
+# ve hien tai, tuc SAI. "Trong do", "tuong tu", "cung theo" va dai tu tro vao cau truoc.
+TU_NOI_BO_DUOC = ("tuy nhiên", "ngoài ra", "bên cạnh đó", "như vậy", "cụ thể", "do đó", "vì vậy",
+                  "vì thế", "theo đó", "hơn nữa", "thậm chí")
+BO_NOI = re.compile(r'^(\s*["“]?\s*)(?:' + "|".join(TU_NOI_BO_DUOC) + r")\s*,\s*", re.I)
 RAC = re.compile(r"ảnh\s*:|\(ảnh\s*:|ảnh minh hoạ|ảnh minh họa|xem thêm|nguồn\s*:|video\s*:", re.I)
 # Chi mot chu hoa ("T.", "N.V.") hoac phu am dau ghep that cua ten nguoi Viet ("Tr.", "Ng.").
 # Cho phep moi tu hai chu cai thi ghep nham ca dia danh cuoi cau: "Hoang Sa.", "Hoa An.".
@@ -96,6 +109,15 @@ def la_treo(t):
     return dau.startswith(TREO)
 
 
+def bo_tu_noi(t):
+    """Bỏ từ nối bỏ được ở đầu câu, viết hoa chữ đầu phần còn lại; không khớp thì trả nguyên."""
+    m = BO_NOI.match(t)
+    if not m or m.end() >= len(t):
+        return t
+    con = t[m.end():]
+    return m.group(1) + con[0].upper() + con[1:]
+
+
 # --------------------------------------------------------------------------
 # Chon cau
 # --------------------------------------------------------------------------
@@ -121,15 +143,17 @@ def chuan_bi_bai(article, diem_phobert):
         "tu": [set(syllables(t)) for _, t in dv],
         "rac": np.array([la_rac(t) for _, t in dv]),
         "treo": np.array([la_treo(t) for _, t in dv]),
+        # treo ma bo tu noi cung khong cuu duoc — doi tuong cua `w_treo`
+        "treo_cung": np.array([la_treo(bo_tu_noi(t)) for _, t in dv]),
     }
 
 
-def chon(b, ngan_sach, w_vt, w_lex, lam, noi_tien_de, loc_rac):
-    """Chỉ số các đơn vị được chọn, theo thứ tự bài."""
+def chon(b, ngan_sach, w_vt, w_lex, lam, noi_tien_de, loc_rac, w_treo=0.0):
+    """Chỉ số các đơn vị được chọn, theo thứ tự bài. `w_treo` = 0 là đúng giai đoạn 1."""
     n = len(b["dv"])
     if not n:
         return []
-    diem = b["p"] + w_vt * b["vt"] + w_lex * b["lex"]
+    diem = b["p"] + w_vt * b["vt"] + w_lex * b["lex"] - w_treo * b["treo_cung"]
     duoc = ~b["rac"] if loc_rac else np.ones(n, dtype=bool)
     if not duoc.any():
         duoc = np.ones(n, dtype=bool)
@@ -165,8 +189,15 @@ def chon(b, ngan_sach, w_vt, w_lex, lam, noi_tien_de, loc_rac):
     return sorted(set(chon_))
 
 
-def van_ban(b, idx):
-    return " ".join(b["dv"][k][1] for k in idx)
+def van_ban(b, idx, bo_noi=False):
+    return " ".join(bo_tu_noi(b["dv"][k][1]) if bo_noi else b["dv"][k][1] for k in idx)
+
+
+def so_cau_treo(b, idx, bo_noi=False):
+    """Số câu trong bản tóm tắt vẫn còn treo: mở đầu bằng từ nối/đại từ mà câu trước không có."""
+    chon_ = set(idx)
+    return sum(1 for k in idx
+               if la_treo(bo_tu_noi(b["dv"][k][1]) if bo_noi else b["dv"][k][1]) and (k - 1) not in chon_)
 
 
 def lead_ngan_sach(b, ngan_sach):
@@ -200,34 +231,48 @@ def nap(split):
     return rows, sc["scores"]
 
 
-def cmd_do(args):
+GD1 = ("ngan_sach", "w_vt", "w_lex", "lam", "noi_tien_de", "loc_rac")
+
+
+def chuan_bi_tune(khong_phobert=False):
     rows, scores = nap("tune")
     t0 = time.time()
-    bai = [chuan_bi_bai(r["article"], s) for r, s in zip(rows, scores)]
+    bai = [chuan_bi_bai(r["article"], None if khong_phobert else s) for r, s in zip(rows, scores)]
     sapo = []
     for r in rows:
         toks = syllables(for_scoring(r["abstract"]))
         sapo.append((chi_tiet(r["abstract"]), Counter(toks), len(toks)))
-    print(f"Chuẩn bị {len(rows)} bài tune trong {time.time() - t0:.0f}s")
+    print(f"Chuẩn bị {len(rows)} bài tune trong {time.time() - t0:.0f}s"
+          + (" — ĐÃ TẮT điểm PhoBERT" if khong_phobert else ""))
+    return rows, bai, sapo
+
+
+def do_nhanh(bai, sapo, ten, ds_idx, bo_noi=False):
+    phu, rc, am, cau, treo = [], [], [], [], 0
+    for b, (ct, uni, n), idx in zip(bai, sapo, ds_idx):
+        p, r, a = cham_nhanh(van_ban(b, idx, bo_noi), ct, uni, n)
+        if p is not None:
+            phu.append(p)
+        rc.append(r)
+        am.append(a)
+        cau.append(len(idx))
+        treo += so_cau_treo(b, idx, bo_noi) > 0
+    return {"ten": ten, "phu": float(np.mean(phu)), "recall": float(np.mean(rc)),
+            "am": float(np.mean(am)), "cau_tb": float(np.mean(cau)), "cau_max": int(max(cau)),
+            "ban_co_treo": treo}
+
+
+def cmd_do(args):
+    rows, bai, sapo = chuan_bi_tune(args.khong_phobert)
 
     def do(ten, ds_idx):
-        phu, rc, am, cau = [], [], [], []
-        for b, (ct, uni, n), idx in zip(bai, sapo, ds_idx):
-            p, r, a = cham_nhanh(van_ban(b, idx), ct, uni, n)
-            if p is not None:
-                phu.append(p)
-            rc.append(r)
-            am.append(a)
-            cau.append(len(idx))
-        return {"ten": ten, "phu": float(np.mean(phu)), "recall": float(np.mean(rc)),
-                "am": float(np.mean(am)), "cau_tb": float(np.mean(cau)), "cau_max": int(max(cau))}
+        return do_nhanh(bai, sapo, ten, ds_idx)
 
     moc = [do("Lead-3", [list(range(min(3, len(b["dv"])))) for b in bai])]
-    k3 = []
-    for b in bai:
-        idx = sorted(np.argsort(-b["p"], kind="stable")[:3].tolist()) if b["p"].any() else list(range(min(3, len(b["dv"]))))
-        k3.append(idx)
-    moc.append(do("PhoBERT 3 câu", k3))
+    if not args.khong_phobert:
+        k3 = [sorted(np.argsort(-b["p"], kind="stable")[:3].tolist()) if b["p"].any()
+              else list(range(min(3, len(b["dv"])))) for b in bai]
+        moc.append(do("PhoBERT 3 câu", k3))
     for B in args.ngan_sach:
         moc.append(do(f"Lead theo ngân sách {B}", [lead_ngan_sach(b, B) for b in bai]))
     for m in moc:
@@ -249,51 +294,127 @@ def cmd_do(args):
         print(f"  phủ {m['phu']:5.1f} | recall {m['recall']:5.1f} | {m['am']:5.1f} âm tiết | {m['cau_tb']:.1f} câu"
               f" | B={m['ngan_sach']} vt={m['w_vt']} lex={m['w_lex']} lam={m['lam']}"
               f" tiền đề={m['noi_tien_de']} rác={m['loc_rac']}")
-    dest = RESULTS / "tables" / "chon_cau_tune_do.json"
+    ten_file = "chon_cau_tune_do_khong-phobert.json" if args.khong_phobert else "chon_cau_tune_do.json"
+    dest = RESULTS / "tables" / ten_file
     dest.write_text(json.dumps({"moc": moc, "cau_hinh": kq, "thang": hop_le[0] if hop_le else None},
                                ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\nĐã ghi {dest}")
+
+
+def cmd_so_phobert(args):
+    """PhoBERT góp bao nhiêu: cấu hình thắng CÓ điểm PhoBERT so với cấu hình thắng khi TẮT nó.
+
+    Công bằng cho bên không có PhoBERT: nó được dò lại cả lưới, chứ không chỉ tắt điểm ở cấu hình
+    vốn được chọn cho bên có PhoBERT. Chấm bằng bộ chấm chính thức, so cặp trên cùng 500 bài `tune`.
+    """
+    from eval.chinh_xac import cham
+    from eval.stats import paired_bootstrap
+
+    def thang(ten_file):
+        return json.loads((RESULTS / "tables" / ten_file).read_text(encoding="utf-8"))["thang"]
+
+    co, khong = thang("chon_cau_tune_do.json"), thang("chon_cau_tune_do_khong-phobert.json")
+    rows, scores = nap("tune")
+    per = {"co": [], "khong": []}
+    for r, s in zip(rows, scores):
+        for ten, th, diem in (("co", co, s), ("khong", khong, None)):
+            b = chuan_bi_bai(r["article"], diem)
+            per[ten].append(cham(van_ban(b, chon(b, *[th[k] for k in GD1])), r["abstract"], r["article"]))
+    kq = {"co_phobert": {k: co[k] for k in GD1}, "khong_phobert": {k: khong[k] for k in GD1}}
+    for m in ("r1_recall", "do_phu_chi_tiet"):
+        cap = [(a[m], b[m]) for a, b in zip(per["co"], per["khong"]) if a[m] is not None and b[m] is not None]
+        x, y = [a for a, _ in cap], [b for _, b in cap]
+        kq[m] = {"co": float(np.mean(x)), "khong": float(np.mean(y)), "n": len(cap), **paired_bootstrap(x, y)}
+        print(f"{m:16s} có {kq[m]['co']:5.2f} | không {kq[m]['khong']:5.2f} | hiệu {kq[m]['diff']:+.2f} "
+              f"[{kq[m]['lo']:+.2f}, {kq[m]['hi']:+.2f}] p = {kq[m]['p']:.4f}")
+    dest = RESULTS / "tables" / "chon_cau_phobert_dong_gop.json"
+    dest.write_text(json.dumps(kq, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Đã ghi {dest}")
+
+
+# Quy tac chon cua giai doan 2, CHOT TRUOC KHI DO: trong cac cau hinh giu duoc chi so (phu chi
+# tiet va recall moi thu giam khong qua 0,5 diem so voi giai doan 1 tren tune, van <= 110 am
+# tiet va <= 4 cau), lay cau hinh co IT BAN CON CAU TREO nhat; hoa thi lay w_treo nho hon, roi
+# khong bo tu noi (don gian hon).
+DUNG_SAI = 0.5
+W_TREO = (0.0, 0.25, 0.5, 1.0, 2.0, 5.0)
+
+
+def cmd_do_treo(args):
+    rows, bai, sapo = chuan_bi_tune()
+    th = json.loads((RESULTS / "tables" / "chon_cau_tune_do.json").read_text(encoding="utf-8"))["thang"]
+    cfg = [th[k] for k in GD1]
+    kq = []
+    for w, bo in itertools.product(W_TREO, (False, True)):
+        m = do_nhanh(bai, sapo, "", [chon(b, *cfg, w_treo=w) for b in bai], bo)
+        m.update({k: th[k] for k in GD1}, w_treo=w, bo_noi=bo)
+        kq.append(m)
+        print(f"  w_treo {w:4.2f} bỏ từ nối {bo!s:5s} | phủ {m['phu']:5.2f} | recall {m['recall']:5.2f} | "
+              f"{m['am']:5.1f} âm tiết | {m['cau_max']} câu tối đa | bản có câu treo {m['ban_co_treo']}")
+    goc = kq[0]
+    hop_le = [m for m in kq if m["am"] <= NGAN_SACH_TB and m["cau_max"] <= TOI_DA_CAU
+              and m["phu"] >= goc["phu"] - DUNG_SAI and m["recall"] >= goc["recall"] - DUNG_SAI]
+    hop_le.sort(key=lambda m: (m["ban_co_treo"], m["w_treo"], m["bo_noi"]))
+    th2 = hop_le[0]
+    print(f"\nGiai đoạn 1: {goc['ban_co_treo']} bản có câu treo. Thắng: w_treo {th2['w_treo']}, "
+          f"bỏ từ nối {th2['bo_noi']} → {th2['ban_co_treo']} bản "
+          f"(phủ {th2['phu'] - goc['phu']:+.2f}, recall {th2['recall'] - goc['recall']:+.2f})")
+    dest = RESULTS / "tables" / "chon_cau_gd2_tune_do.json"
+    dest.write_text(json.dumps({"dung_sai": DUNG_SAI, "giai_doan_1": goc, "cau_hinh": kq, "thang": th2},
+                               ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Đã ghi {dest}")
 
 
 def cmd_sinh(args):
     """Sinh bản tóm tắt bằng cấu hình THẮNG trên `tune` — đọc từ file dò, không gõ tay."""
     if args.split == "test" and not args.cho_phep_test:
         raise SystemExit("Từ chối sinh trên `test`: tập này dùng MỘT lần. Thêm --cho-phep-test khi chấm lần cuối.")
-    do_ = json.loads((RESULTS / "tables" / "chon_cau_tune_do.json").read_text(encoding="utf-8"))
-    th = do_["thang"]
-    cfg = {k: th[k] for k in ("ngan_sach", "w_vt", "w_lex", "lam", "noi_tien_de", "loc_rac")}
-    tag = f"chon-cau_{args.split}"
+    if args.gd == 1:
+        th = json.loads((RESULTS / "tables" / "chon_cau_tune_do.json").read_text(encoding="utf-8"))["thang"]
+        th, ten = dict(th, w_treo=0.0, bo_noi=False), "chon-cau"
+    else:
+        th = json.loads((RESULTS / "tables" / "chon_cau_gd2_tune_do.json").read_text(encoding="utf-8"))["thang"]
+        ten = "chon-cau-gd2"
+    cfg = {k: th[k] for k in GD1 + ("w_treo", "bo_noi")}
+    tag = f"{ten}_{args.split}"
     dest = RESULTS / "predictions" / f"{tag}.json"
     if dest.exists():
         raise SystemExit(f"{dest} đã có — không đè. Xoá tay nếu thật sự muốn sinh lại.")
     rows, scores = nap(args.split)
     t0 = time.time()
-    preds = []
+    preds, treo = [], 0
     for r, s in zip(rows, scores):
         b = chuan_bi_bai(r["article"], s)
-        preds.append(van_ban(b, chon(b, cfg["ngan_sach"], cfg["w_vt"], cfg["w_lex"], cfg["lam"],
-                                     cfg["noi_tien_de"], cfg["loc_rac"])))
+        idx = chon(b, *[cfg[k] for k in GD1], w_treo=cfg["w_treo"])
+        preds.append(van_ban(b, idx, cfg["bo_noi"]))
+        treo += so_cau_treo(b, idx, cfg["bo_noi"]) > 0
     rong = sum(1 for p in preds if not p.strip())
     dest.write_text(json.dumps({"guid": [str(r["guid"]) for r in rows],
-                                "reference": [r["abstract"] for r in rows], "chon-cau": preds},
+                                "reference": [r["abstract"] for r in rows], ten: preds},
                                ensure_ascii=False), encoding="utf-8")
-    (RESULTS / "tables" / f"{tag}_run.json").write_text(json.dumps({
-        "tag": tag, "split": args.split, "cau_hinh": cfg, "chon_tren": "tune",
-        "diem_phobert": f"phobert-sent-train_20k_{args.split}_len256_scores.json",
-        "giay": round(time.time() - t0, 1), "ban_rong": rong,
-    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    run = {"tag": tag, "split": args.split, "cau_hinh": cfg, "chon_tren": "tune",
+           "diem_phobert": f"phobert-sent-train_20k_{args.split}_len256_scores.json",
+           "giay": round(time.time() - t0, 1), "ban_rong": rong}
+    if args.gd == 2:
+        run["ban_co_cau_treo"] = treo
+    (RESULTS / "tables" / f"{tag}_run.json").write_text(json.dumps(run, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Cấu hình (thắng trên tune): {cfg}")
-    print(f"Sinh {len(preds)} bản {args.split} trong {time.time() - t0:.0f}s, {rong} bản rỗng. Đã ghi {dest}")
+    print(f"Sinh {len(preds)} bản {args.split} trong {time.time() - t0:.0f}s, {rong} bản rỗng, "
+          f"{treo} bản có câu treo. Đã ghi {dest}")
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Hướng mới, giai đoạn 1: chọn câu có chủ đích.")
+    ap = argparse.ArgumentParser(description="Hướng mới, giai đoạn 1 và 2: chọn câu có chủ đích.")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    d = sub.add_parser("do", help="dò cấu hình trên tune")
+    d = sub.add_parser("do", help="giai đoạn 1: dò cấu hình trên tune")
     d.add_argument("--ngan-sach", type=int, nargs="+", default=[90, 100, 110])
+    d.add_argument("--khong-phobert", action="store_true", help="đối chứng: tắt điểm PhoBERT, dò lại cả lưới")
     d.set_defaults(fn=cmd_do)
+    sub.add_parser("so-phobert", help="giai đoạn 1: PhoBERT góp bao nhiêu (tune)").set_defaults(fn=cmd_so_phobert)
+    sub.add_parser("do-treo", help="giai đoạn 2: dò xử lý câu treo trên tune").set_defaults(fn=cmd_do_treo)
     s = sub.add_parser("sinh", help="sinh bản tóm tắt bằng cấu hình thắng trên tune")
     s.add_argument("--split", required=True, choices=["tune", "val", "test"])
+    s.add_argument("--gd", type=int, default=1, choices=[1, 2], help="1: chọn câu; 2: thêm xử lý câu treo")
     s.add_argument("--cho-phep-test", action="store_true", help="MỞ khoá `test` — chỉ ở lần chấm cuối")
     s.set_defaults(fn=cmd_sinh)
     args = ap.parse_args()

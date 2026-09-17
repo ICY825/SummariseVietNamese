@@ -9,8 +9,8 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**, cùng n
 - **Tuần 1–7: xong, đã commit và push.**
 - **Tuần 8: phần đo đạc xong.** Mọi tầng đã chấm trên `test` (ROUGE và BERTScore), đã
   commit và push ở `1cea014`.
-- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0 và 1 xong; tiếp theo
-  giai đoạn 2 (xem mục "HƯỚNG MỚI" bên dưới).
+- **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0, 1, 2 xong; không dùng
+  BARTpho trong hệ thống cuối; tiếp theo giai đoạn 3 (xem mục "HƯỚNG MỚI" bên dưới).
 - **Còn lại:** báo cáo và slide (bạn đã chọn để sau), kiểm tra tái lập trên máy sạch.
 - Demo Gradio chạy đầu-cuối được trên máy này (kiểm lại lần cuối 16/09 sau mọi thay đổi
   của tuần 8).
@@ -92,9 +92,31 @@ sách âm tiết, điểm = PhoBERT + ưu tiên vị trí + LexRank + thưởng 
   ở 23 bản do tách câu mịn hơn (Lead-3 cũng bị, 8 bản) — không phải vi phạm.
 - Bản tóm tắt `val` không commit: sinh lại tất định trong 5 giây (đã kiểm trùng khít).
 
-**Việc tiếp theo: giai đoạn 2** — cho BARTpho viết lại có kiểm soát trên nền bản chọn câu,
-câu sinh nào không qua `chi_tiet_la` thì lùi về câu gốc. Cần giữ ≤ 1,0% chi tiết lạ; chú ý
-câu treo là chỗ viết lại có thể thắng thật. Chưa bắt đầu — chờ review giai đoạn 1.
+**Bạn đã quyết (17/09): bỏ BARTpho khỏi hệ thống cuối**, giữ nó làm phần phân tích. Lý do trình
+bày với hội đồng: mô hình sinh thắng ROUGE nhưng hỏng tiêu chí không sai sự thật, và hai lần dùng
+có kiểm soát đều thất bại. Câu hỏi hội đồng dễ hỏi nhất — "deep learning nằm ở đâu" — đã có số:
+
+- **PhoBERT góp +2,37 recall** (tune, tắt PhoBERT rồi dò lại cả lưới, p < 0,0001); phủ chi
+  tiết +1,27 chưa có ý nghĩa. `chon_cau.py do --khong-phobert` rồi `so-phobert`.
+
+**Giai đoạn 2 — XONG (17/09/2026), kết quả: giữ hai phiên bản, giai đoạn 3 chọn.**
+- Thử nghiệm âm 1 (`viet_lai.py thu-ghep`): ghép câu BARTpho vào đầu bản chọn câu → giảm cả
+  recall lẫn phủ chi tiết; không lọc thì 12,2% chi tiết lạ.
+- Thử nghiệm âm 2 (`viet_lai.py ung-vien`/`phan-tich`): BARTpho viết lại 67 câu treo trên tune →
+  22 có chi tiết lạ, chỉ 15 giữ ý; lỗi đảo chủ thể/bịa chức vụ lọt bộ đo (#17, #27, #63).
+  BARTpho trên CPU máy này tái lập đúng từng ký tự bản Kaggle (6/6).
+- Thay bằng luật (`chon_cau.py do-treo`, `sinh --gd 2`): bỏ từ nối ("Tuy nhiên, "...; CỐ Ý giữ
+  "Trước đó/Sau đó" vì là dấu thời gian) + `w_treo` 1 trừ điểm câu treo. Chốt trên tune theo
+  quy tắc dung sai 0,5 điểm.
+- `val`: câu treo 152 → 21; recall 56,9, phủ 68,8, 0% chi tiết lạ. **Trượt một điều**: phủ chi
+  tiết hơn Lead-3 +1,18 [−0,14, +2,52], p = 0,08. So giai đoạn 1: −0,21 recall, −0,29 phủ, đều
+  không có ý nghĩa.
+- `val` giờ đã chấm ba lần (gđ1 hai lần, gđ2 một lần) — không chỉnh gì thêm theo `val`.
+- Quy tắc chọn gđ1/gđ2 ở giai đoạn 3 đã chốt trong README (troi_chay hơn có ý nghĩa và
+  day_du/trung_thuc không kém quá 0,25). Tuần 7: LLM chấm troi_chay không khớp người.
+
+**Việc tiếp theo: giai đoạn 3** — chấm `day_du`/`trung_thuc`/`troi_chay` cho gđ1 và gđ2 trên mẫu
+`val`. Cần quyết trước khi làm: ai chấm (người, LLM, hay cả hai), cỡ mẫu. Chưa bắt đầu.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.

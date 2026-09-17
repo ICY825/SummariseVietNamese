@@ -28,6 +28,9 @@ results/predictions/*
 # huan luyen chi nam tren Kaggle, sinh lai can GPU, va tuan 7 cham blind can
 # chinh nhung ban tom tat nay.
 !results/predictions/phobert-sent-*.json
+# Giai doan 2: cau BARTpho viet lai cau treo -- bang chung cho ket qua am, sinh lai mat
+# ~9 phut CPU va can checkpoint 1,91 GB nam ngoai repo.
+!results/predictions/viet-lai_*.json
 
 # Khoa cham blind (nhan nao la he thong nao): KHONG commit, vi nguoi cham doc duoc repo
 # thi quy trinh blind hong. Mat file cung khong sao: `human_eval.py prepare` tat dinh,

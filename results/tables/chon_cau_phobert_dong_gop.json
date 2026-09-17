@@ -1,0 +1,38 @@
+{
+ "co_phobert": {
+  "ngan_sach": 110,
+  "w_vt": 1.0,
+  "w_lex": 0.5,
+  "lam": 1.0,
+  "noi_tien_de": false,
+  "loc_rac": true
+ },
+ "khong_phobert": {
+  "ngan_sach": 110,
+  "w_vt": 1.0,
+  "w_lex": 0.5,
+  "lam": 0.5,
+  "noi_tien_de": false,
+  "loc_rac": true
+ },
+ "r1_recall": {
+  "co": 58.031856375737895,
+  "khong": 55.660364445696345,
+  "n": 500,
+  "diff": 2.371491930041552,
+  "lo": 1.3680043814470764,
+  "hi": 3.4047430429687977,
+  "p": 0.0,
+  "significant": true
+ },
+ "do_phu_chi_tiet": {
+  "co": 70.44003064836399,
+  "khong": 69.17413219496552,
+  "n": 468,
+  "diff": 1.2658984533984534,
+  "lo": -0.507830518247185,
+  "hi": 3.0894023029439683,
+  "p": 0.1648,
+  "significant": false
+ }
+}
