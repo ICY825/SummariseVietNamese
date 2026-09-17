@@ -6,6 +6,14 @@ So sánh có kiểm soát giữa hướng **extractive** (chọn câu có sẵn)
 (sinh câu mới) trên bộ tin tức VietNews/VNDS, cùng một pipeline lai kết hợp hai hướng.
 Toàn bộ thiết kế chạy được trong giới hạn của Google Colab bản miễn phí.
 
+> **Câu chuyện của dự án (từ 17/09/2026): phát hiện → giải quyết.** Tuần 1–8 là phần
+> **phát hiện**: mô hình sinh (BARTpho) đứng đầu ROUGE, nhưng người chấm thấy nó thiếu ý và
+> kém trung thực, và ROUGE gần như không tương quan với người đọc. Mục "Hướng mới" là phần
+> **giải quyết**: đổi tiêu chí thành *đủ ý và không sai sự thật*, bảng xếp hạng đảo ngược, hai
+> lần dùng BARTpho có kiểm soát đều thất bại, và hệ thống cuối là PhoBERT chọn câu có chủ đích.
+> Phần mở đầu này sẽ được viết lại theo khung đó ở giai đoạn 4; kế hoạch ở mục
+> "Giai đoạn 3–4 — kế hoạch".
+
 ## Câu hỏi nghiên cứu
 
 1. Mô hình abstractive được fine-tune có thực sự vượt baseline extractive không, và vượt ở khía cạnh nào?
@@ -2017,6 +2025,25 @@ cần người chấm, hoặc phải kiểm máy chấm lại trên mẫu ngư�
     chon-cau-gd2_val chon-cau_val baselines_val:Lead-3 phobert-sent-train_20k_val_len256:phobert-sent
 ```
 
+### Giai đoạn 3–4 — kế hoạch: ghép hai hướng thành một câu chuyện
+
+Rà soát 17/09 cho thấy hai hướng đã nối nhau về logic nhưng còn bốn chỗ hở. Giai đoạn 3–4 được
+mở rộng để lấp đúng bốn chỗ đó:
+
+| Chỗ hở | Việc | Giai đoạn |
+|---|---|---|
+| Người đọc chưa chấm hệ thống cuối; tuần 7 chỉ có các hệ thống cũ | Phiếu chấm gồm **giai đoạn 1, giai đoạn 2, BARTpho, Lead-3** trên cùng bài — vừa chọn phiên bản, vừa để người đọc xác nhận cú đảo chiều | 3 |
+| Bảng đảo chiều mới có trên `val`; `test` chỉ có ROUGE/BERTScore | Chấm thước đo mới trên `test` cho **mọi hệ thống** (BARTpho, ViT5 nếu có, Lead-3, PhoBERT, hệ thống cuối); `cham_chinh_xac.py` cần mở khoá `test` bằng cờ tường minh | 4 |
+| Demo kể câu chuyện cũ (bốn tầng, cố ý không có ô "tốt nhất") | Demo hệ thống cuối **cạnh BARTpho, tô màu chi tiết lạ** | 4 |
+| README và báo cáo mở đầu bằng khung cũ; tầng 4 chưa có chỗ trong mạch | Viết lại phần mở đầu thành "phát hiện → giải quyết", thêm câu hỏi nghiên cứu 4; tầng 4 thành một phát hiện ("lọc rồi viết lại cũng không cứu được") | 4 |
+
+**Giai đoạn 3 — thiết kế.** Chỉ 245/1.000 bài `val` có giai đoạn 1 khác giai đoạn 2 (ở các bài
+còn lại hai bản trùng chữ, phiếu tự gộp thành một nhãn), và chỉ 16/50 bài của phiếu tuần 7 thuộc
+số đó — nên cần phiếu mới, rút theo hai tầng: bài ngẫu nhiên toàn `val` (đại diện, cho so sánh
+hệ thống cuối với BARTpho và Lead-3) và bài ngẫu nhiên trong 245 bài hai phiên bản khác nhau (cho
+việc chọn phiên bản). Khung chấm dùng lại nguyên tuần 7: ba tiêu chí, bảng mức điểm, tám quy tắc,
+blind, xáo nhãn từng bài. Quy tắc chọn giai đoạn 1/2 đã chốt ở cuối mục giai đoạn 2.
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
@@ -2217,8 +2244,11 @@ cau = sentences(test[0]["article"])   # cắt câu dùng chung cho mọi tầng 
     hình sinh; thay bằng bỏ từ nối + trừ điểm câu treo: câu treo `val` 152 → 21, nhưng phủ chi
     tiết hơn Lead-3 không còn có ý nghĩa (p = 0,08) → giữ cả hai, giai đoạn 3 chọn. PhoBERT góp
     +2,37 recall (tune, p < 0,0001)
-  - [ ] giai đoạn 3: chấm theo tiêu chí `day_du`/`trung_thuc` trên mẫu `val`
-  - [ ] giai đoạn 4: chấm `test` một lần, demo một ô, viết lại khung báo cáo
+  - [ ] giai đoạn 3: chấm blind `day_du`/`trung_thuc`/`troi_chay` trên mẫu `val` cho giai đoạn
+    1, giai đoạn 2, BARTpho, Lead-3 — chọn phiên bản cuối và xác nhận cú đảo chiều bằng người đọc
+  - [ ] giai đoạn 4: chấm thước đo mới trên `test` cho mọi hệ thống (một lần); demo hệ thống
+    cuối cạnh BARTpho có tô chi tiết lạ; viết lại mở đầu README/báo cáo theo khung "phát hiện →
+    giải quyết", thêm câu hỏi nghiên cứu 4
 
 ### Rà soát tuần 5 — đã lấp và còn nợ
 

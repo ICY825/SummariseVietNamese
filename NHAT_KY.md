@@ -115,8 +115,17 @@ có kiểm soát đều thất bại. Câu hỏi hội đồng dễ hỏi nhất
 - Quy tắc chọn gđ1/gđ2 ở giai đoạn 3 đã chốt trong README (troi_chay hơn có ý nghĩa và
   day_du/trung_thuc không kém quá 0,25). Tuần 7: LLM chấm troi_chay không khớp người.
 
-**Việc tiếp theo: giai đoạn 3** — chấm `day_du`/`trung_thuc`/`troi_chay` cho gđ1 và gđ2 trên mẫu
-`val`. Cần quyết trước khi làm: ai chấm (người, LLM, hay cả hai), cỡ mẫu. Chưa bắt đầu.
+**Khung trình bày đã chốt (17/09): "phát hiện → giải quyết".** Hướng cũ (tuần 1–8) là phần phát
+hiện, hướng mới là phần giải quyết. Kế hoạch giai đoạn 3–4 được mở rộng để lấp bốn chỗ hở (README,
+mục "Giai đoạn 3–4 — kế hoạch"):
+1. Gđ 3: phiếu chấm gồm gđ1, gđ2, **BARTpho, Lead-3** — người đọc xác nhận cú đảo chiều.
+2. Gđ 4: chấm thước đo mới trên `test` cho **mọi hệ thống** (cần mở khoá `test` trong
+   `cham_chinh_xac.py`).
+3. Gđ 4: demo hệ thống cuối cạnh BARTpho, tô màu chi tiết lạ.
+4. Gđ 4: viết lại mở đầu README/báo cáo, thêm câu hỏi nghiên cứu 4, đặt tầng 4 vào mạch.
+
+**Việc tiếp theo: giai đoạn 3** — 245/1.000 bài `val` có gđ1 ≠ gđ2 (chỉ 16/50 bài phiếu tuần 7),
+nên rút phiếu mới hai tầng. Cần quyết: ai chấm (người, LLM, cả hai), cỡ mẫu.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.
