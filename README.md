@@ -2044,6 +2044,51 @@ hệ thống cuối với BARTpho và Lead-3) và bài ngẫu nhiên trong 245 b
 việc chọn phiên bản). Khung chấm dùng lại nguyên tuần 7: ba tiêu chí, bảng mức điểm, tám quy tắc,
 blind, xáo nhãn từng bài. Quy tắc chọn giai đoạn 1/2 đã chốt ở cuối mục giai đoạn 2.
 
+### Giai đoạn 3 — chấm blind, dùng lại điểm tuần 7 (chốt trước khi có điểm)
+
+**Đổi so với thiết kế trên (quyết định 17/09):** không rút phiếu mới mà **dùng lại 50 bài tuần
+7**, vốn đã có điểm máy hai lượt và điểm hai người (12 bài) cho Lead-3, `k2`, BARTpho, sapo. Chỉ
+chấm **bản mới**: giai đoạn 1 và giai đoạn 2 của từng bài, trừ bản trùng từng chữ với một bản đã
+chấm (dùng thẳng điểm cũ). `src/eval/cham_gd3.py`:
+
+| | Máy chấm | Người chấm |
+|---|---|---|
+| Bài | 46 (4 bài mọi bản mới đều trùng bản đã chấm) | 11 trong 12 bài mẫu tuần 7 |
+| Bản cần chấm | 69 = 59 bản mới + **10 bản mốc** | 19 = 13 bản mới + 6 bản mốc |
+| Bản mới dùng lại điểm cũ | 11 | — |
+
+**Bản mốc** là bản BARTpho và Lead-3 đã chấm ở tuần 7, trộn vào phiếu mới và chấm blind lại, để
+đo **độ trôi giữa hai đợt chấm** — nếu đợt mới khắt khe hay dễ hơn, độ lệch ấy lẫn vào mọi hiệu
+"hệ thống cuối − BARTpho". Mỗi bài giờ có 1–3 bản thay vì 3–4, nên người chấm mất các bản kia
+làm mốc ngầm; bản mốc đo đúng hệ quả này.
+
+**Ai chấm.** Hai lượt máy, **cả hai** do tác tử con độc lập chỉ được đọc năm file
+`phieu_phan<k>.md` (không đọc repo, khoá, điểm tuần 7 hay lượt kia). Khác tuần 7, lượt 1 **không**
+do phiên dựng phiếu chấm: phiên này đã đọc các bản giai đoạn 1/2 khi làm giai đoạn 2, nên không
+còn blind. Hai người chấm mẫu tuần 7 chấm `phieu_doc_mau.html`.
+
+**Kiểm trước khi dựng thật** (chạy thử vào thư mục tạm với điểm giả, không lưu vào `results/`):
+phiếu không chứa tên hệ thống nào; 99/99 cặp (nhãn, hệ thống) trong khoá trỏ đúng văn bản; dựng
+lại 50 bài tuần 7 trùng khít phiếu và khoá đã phát; `analyze` chạy hết bốn phần.
+
+**Quy tắc phân tích — chốt trước khi có điểm:**
+
+1. **Độ trôi** (10 bản mốc, điểm mới − điểm cũ, trung bình hai lượt máy mỗi đợt): ghép điểm hai
+   đợt là hợp lệ cho một tiêu chí khi |trôi trung bình| ≤ 0,25 **và** alpha mới–cũ ≥ 0,667. Không
+   đạt thì mọi so sánh chéo đợt ở tiêu chí đó chỉ nêu kèm độ trôi, không viết thành kết luận.
+2. **Cú đảo chiều** (50 bài, điểm máy): so cặp theo bài giai đoạn 1 và 2 với BARTpho, Lead-3,
+   `k2`, ba tiêu chí.
+3. **Chọn phiên bản** (16 bài có giai đoạn 1 ≠ 2, điểm máy): giai đoạn 2 khi `troi_chay` hơn có
+   ý nghĩa **và** cận dưới khoảng tin cậy của `day_du`, `trung_thuc` đều > −0,25; ngược lại giai
+   đoạn 1. `troi_chay` của máy chưa được kiểm chứng ở tuần 7 — nêu kèm. Không đủ bằng chứng thì
+   viết "chưa chứng minh được giai đoạn 2 trôi chảy hơn".
+4. **Người chấm** (12 bài): cùng so sánh ở mục 2, dùng để kiểm **chiều** so với máy.
+
+```bash
+.venv/Scripts/python.exe src/eval/cham_gd3.py prepare    # đã chạy; từ chối chạy lại khi gd3/khoa.json đã có
+.venv/Scripts/python.exe src/eval/cham_gd3.py analyze    # sau khi thu llm_judge_1..2.csv (và cham_mau_nguoi1..2.csv)
+```
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
