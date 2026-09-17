@@ -36,23 +36,33 @@ def nap_he_thong(specs):
     out = []
     for spec in specs:
         tag, _, ten = spec.partition(":")
+        ten, _, nhan = ten.partition("=")  # "tag:ten=nhan": doi ten khi hai file cung ten he thong
         d = json.loads((RESULTS / "predictions" / f"{tag}.json").read_text(encoding="utf-8"))
         guid = [str(g) for g in d["guid"]]
         cac_ten = [ten] if ten else [k for k in d if k not in ("guid", "reference", "article")]
         for t in cac_ten:
             if t not in d:
                 raise SystemExit(f"{tag}.json không có hệ thống {t!r}. Có: {list(d)}")
-            out.append((t, dict(zip(guid, d[t]))))
+            out.append((nhan or t, dict(zip(guid, d[t]))))
+    trung = sorted({t for t, _ in out if [x for x, _ in out].count(t) > 1})
+    if trung:
+        raise SystemExit(f"Hai hệ thống cùng tên {trung} — đổi tên bằng tag:ten=nhan.")
     return out
 
 
 def main():
     ap = argparse.ArgumentParser(description="Chấm đủ ý và không sai sự thật.")
     ap.add_argument("tag", nargs="+")
-    ap.add_argument("--split", default="val", choices=["tune", "val"])
+    ap.add_argument("--split", default="val", choices=["tune", "val", "test"])
     ap.add_argument("--n-boot", type=int, default=10_000)
     ap.add_argument("--ten", default="", help="hậu tố tên file kết quả")
+    ap.add_argument("--cho-phep-test", action="store_true", help="MỞ khoá `test` — chỉ ở lần chấm cuối")
     args = ap.parse_args()
+    if args.split == "test" and not args.cho_phep_test:
+        raise SystemExit("Từ chối chấm trên `test`: tập này dùng MỘT lần. Thêm --cho-phep-test khi chấm lần cuối.")
+    ten_file = f"chinh_xac_{args.split}" + (f"_{args.ten}" if args.ten else "") + ".json"
+    if args.split == "test" and (RESULTS / "tables" / ten_file).exists():
+        raise SystemExit(f"{ten_file} đã có. `test` chấm MỘT lần — xoá tay nếu thật sự muốn chấm lại.")
 
     rows = list(load_split(args.split, add_raw=True))
     guid = [str(r["guid"]) for r in rows]
@@ -80,7 +90,6 @@ def main():
               f" | có chi tiết lạ {c['co_chi_tiet_la']['mean']:4.1f}% | R1-F1 {c['r1_f1']['mean']:5.1f}"
               f" | {c['so_cau']['mean']:.1f} câu, {c['am_tiet']['mean']:.0f} âm tiết")
 
-    ten_file = f"chinh_xac_{args.split}" + (f"_{args.ten}" if args.ten else "") + ".json"
     dest = RESULTS / "tables" / ten_file
     dest.write_text(json.dumps(ket_qua, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\nĐã ghi {dest}")

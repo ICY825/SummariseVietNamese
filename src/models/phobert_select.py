@@ -276,6 +276,27 @@ def cmd_cham_test(args):
     print(f"\nĐã ghi results/tables/{tag}.json, _run.json và results/predictions/{tag}.json")
 
 
+def cmd_sinh_k3(args):
+    """Bản PhoBERT 3 câu (`k3`) dựng lại từ điểm đã lưu — mốc của hướng mới trên `test`.
+
+    Trên `test` tuần 8 chỉ sinh quy tắc thắng (`k2`); hướng mới so với PhoBERT 3 câu. `k3` dựng từ
+    điểm đã lưu là tất định, và trên `val` phải trùng từng chữ file của lần chạy Kaggle — kiểm bằng
+    `--split val --ra <thư mục tạm>` trước khi sinh `test`.
+    """
+    if args.split == "test" and not args.cho_phep_test:
+        raise SystemExit("Từ chối sinh trên `test`: tập này dùng MỘT lần. Thêm --cho-phep-test khi chấm lần cuối.")
+    dest = Path(args.ra) if args.ra else RESULTS / "predictions" / f"{BASE.format(split=args.split)}.json"
+    if dest.exists():
+        raise SystemExit(f"{dest} đã có — không đè.")
+    rows, d = load_scores(args.split)
+    rows = list(load_split(args.split, add_raw=True))
+    preds, _ = summaries(rows, d["scores"], "k3")
+    dest.write_text(json.dumps({"guid": [str(r["guid"]) for r in rows],
+                                "reference": [r["abstract"] for r in rows], NAME: preds},
+                               ensure_ascii=False), encoding="utf-8")
+    print(f"Sinh {len(preds)} bản k3 trên {args.split}. Đã ghi {dest}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Tầng 2: chọn số câu linh hoạt.")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -300,6 +321,11 @@ def main():
         help="BẮT BUỘC: `test` dùng đúng MỘT lần ở cuối dự án",
     )
     t.set_defaults(fn=cmd_cham_test)
+    k = sub.add_parser("sinh-k3", help="dựng bản PhoBERT 3 câu từ điểm đã lưu (mốc hướng mới)")
+    k.add_argument("--split", required=True, choices=["val", "test"])
+    k.add_argument("--ra", help="ghi vào file này thay vì results/predictions (để kiểm trên val)")
+    k.add_argument("--cho-phep-test", action="store_true")
+    k.set_defaults(fn=cmd_sinh_k3)
     args = ap.parse_args()
     args.fn(args)
 

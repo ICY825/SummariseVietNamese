@@ -2183,6 +2183,38 @@ bài có bản giai đoạn 1 trùng chữ với một bản đã chấm. Nó đ
 - ❌ Không nói "người đọc đánh giá hệ thống cuối tốt hơn".
 - ❌ Không nói "không thể sai sự thật" — chỉ "không bịa chi tiết".
 
+### Giai đoạn 4 — chấm `test` một lần (chốt trước khi mở `test`)
+
+**Hệ thống cuối: giai đoạn 1**, cấu hình đọc từ `chon_cau_tune_do.json` (chọn trên `tune`). Giai đoạn
+2 **không** chấm trên `test` — nó không được chọn, và chấm thêm trên `test` là mở cửa cho việc chọn
+lại theo `test`.
+
+**Các hệ thống trên cùng bảng** (2.000 bài `test`, `cham_chinh_xac.py --split test --cho-phep-test`):
+hệ thống cuối; Lead-1, Lead-3, LexRank, Oracle-3 (`baselines_test`); PhoBERT 3 câu (dựng lại từ
+điểm đã lưu bằng `phobert_select.py sinh-k3` — trên `val` trùng từng chữ 1.000/1.000 file Kaggle);
+PhoBERT `k2`; BARTpho (tầng 3); tầng 4 (lọc `lexrank` rồi viết lại). Không có ViT5 trên `test`
+(tuần 8, mục 5).
+
+**Quy tắc — y nguyên giai đoạn 0, không đổi:** (1) có chi tiết lạ ≤ 1,0%; (2) ≤ 110 âm tiết trung
+bình, ≤ 4 câu; (3) recall **và** phủ chi tiết hơn **cả** Lead-3 lẫn PhoBERT 3 câu, bootstrap ghép
+cặp, khoảng tin cậy 95% không chứa 0; (4) báo cáo kèm F1. Kết quả được ghi **như nó ra**, kể cả khi
+trượt; không sửa hệ thống sau khi thấy `test`. Kèm theo là **bảng đảo chiều trên `test`**: xếp hạng
+theo F1 so với theo recall/phủ chi tiết/chi tiết lạ, cho mọi hệ thống trên.
+
+**Chốt khoá đã kiểm:** `cham_chinh_xac.py`, `chon_cau.py sinh`, `phobert_select.py sinh-k3` đều từ
+chối `test` khi thiếu `--cho-phep-test`; `cham_chinh_xac.py` từ chối chấm lại khi bảng `test` đã
+có; bộ chấm sau khi thêm khoá ra trùng khít bảng giai đoạn 1 trên `val`.
+
+```bash
+.venv/Scripts/python.exe src/models/chon_cau.py sinh --gd 1 --split test --cho-phep-test
+.venv/Scripts/python.exe src/models/phobert_select.py sinh-k3 --split test --cho-phep-test
+.venv/Scripts/python.exe src/eval/cham_chinh_xac.py --split test --cho-phep-test \
+    chon-cau_test baselines_test:Lead-1 baselines_test:Lead-3 baselines_test:LexRank \
+    phobert-sent-train_20k_test_len256:phobert-sent phobert-sent-train_20k_test_len256_k2 \
+    bartpho-syllable-train_20k_test_in1024 bartpho-syllable-train_20k_test_in1024_loc-lexrank:bartpho-syllable-train_20k=tang4 \
+    baselines_test:Oracle-3
+```
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
