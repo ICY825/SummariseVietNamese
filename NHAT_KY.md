@@ -124,8 +124,25 @@ mục "Giai đoạn 3–4 — kế hoạch"):
 3. Gđ 4: demo hệ thống cuối cạnh BARTpho, tô màu chi tiết lạ.
 4. Gđ 4: viết lại mở đầu README/báo cáo, thêm câu hỏi nghiên cứu 4, đặt tầng 4 vào mạch.
 
-**Việc tiếp theo: giai đoạn 3** — 245/1.000 bài `val` có gđ1 ≠ gđ2 (chỉ 16/50 bài phiếu tuần 7),
-nên rút phiếu mới hai tầng. Cần quyết: ai chấm (người, LLM, cả hai), cỡ mẫu.
+**Giai đoạn 3 — ĐANG LÀM (17/09).** Bạn quyết: **dùng lại 50 bài tuần 7** (không rút phiếu mới),
+máy chấm hai lượt bằng tác tử con, hai người chấm mẫu cũ chấm tiếp; mẫu nhỏ thì giữ quy tắc,
+mặc định gđ1.
+- `src/eval/cham_gd3.py prepare` đã chạy, phiếu đã commit (`754cd9c`): máy 46 bài / 69 bản
+  (59 mới + 10 bản mốc đo độ trôi hai đợt), người 11 bài / 19 bản. `gd3/khoa.json` không commit.
+- Quy tắc phân tích chốt trước khi có điểm: README, mục "Giai đoạn 3 — chấm blind".
+- **Cả hai lượt máy** do tác tử con chấm, mỗi lượt một thư mục riêng ngoài repo, chỉ đọc
+  `phieu_phan1..5.md`. Lượt 1 không do phiên chính chấm vì phiên này đã đọc bản gđ1/gđ2.
+- **Phần máy chấm XONG** (`cham_gd3.py analyze`, README "Kết quả phần máy chấm"): hai lượt
+  đồng thuận alpha 0,85–0,92. Độ trôi hai đợt: `day_du` −0,55 và `troi_chay` +0,35 **vượt ngưỡng**
+  → so chéo đợt hai tiêu chí này chỉ tham khảo; `trung_thuc` −0,25 đạt.
+  - Kết luận được: gđ1 **trung thực hơn BARTpho** +0,55, p < 0,0001.
+  - Chọn phiên bản theo quy tắc: **gđ1** (16 bài, gđ2 − gđ1 gần 0 ở cả ba tiêu chí).
+  - Phát hiện: 7 bản gđ1 bị trừ trung thực vì **ghép câu mất ngữ cảnh** (B43 "9h cùng ngày" đọc
+    thành 13/3) → không được nói "không thể sai sự thật", chỉ "không bịa".
+  - Chưa giải: máy chấm cho gđ1 kém Lead-3 về đầy đủ (−0,25, nhưng trôi −0,55) trái với chỉ số
+    tự động.
+- **Còn chờ:** hai người chấm `gd3/phieu_doc_mau.html` + `gd3/cham_mau_nguoi1..2.csv` (19 bản,
+  ~20–30 phút) → chạy lại `analyze`, phần 4 tự bổ sung.
 
 **Bẫy riêng của hướng mới:** recall tự tăng theo độ dài — mọi so sánh đủ ý phải ở cùng ngân
 sách độ dài, không thì "dài hơn" sẽ luôn thắng.

@@ -2089,6 +2089,72 @@ lại 50 bài tuần 7 trùng khít phiếu và khoá đã phát; `analyze` ch�
 .venv/Scripts/python.exe src/eval/cham_gd3.py analyze    # sau khi thu llm_judge_1..2.csv (và cham_mau_nguoi1..2.csv)
 ```
 
+#### Kết quả phần máy chấm (người chấm: còn chờ phiếu)
+
+Hai tác tử con chấm đủ 69/69 bản mỗi lượt (`gd3/llm_judge_1.csv`, `_2.csv`), không lượt nào thấy
+lượt kia. Lượt 2 có ghi một script tạm ra thư mục cha của thư mục chấm để viết file; theo báo cáo
+của nó, không đọc gì ngoài năm phiếu. Kết quả: `results/tables/cham_gd3_val.json`.
+
+**Hai lượt mới đồng thuận cao, ngang tuần 7:** alpha `day_du` 0,90, `trung_thuc` 0,92,
+`troi_chay` 0,85 (tuần 7: 0,82 / 0,92 / 0,76).
+
+**1. Độ trôi giữa hai đợt** (10 bản mốc, đã tính tay lại khớp):
+
+| Tiêu chí | Trôi (mới − cũ) | alpha mới–cũ | Ghép hai đợt |
+|---|---|---|---|
+| `day_du` | **−0,55** (đợt mới khắt khe hơn) | 0,76 | **không đạt** |
+| `trung_thuc` | −0,25 (đúng ngưỡng) | 0,96 | đạt |
+| `troi_chay` | **+0,35** (đợt mới dễ hơn) | 0,74 | **không đạt** |
+
+Theo quy tắc đã chốt, so sánh chéo đợt ở `day_du` và `troi_chay` **chỉ được nêu kèm độ trôi,
+không viết thành kết luận**. Mỗi bài giờ chỉ có 1–3 bản thay vì 3–4 — nguyên nhân khả dĩ, chưa
+kiểm được.
+
+**2. Hệ thống cuối so với các hệ tuần 7** (50 bài, điểm máy trung bình hai lượt):
+
+| Hệ thống | `day_du` | `trung_thuc` | `troi_chay` |
+|---|---|---|---|
+| sapo | 3,41 | 4,03 | 4,62 |
+| Lead-3 | 3,48 | 5,00 | 3,83 |
+| PhoBERT `k2` | 3,11 | 4,96 | 3,37 |
+| BARTpho | 2,72 | 4,32 | 4,41 |
+| Giai đoạn 1 | 3,23\* | 4,87 | 3,54\* |
+| Giai đoạn 2 | 3,23\* | 4,87 | 3,56\* |
+
+\* chấm ở đợt mới, trôi vượt ngưỡng — không so thẳng với các dòng trên.
+
+| Giai đoạn 1 so với | `day_du` | `trung_thuc` (ghép hợp lệ) | `troi_chay` |
+|---|---|---|---|
+| BARTpho | +0,51 [+0,21, +0,80] \* | **+0,55 [+0,26, +0,85], p < 0,0001** | −0,87 [−1,18, −0,56] \* |
+| Lead-3 | −0,25 [−0,47, −0,03] \* | −0,13 [−0,26, −0,04], p = 0,001 | −0,29 [−0,54, −0,06] \* |
+| PhoBERT `k2` | +0,12 [−0,10, +0,34] \* | −0,09 [−0,16, −0,03], p = 0,001 | +0,17 [−0,10, +0,45] \* |
+
+Đọc bảng:
+
+- **Trung thực hơn BARTpho: là kết luận** (ghép hợp lệ, p < 0,0001) — người đọc (máy chấm đã kiểm
+  chứng ở tuần 7 cho tiêu chí này) xác nhận vế "không sai sự thật" của cú đảo chiều.
+- **Đầy đủ hơn BARTpho, kém trôi chảy hơn BARTpho: chưa là kết luận** vì trôi. Nhưng trôi đi
+  **ngược chiều** với cả hai hiệu (đợt mới khắt khe hơn về đầy đủ mà hệ thống cuối vẫn hơn; dễ hơn
+  về trôi chảy mà vẫn kém) — gợi ý hiệu thật không nhỏ hơn. Đây là nhận xét, không phải phép kiểm
+  đã chốt, và bản mốc chỉ gồm BARTpho/Lead-3 nên độ trôi của bản chọn câu có thể khác.
+- **Kém Lead-3 về trung thực** −0,13 dù ghép hợp lệ — nhưng nhỏ hơn chính độ trôi (−0,25) ở tiêu
+  chí đó, nên chưa phân biệt được với độ trôi. Kém Lead-3 về đầy đủ −0,25 thì trôi −0,55 còn lớn
+  hơn — không kết luận được, và **mâu thuẫn chưa giải với chỉ số tự động** (recall, phủ chi tiết
+  hơn Lead-3 có ý nghĩa).
+
+**3. Chọn phiên bản** (16 bài giai đoạn 1 ≠ 2): `day_du` +0,00, `trung_thuc` +0,00, `troi_chay`
++0,06 [−0,56, +0,59] → **theo quy tắc: giai đoạn 1**. Chưa chứng minh được giai đoạn 2 trôi chảy
+hơn — máy chấm gần như không thấy khác biệt ở 16 bài này.
+
+**Phát hiện: chép nguyên câu vẫn có thể làm hiểu sai.** 7 bản giai đoạn 1 bị trừ trung thực ở ít
+nhất một lượt; theo ghi chú, lý do chính là **ghép câu mất ngữ cảnh**, không phải bịa: B43 "9h
+cùng ngày" đứng sau câu "Sáng 13/3" nên đọc thành 13/3 trong khi bài là 9/3 (2/3 điểm); B42 "Nhóm
+cán bộ này" treo nên dễ hiểu nhầm đối tượng; B16 "ông nói", "điều đó" không rõ chỉ ai. Nên câu
+"chép nguyên câu nên **không thể sai sự thật**" (docstring `chon_cau.py`) là **quá mạnh** — đúng là không bịa
+chi tiết (0% chi tiết lạ), nhưng sắp đặt câu vẫn tạo được hàm ý sai. Bộ nhận diện câu treo (chỉ
+nhìn đầu câu) không bắt được "cùng ngày" nằm giữa câu. Phải nói đúng như vậy khi trình bày:
+hệ thống cuối **không bịa**, chứ không phải "không thể sai" (docstring `chon_cau.py` đã sửa theo).
+
 ## Demo Gradio — bốn tầng chạy cạnh nhau trên máy
 
 Dán một bài báo, xem bốn hướng tóm tắt nó khác nhau thế nào. Chạy hoàn toàn trên CPU.
