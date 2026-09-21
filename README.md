@@ -1962,13 +1962,48 @@ Lưới 216 cấu hình luôn bật điểm PhoBERT, nên đối chứng là **t
 | ROUGE-1 recall | 58,03 | 55,66 | **+2,37** [+1,37, +3,40], p < 0,0001 |
 | Phủ chi tiết | 70,44 | 69,17 | +1,27 [−0,51, +3,09], p = 0,16 |
 
-PhoBERT là thành phần góp recall **lớn nhất** (các thành phần khác ≤ 1,2 điểm khi bỏ riêng);
+PhoBERT là thành phần góp recall **lớn nhất** (bảng dưới: mọi thành phần khác ≤ 1,2 điểm
+khi bỏ riêng, và không cái nào qua ngưỡng đã hiệu chỉnh);
 không có nó, hệ thống chỉ ngang PhoBERT 3 câu (recall 55,7 so với 55,3). Về phủ chi tiết thì
 chưa thấy đóng góp có ý nghĩa — vị trí câu đã mang phần lớn tín hiệu tên riêng và con số.
 
 ```bash
 .venv/Scripts/python.exe src/models/chon_cau.py do --khong-phobert   # ~2 phút
 .venv/Scripts/python.exe src/models/chon_cau.py so-phobert
+```
+
+**Từng thành phần thủ công góp bao nhiêu** — cùng cách đo, nhưng mỗi thành phần ở đây là một
+**trục của lưới**, nên "dò lại khi tắt nó" chỉ là lọc lại 216 cấu hình đã dò và lấy cấu hình tốt
+nhất trong số những cấu hình tắt thành phần ấy (`results/tables/chon_cau_thanh_phan_dong_gop.json`):
+
+| Thành phần bị tắt | Δ ROUGE-1 recall | Δ phủ chi tiết |
+|---|---|---|
+| PhoBERT (bảng trên) | **+2,37** [+1,37, +3,40], p < 0,0001 | +1,27 [−0,51, +3,09], p = 0,16 |
+| Ưu tiên vị trí | +0,38 [−0,45, +1,26], p = 0,37 | +1,22 [−0,38, +2,84], p = 0,14 |
+| Độ trung tâm LexRank | +0,77 [+0,04, +1,51], p = 0,038 | +0,42 [−0,58, +1,45], p = 0,42 |
+| Thưởng phủ ý mới | +0,42 [−0,11, +0,99], p = 0,13 | +0,49 [−0,16, +1,19], p = 0,15 |
+| Lọc rác, ghép mảnh câu | +0,11 [−0,08, +0,31], p = 0,25 | +0,01 [−0,38, +0,36], p = 0,93 |
+| **Cả ba trọng số cùng tắt** | **+1,84** [+0,89, +2,83], p = 0,0002 | **+2,57** [+0,84, +4,32], p = 0,0036 |
+
+**Không thành phần thủ công nào một mình có đóng góp vững.** Với 8 phép so (4 thành phần × 2
+thước đo) ngưỡng Bonferroni là 0,00625, nên LexRank (p = 0,038) cũng không qua. **Nhưng tắt cả ba
+trọng số cùng lúc thì sập rõ**, ở cả hai thước đo. Lý do: ưu tiên vị trí và LexRank **thay thế
+được cho nhau** — cả hai đều cho điểm MỌI câu, kể cả câu nằm ngoài cửa sổ 256 token mà PhoBERT
+không với tới, nên tắt một cái thì cái kia gánh. Vì vậy bốn dòng giữa **không** đọc được thành
+"bỏ các thành phần thủ công đi cũng được"; phải đọc cùng dòng cuối.
+
+Đặt cạnh nhau: PhoBERT một mình góp +2,37 recall (p < 0,0001), ngang ngửa cả ba trọng số thủ
+công cộng lại (+1,84) và chắc hơn về mặt thống kê. Đó là câu trả lời bằng số cho "deep learning
+nằm ở đâu trong hệ thống cuối".
+
+**Hai chỗ phải nêu khi trích bảng này.** Cấu hình thắng khi tắt ba trọng số hoá ra bỏ luôn
+`loc_rac` (nó là cấu hình tốt nhất trong 12 ứng viên còn lại), nên dòng cuối thực chất là "tắt ba
+trọng số **và** lưới tự chọn bỏ lọc rác". Và bảng này dò **sau** khi đã chấm `test`, nên nó là
+phân tích thăm dò chứ không phải phép kiểm chốt trước — nó chỉ chạy trên `tune` nên không đụng
+tới tính hợp lệ của kết quả `test`, nhưng đừng trình bày như một kết luận đã đăng ký từ đầu.
+
+```bash
+.venv/Scripts/python.exe src/models/chon_cau.py so-thanh-phan   # 23 giây, chỉ đọc lưới đã dò
 ```
 
 ### Giai đoạn 2 — câu treo: hai thử nghiệm BARTpho thất bại, thay bằng luật tất định

@@ -1,0 +1,175 @@
+{
+ "day_du": {
+  "ngan_sach": 110,
+  "w_vt": 1.0,
+  "w_lex": 0.5,
+  "lam": 1.0,
+  "noi_tien_de": false,
+  "loc_rac": true
+ },
+ "n_hop_le": 216,
+ "n_bai": 500,
+ "thanh_phan": {
+  "w_vt": {
+   "nhan": "ưu tiên vị trí",
+   "cau_hinh_tat": {
+    "ngan_sach": 110,
+    "w_vt": 0.0,
+    "w_lex": 0.5,
+    "lam": 1.0,
+    "noi_tien_de": false,
+    "loc_rac": true
+   },
+   "n_ung_vien": 72,
+   "r1_recall": {
+    "co": 58.031856375737895,
+    "khong": 57.65113592426891,
+    "n": 500,
+    "diff": 0.38072045146898625,
+    "lo": -0.4535127801065811,
+    "hi": 1.264468470380953,
+    "p": 0.3738,
+    "significant": false
+   },
+   "do_phu_chi_tiet": {
+    "co": 70.44003064836399,
+    "khong": 69.21964224047558,
+    "n": 468,
+    "diff": 1.220388407888408,
+    "lo": -0.3818988688780355,
+    "hi": 2.843624450395283,
+    "p": 0.1392,
+    "significant": false
+   }
+  },
+  "w_lex": {
+   "nhan": "độ trung tâm LexRank",
+   "cau_hinh_tat": {
+    "ngan_sach": 110,
+    "w_vt": 0.5,
+    "w_lex": 0.0,
+    "lam": 1.0,
+    "noi_tien_de": false,
+    "loc_rac": true
+   },
+   "n_ung_vien": 108,
+   "r1_recall": {
+    "co": 58.031856375737895,
+    "khong": 57.26396273888862,
+    "n": 500,
+    "diff": 0.7678936368492723,
+    "lo": 0.03791943802720651,
+    "hi": 1.5135845824580192,
+    "p": 0.0376,
+    "significant": true
+   },
+   "do_phu_chi_tiet": {
+    "co": 70.44003064836399,
+    "khong": 70.02466283716285,
+    "n": 468,
+    "diff": 0.4153678112011446,
+    "lo": -0.5831215466632134,
+    "hi": 1.446610199214366,
+    "p": 0.4196,
+    "significant": false
+   }
+  },
+  "lam": {
+   "nhan": "thưởng phủ ý mới",
+   "cau_hinh_tat": {
+    "ngan_sach": 110,
+    "w_vt": 1.0,
+    "w_lex": 0.5,
+    "lam": 0.0,
+    "noi_tien_de": false,
+    "loc_rac": true
+   },
+   "n_ung_vien": 72,
+   "r1_recall": {
+    "co": 58.031856375737895,
+    "khong": 57.61455003054731,
+    "n": 500,
+    "diff": 0.4173063451905898,
+    "lo": -0.11123498721492191,
+    "hi": 0.9856556643441984,
+    "p": 0.1282,
+    "significant": false
+   },
+   "do_phu_chi_tiet": {
+    "co": 70.44003064836399,
+    "khong": 69.95247807747808,
+    "n": 468,
+    "diff": 0.4875525708859042,
+    "lo": -0.16238892280558945,
+    "hi": 1.1905609822276486,
+    "p": 0.1502,
+    "significant": false
+   }
+  },
+  "loc_rac": {
+   "nhan": "lọc rác, ghép mảnh câu",
+   "cau_hinh_tat": {
+    "ngan_sach": 110,
+    "w_vt": 1.0,
+    "w_lex": 0.5,
+    "lam": 1.0,
+    "noi_tien_de": false,
+    "loc_rac": false
+   },
+   "n_ung_vien": 108,
+   "r1_recall": {
+    "co": 58.031856375737895,
+    "khong": 57.91883452155977,
+    "n": 500,
+    "diff": 0.11302185417812378,
+    "lo": -0.08163371866121097,
+    "hi": 0.30907361961293656,
+    "p": 0.2536,
+    "significant": false
+   },
+   "do_phu_chi_tiet": {
+    "co": 70.44003064836399,
+    "khong": 70.4326537659871,
+    "n": 468,
+    "diff": 0.007376882376882355,
+    "lo": -0.3808156542531543,
+    "hi": 0.3555116758241754,
+    "p": 0.934,
+    "significant": false
+   }
+  },
+  "ba_trong_so": {
+   "nhan": "cả ba trọng số cùng tắt",
+   "cau_hinh_tat": {
+    "ngan_sach": 110,
+    "w_vt": 0.0,
+    "w_lex": 0.0,
+    "lam": 0.0,
+    "noi_tien_de": false,
+    "loc_rac": false
+   },
+   "n_ung_vien": 12,
+   "r1_recall": {
+    "co": 58.031856375737895,
+    "khong": 56.19366990446298,
+    "n": 500,
+    "diff": 1.838186471274913,
+    "lo": 0.8930190848742731,
+    "hi": 2.825308446061794,
+    "p": 0.0002,
+    "significant": true
+   },
+   "do_phu_chi_tiet": {
+    "co": 70.44003064836399,
+    "khong": 67.86857818107818,
+    "n": 468,
+    "diff": 2.5714524672858006,
+    "lo": 0.8408770049395051,
+    "hi": 4.319914653247985,
+    "p": 0.0036,
+    "significant": true
+   }
+  }
+ },
+ "giay": 22.7
+}

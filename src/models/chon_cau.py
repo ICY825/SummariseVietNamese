@@ -403,6 +403,73 @@ def cmd_sinh(args):
           f"{treo} bản có câu treo. Đã ghi {dest}")
 
 
+# Bon thanh phan cua diem chon cau; moi cai la MOT TRUC cua luoi 216 cau hinh da do tren
+# `tune`, nen "do lai luoi khi tat mot thanh phan" chi la loc lai file cu chu khong phai chay
+# lai. PhoBERT KHONG nam trong danh sach nay: tat no doi chinh diem tung cau nen phai do bang
+# mot lan chay rieng (`do --khong-phobert`) — xem `cmd_so_phobert`.
+# Moi muc: (ten, {truc: gia tri khi TAT}, nhan). Muc cuoi tat CA BA trong so cung luc — can
+# thiet vi ba thu nay thay the duoc cho nhau (vi tri va LexRank deu la diem cho MOI cau, ke ca
+# cau nam ngoai cua so 256 token cua PhoBERT), nen tat tung cai mot se luon ra so nho.
+THANH_PHAN = (("w_vt", {"w_vt": 0.0}, "ưu tiên vị trí"),
+              ("w_lex", {"w_lex": 0.0}, "độ trung tâm LexRank"),
+              ("lam", {"lam": 0.0}, "thưởng phủ ý mới"),
+              ("loc_rac", {"loc_rac": False}, "lọc rác, ghép mảnh câu"),
+              ("ba_trong_so", {"w_vt": 0.0, "w_lex": 0.0, "lam": 0.0}, "cả ba trọng số cùng tắt"))
+
+
+def cmd_so_thanh_phan(args):
+    """Tung thanh phan gop bao nhieu vao he thong cuoi, do tren `tune`.
+
+    Cong bang cho ben bi tat, dung cach da dung o `so-phobert`: ben khong co thanh phan duoc
+    DO LAI ca luoi (lay cau hinh tot nhat TRONG SO cac cau hinh tat thanh phan ay) chu khong
+    phai chi tat no o cau hinh von duoc chon cho ben day du. Neu khong se tinh vong vao phan
+    ma cac thanh phan con lai bu duoc — tuc phong dai dong gop.
+
+    Cham bang bo cham chinh thuc `eval.chinh_xac.cham`, so cap bootstrap tren cung 500 bai
+    `tune`. Khong dung `val` hay `test`.
+    """
+    from eval.chinh_xac import cham
+    from eval.stats import paired_bootstrap
+
+    luoi = json.loads((RESULTS / "tables" / "chon_cau_tune_do.json").read_text(encoding="utf-8"))
+    hop_le = [m for m in luoi["cau_hinh"] if m["am"] <= NGAN_SACH_TB and m["cau_max"] <= TOI_DA_CAU]
+    day_du = max(hop_le, key=lambda m: m["muc_tieu"])
+    if [day_du[k] for k in GD1] != [luoi["thang"][k] for k in GD1]:
+        raise SystemExit("Cấu hình tốt nhất lọc lại không trùng `thang` đã ghi — dừng, đừng đọc bảng này")
+
+    rows, scores = nap("tune")
+    t0 = time.time()
+    bai = [chuan_bi_bai(r["article"], s) for r, s in zip(rows, scores)]
+
+    def cham_cau_hinh(th):
+        return [cham(van_ban(b, chon(b, *[th[k] for k in GD1])), r["abstract"], r["article"])
+                for b, r in zip(bai, rows)]
+
+    nen = cham_cau_hinh(day_du)
+    kq = {"day_du": {k: day_du[k] for k in GD1}, "n_hop_le": len(hop_le), "n_bai": len(rows),
+          "thanh_phan": {}}
+    for khoa, tat_gt, nhan in THANH_PHAN:
+        ung = [m for m in hop_le if all(m[k] == v for k, v in tat_gt.items())]
+        if not ung:
+            raise SystemExit(f"Lưới không có cấu hình nào tắt `{khoa}` — không dò lại được")
+        tat = max(ung, key=lambda m: m["muc_tieu"])
+        per = cham_cau_hinh(tat)
+        muc = {"nhan": nhan, "cau_hinh_tat": {k: tat[k] for k in GD1}, "n_ung_vien": len(ung)}
+        for m in ("r1_recall", "do_phu_chi_tiet"):
+            cap = [(a[m], b[m]) for a, b in zip(nen, per) if a[m] is not None and b[m] is not None]
+            x, y = [a for a, _ in cap], [b for _, b in cap]
+            muc[m] = {"co": float(np.mean(x)), "khong": float(np.mean(y)), "n": len(cap),
+                      **paired_bootstrap(x, y)}
+        kq["thanh_phan"][khoa] = muc
+        r, f = muc["r1_recall"], muc["do_phu_chi_tiet"]
+        print(f"  {nhan:22s} recall {r['diff']:+5.2f} [{r['lo']:+.2f}, {r['hi']:+.2f}] p = {r['p']:.4f}"
+              f" | phủ {f['diff']:+5.2f} [{f['lo']:+.2f}, {f['hi']:+.2f}] p = {f['p']:.4f}")
+    kq["giay"] = round(time.time() - t0, 1)
+    dest = RESULTS / "tables" / "chon_cau_thanh_phan_dong_gop.json"
+    dest.write_text(json.dumps(kq, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Đã ghi {dest}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Hướng mới, giai đoạn 1 và 2: chọn câu có chủ đích.")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -411,6 +478,7 @@ def main():
     d.add_argument("--khong-phobert", action="store_true", help="đối chứng: tắt điểm PhoBERT, dò lại cả lưới")
     d.set_defaults(fn=cmd_do)
     sub.add_parser("so-phobert", help="giai đoạn 1: PhoBERT góp bao nhiêu (tune)").set_defaults(fn=cmd_so_phobert)
+    sub.add_parser("so-thanh-phan", help="giai đoạn 1: từng thành phần góp bao nhiêu (tune)").set_defaults(fn=cmd_so_thanh_phan)
     sub.add_parser("do-treo", help="giai đoạn 2: dò xử lý câu treo trên tune").set_defaults(fn=cmd_do_treo)
     s = sub.add_parser("sinh", help="sinh bản tóm tắt bằng cấu hình thắng trên tune")
     s.add_argument("--split", required=True, choices=["tune", "val", "test"])
