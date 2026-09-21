@@ -2609,12 +2609,13 @@ Còn nợ:
 - [ ] **ViT5 `train_2k`** (~22 phút GPU) — tập con này đã đóng băng từ tuần 2 nhưng
   chưa bao giờ dùng; đường cong học vì thế có 3 điểm chứ không phải 4. Điểm 2k nằm ở
   chỗ đường cong dốc nhất, trong khi bước 5k → 10k hiện không đo được.
-  **Còn ràng buộc thứ tự:** nó đẩy lên kernel `dl-summarisevn-vit5` và khiến checkpoint
-  BARTpho không còn lấy được qua `kernel_sources` — trong khi checkpoint ấy vẫn cần
-  cho lần chấm `test` ở tuần 8. (Đối chứng `--no-train` không lọc đã chạy xong nên không
-  còn phụ thuộc vào nó.) Hoặc chấm `test` trước, hoặc đẩy `train_2k` lên kernel riêng.
+  **Ràng buộc thứ tự đã hết:** `test` đã chấm xong ở tuần 8, nên không còn việc nào phải
+  đợi checkpoint BARTpho bên Kaggle. Nhưng vẫn **phải đẩy lên một kernel riêng**: đẩy vào
+  `dl-summarisevn-vit5` là ghi đè output và mất checkpoint BARTpho trên Kaggle (bản sao
+  cục bộ vẫn còn, xem `NHAT_KY.md`).
 - [ ] **Đường cong học cho BARTpho** (~2 giờ GPU) — hiện chỉ có một điểm `train_20k`.
   Không bắt buộc: có thể trình bày đường cong như một khảo sát *trên ViT5*, nói rõ vậy.
-- [ ] **Chấm mọi tầng trên `test`** — việc của tuần 8, đúng thiết kế. Hiện tầng 0–1
-  chấm trên `test` còn tầng 3 chấm trên `val`, nên chưa có bảng nào đặt được mọi tầng
-  cạnh nhau trên cùng một split.
+- [x] **Chấm mọi tầng trên `test`** — đã làm ở tuần 8 (`1cea014`). Mục "Tuần 8 — kết quả
+  cuối trên `test`" đặt Lead-1, Lead-3, tầng 2, tầng 3, tầng 4 và Oracle-3 cạnh nhau trên
+  cùng một split, ở cả ROUGE lẫn BERTScore. Thước đo của hướng mới cũng chấm trên `test`
+  một lần ở giai đoạn 4a, cho cả chín hệ thống.
