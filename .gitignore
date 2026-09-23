@@ -39,6 +39,14 @@ results/human_eval/khoa.json
 results/human_eval/gd3/khoa.json
 results/human_eval/phu_y/khoa.json
 
+# Giai doan 6a: toan van tin bao va HTML tho KHONG commit. Day la noi dung co ban quyen
+# cua cac toa soan; repo nay cong khai. `ke_khai.json` duoc commit va da du de doi chieu:
+# no giu URL, thoi diem tai, do dai va SHA-256 cua tung bai, nen ai cung kiem duoc rang
+# bo du lieu khong bi sua giua chung. Dung lai duoc bang `thu_thap.py thu-thap`, nhung
+# bai bao doi theo thoi gian nen ban tai lai co the khac -- do la ly do phai co SHA-256.
+data/tin_moi/tin.json
+data/tin_moi/html/
+
 # Cache va checkpoint
 .cache/
 checkpoints/

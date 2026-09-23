@@ -2479,6 +2479,71 @@ Ba lượt cùng là mô hình ngôn ngữ nên có thể cùng lệch một ki�
 (quy ước hiện tại: phủ mệnh đề chính thì tính là phủ), và B01 ý 3 — "hô hoán" có hàm ý "bị phát
 giác" hay không (bản gốc và máy 2 đánh là không, máy 3 đánh là có).
 
+## Hướng agent — tự tìm tin, kiểm duyệt, rồi tóm tắt
+
+Đề bài mới: một agent tự tìm tin, tự kiểm rồi tóm tắt ngắn gọn mà vẫn đủ ý. Phần đo lường ở
+trên **không bị thay thế** — nó trở thành tầng đánh giá cho agent, và khâu kiểm duyệt của agent
+chính là bộ đo `chi_tiet_la` cùng thước đo phủ ý đã dựng.
+
+**Vì sao không để agent tìm kiếm trực tiếp rồi chấm luôn.** Web đổi theo giờ; agent tìm trực
+tiếp thì không lần chạy nào giống lần nào, và đồ án mất khả năng tái lập — thứ đắt nhất repo này
+đang có. Nên tách đôi: agent *demo* tìm trực tiếp, agent *được chấm* chạy trên một bộ tin đã tải
+về và khoá lại. Mọi con số trong báo cáo đến từ bộ khoá đó.
+
+### Giai đoạn 6a — đóng băng ngữ liệu tin mới
+
+    .venv/Scripts/python.exe src/agent/thu_thap.py thu-thap --n 40
+    .venv/Scripts/python.exe src/agent/thu_thap.py trich    # trích lại từ HTML đã lưu
+    .venv/Scripts/python.exe src/agent/thu_thap.py kiem     # đối chiếu SHA-256, kiểm lại robots.txt
+
+**Chọn nguồn theo `robots.txt`, không theo tiện.** `vnexpress.net` ghi `Disallow: /` cho
+ClaudeBot, anthropic-ai, GPTBot, CCBot và các bot thu thập cho AI khác, chỉ cho phép loại truy
+cập do người dùng chủ động; thu thập hàng loạt để dựng ngữ liệu đúng là thứ họ từ chối nên
+**không lấy**. `dantri.com.vn` cũng nêu tên claudebot nên tránh luôn. Ba nguồn dùng ở đây —
+**Tuổi Trẻ, Thanh Niên, VietnamNet** — đều có `User-agent: *` → `Allow: /` và không có điều
+khoản riêng cho AI. Lấy qua RSS do chính toà soạn phát hành, nghỉ 2.5 giây giữa hai
+yêu cầu. `kiem` kiểm lại `robots.txt` mỗi lần chạy, vì nó có thể đổi sau ngày thu thập.
+
+**Tải một lần, trích nhiều lần.** HTML thô được lưu lại, nên mỗi vòng sửa bộ trích chỉ là chạy
+`trich` trên đĩa. Bộ trích phải sửa **bốn vòng** mới sạch, mà chỉ gõ cửa máy chủ đúng một lần
+cho mỗi bài.
+
+| Ngữ liệu | |
+|---|---|
+| Số bài | 40 |
+| Theo báo | Tuổi Trẻ 14, Thanh Niên 14, VietnamNet 12 |
+| Chuyên mục | thoi-su 9, the-gioi 9, kinh-doanh 9, phap-luat 6, giao-duc 4, doi-song 3 |
+| Âm tiết | 262–1374, trung vị **513** |
+| Số câu | 6–43, trung vị **15** |
+
+Trung vị 513 âm tiết gần khít VietNews (494), nên so sánh chéo giữa ngữ liệu mới và
+kết quả cũ không bị lệch chỉ vì độ dài bài.
+
+**Bốn lỗi trích nội dung, không lỗi nào tự lộ** — đều tìm ra bằng cách đọc tay từng bài:
+
+1. Mốc cắt (`itemprop="articleBody"`) nằm *bên trong* thẻ mở, nên phần còn lại của thẻ rơi thẳng
+   vào văn bản. Phải nhảy qua dấu `>` đóng thẻ.
+2. Tuổi Trẻ dính khối "tặng sao cho bài viết" và ô bình luận ở cuối bài.
+3. VietnamNet nhúng thẻ bài liên quan **giữa thân bài** (`<article class="ck-cms-insert-news">`) —
+   phải *gỡ khối*, cắt đuôi là mất phần còn lại của bài.
+4. Tuổi Trẻ nhúng thẻ bài liên quan lồng nhiều tầng `div` (`type="RelatedOneNews"`). Regex
+   `<div.*?</div>` cắt ở thẻ đóng đầu tiên và để lại nửa khối rác, nên phải đếm lồng nhau.
+
+Và một khiếm khuyết về **mẫu**, không phải về code: đợt đầu ra đủ 40 bài nhưng **cả 40 đều thuộc
+`thoi-su`**, vì vòng lặp dừng ngay khi đủ hạn mức của nguồn. Ngữ liệu toàn tin tai nạn và bổ
+nhiệm thì không đại diện cho báo chí. Đã đặt hạn mức riêng cho từng chuyên mục. Đợt sau lộ tiếp
+một chuyện nữa: Thanh Niên không có slug `kinh-doanh` hay `phap-luat` (RSS trả 404) mà là
+`kinh-te` và `doi-song`, nên danh sách chuyên mục phải tách theo từng báo rồi gom về tên chung.
+
+Sau khi sửa, năm phép quét tự động trên cả 40 bài đều sạch: không mảnh thẻ HTML, không khối
+giao diện, không chú thích ảnh, không thực thể HTML còn sót, không bài trùng.
+
+**Toàn văn không commit.** `data/tin_moi/tin.json` và HTML thô nằm ngoài git — đây là nội dung có
+bản quyền của các toà soạn và repo này công khai. `ke_khai.json` được commit, giữ URL, thời điểm
+tải, độ dài và SHA-256 từng bài, đủ để kiểm chứng bộ dữ liệu không bị sửa giữa chừng. Tải lại
+được bằng `thu-thap`, nhưng bài báo đổi theo thời gian nên bản tải lại có thể khác — đó chính là
+lý do phải có SHA-256.
+
 ## Demo Gradio — hệ thống cuối cạnh BARTpho, và bốn tầng
 
 Chạy hoàn toàn trên CPU.
