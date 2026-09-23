@@ -1,0 +1,431 @@
+/* Giao dien demo: ban doi chieu cua nguoi bien tap, dat tren nen hong da nguoi.
+   Ba tang token: goc -> ngu nghia -> thanh phan. Khung la mot mau muc duy nhat;
+   chi phan TO mau moi mang nghia, va mau bao hoa chi dung de danh dau mot khang dinh. */
+
+/* ---------- Tang 1: token goc ---------- */
+:root, .gradio-container {
+  --hong-50:  #fdf4ef;   /* hong nhat nhat: vien phu, nen chim */
+  --hong-100: #f8e3d8;   /* nen trang: hong da nguoi */
+  --hong-200: #f1cdbd;   /* ray do, dai mau */
+  --hong-300: #e3ae99;   /* vien mem */
+  --trang:    #fffbf8;   /* mat the: trang am */
+  --muc-900:  #2e1c19;   /* muc: chu, vien, bong */
+  --muc-500:  #6e4f49;   /* chu phu */
+  --do-600:   #a81f2b;   /* co chi tiet la */
+  --do-100:   #f6d9d6;
+  --luc-700:  #14664c;   /* khong co chi tiet la */
+  --luc-100:  #d8e9df;
+  --vang-400: #ffd84d;   /* vach to vang */
+}
+
+/* ---------- Tang 2: token ngu nghia ---------- */
+:root, .gradio-container {
+  --nen: var(--hong-100);
+  --nen-chim: var(--hong-50);
+  --mat: var(--trang);
+  --muc: var(--muc-900);
+  --muc-mo: var(--muc-500);
+  --vien: var(--muc-900);        /* mot muc duy nhat lam vien */
+  --vien-mem: var(--hong-300);
+  --ray: var(--hong-200);
+  --sach: var(--luc-700);
+  --sach-nen: var(--luc-100);
+  --la: var(--do-600);
+  --la-nen: var(--do-100);
+  --vang: var(--vang-400);
+  --sans: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --serif: "Source Serif 4", "Noto Serif", "Times New Roman", serif;
+  --r-the: 14px;
+  --r-tron: 999px;
+  --bong-the: 8px 8px 0;
+}
+
+.dark, .dark .gradio-container {
+  --nen: #1b1416;
+  --nen-chim: #221a1c;
+  --mat: #251c1e;
+  --muc: #f6e7e0;
+  --muc-mo: #b39a94;
+  --vien: #4a3739;
+  --vien-mem: #3a2c2e;
+  --ray: #3a2c2e;
+  --sach: #6fc7a0;
+  --sach-nen: #14312a;
+  --la: #f08a8f;
+  --la-nen: #3a1f23;
+  --vang: #c9a227;
+}
+
+/* ---------- Tang 3: cau noi sang bien cua Gradio ---------- */
+.gradio-container {
+  --body-background-fill: var(--nen);
+  --background-fill-primary: var(--mat);
+  --background-fill-secondary: var(--nen-chim);
+  --block-background-fill: var(--mat);
+  --input-background-fill: var(--mat);
+  --border-color-primary: var(--vien-mem);
+  --border-color-accent: var(--vien);
+  --body-text-color: var(--muc);
+  --body-text-color-subdued: var(--muc-mo);
+  --block-label-text-color: var(--muc-mo);
+  --block-title-text-color: var(--muc);
+  --button-primary-background-fill: var(--muc);
+  --button-primary-background-fill-hover: #432924;
+  --button-primary-text-color: var(--trang);
+  --button-primary-border-color: var(--muc);
+  --radius-sm: 6px;
+  --radius-lg: var(--r-the);
+  max-width: 1180px !important;
+  font-family: var(--sans);
+  color: var(--muc);
+}
+
+.gradio-container .prose :is(h1, h2, h3, h4, p, li) { color: var(--muc); }
+
+/* Gradio dat margin o muc phan tu; xoa truoc, tra lai bang selector du do uu tien. */
+.hero :is(p, h1), .bp :is(p, h3), .tang :is(p, h3), .ghi p, .rong p { margin: 0; }
+.ghi p + p { margin-top: .5rem; }
+
+/* ---------- Hero: ket luan, roi hai thanh ve dung ty le ---------- */
+.hero { margin: .25rem 0 1.9rem; }
+
+.hero h1 {
+  font-family: var(--sans);
+  font-size: clamp(1.7rem, 1.1rem + 1.8vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+  margin: 0 0 .6rem;
+  max-width: 21ch;
+}
+
+.hero .dan {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  line-height: 1.62;
+  max-width: 60ch;
+  margin: 0 0 1.5rem;
+}
+
+/* Khoi do: du lieu nen de vuong, khong bo tron nhu phan con lai cua giao dien. */
+.thanh {
+  background: var(--mat);
+  border: 2px solid var(--vien);
+  border-radius: var(--r-the);
+  padding: 1rem 1.15rem .9rem;
+}
+
+.thanh .thanh-de {
+  font-size: .82rem;
+  color: var(--muc-mo);
+  margin: 0 0 .85rem;
+  max-width: 62ch;
+}
+
+.thanh-hang {
+  display: grid;
+  grid-template-columns: 11.5rem minmax(0, 1fr) 4.6rem;
+  align-items: center;
+  gap: .85rem;
+  margin-bottom: .55rem;
+}
+
+.thanh-ten { font-size: .92rem; font-weight: 600; }
+
+.thanh-ray {
+  display: block;
+  height: 18px;
+  background: var(--ray);
+  border: 2px solid var(--vien);
+}
+
+.thanh-day { display: block; height: 100%; min-width: 3px; background: var(--la); }
+.thanh-hang.sach .thanh-day { background: var(--sach); }
+
+.thanh-so {
+  font-size: .95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--la);
+}
+
+.thanh-hang.sach .thanh-so { color: var(--sach); }
+.thanh .thanh-nguon { font-size: .78rem; color: var(--muc-mo); margin: .8rem 0 0; }
+
+/* ---------- The ket qua: dai mau tren canh tren mang verdict ---------- */
+.bp {
+  position: relative;
+  overflow: hidden;
+  background: var(--mat);
+  border: 2px solid var(--vien);
+  border-radius: var(--r-the);
+  padding: 1.35rem 1.15rem 1rem;
+  margin: 0 8px 1.5rem 0;
+  box-shadow: var(--bong-the) var(--vien-mem);
+}
+
+.bp::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10px;
+  background: var(--vien-mem);
+}
+
+.bp--sach { box-shadow: var(--bong-the) var(--sach); }
+.bp--sach::before { background: var(--sach); }
+.bp--la { box-shadow: var(--bong-the) var(--la); }
+.bp--la::before { background: var(--la); }
+
+.bp-dau {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .5rem .75rem;
+  margin-bottom: .65rem;
+}
+
+.bp .bp-ten { font-size: 1.05rem; font-weight: 700; letter-spacing: -.015em; }
+.bp-cach { font-size: .82rem; color: var(--muc-mo); }
+
+.bp-verdict {
+  margin-left: auto;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .22rem .6rem;
+  border: 1.5px solid currentColor;
+  border-radius: var(--r-tron);
+  white-space: nowrap;
+}
+
+.bp--sach .bp-verdict { background: var(--sach-nen); color: var(--sach); }
+.bp--la   .bp-verdict { background: var(--la-nen);   color: var(--la); }
+.bp--loi  .bp-verdict { background: var(--nen-chim); color: var(--muc-mo); }
+.bp--cho  .bp-verdict { background: var(--nen-chim); color: var(--muc-mo); }
+
+.bp .bp-van {
+  font-family: var(--serif);
+  font-size: 1.06rem;
+  line-height: 1.68;
+  max-width: 68ch;
+}
+
+.bp-van--loi { font-family: var(--sans); font-size: .93rem; color: var(--muc-mo); }
+
+.bp-van code, .ghi code, .thanh code {
+  font-size: .87em;
+  background: var(--nen);
+  border-radius: 4px;
+  padding: .05rem .3rem;
+}
+
+.bp-chan { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem; }
+
+.chip {
+  font-size: .76rem;
+  font-weight: 500;
+  color: var(--muc-mo);
+  border: 1.5px solid var(--vien-mem);
+  border-radius: var(--r-tron);
+  padding: .16rem .6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Truc thu hai: bao nhieu y cua bai lot vao ban tom tat. Chip dam len khi con thieu y,
+   nhung khong to mau -- do/xanh da danh cho truc chi tiet la, hai truc khong duoc lan mau. */
+.chip--thieu { border-color: var(--vien); color: var(--muc); font-weight: 600; }
+
+.bp-thieu {
+  margin-top: .6rem;
+  padding-top: .6rem;
+  border-top: 1.5px dashed var(--vien-mem);
+  font-size: .84rem;
+  line-height: 1.55;
+  color: var(--muc-mo);
+  max-width: 68ch;
+}
+
+.bp-thieu b { color: var(--muc); }
+
+/* Vach to vang: quet duoi chu, khong phai khoi mau de doc. */
+mark {
+  background: linear-gradient(180deg, transparent 54%, var(--vang) 54%, var(--vang) 95%, transparent 95%);
+  color: inherit;
+  padding: 0 .08em;
+}
+
+/* Nen toi: vet quet doc ra gach ngang, doi sang khoi mo kem gach chan. */
+.dark :is(mark, .ghi .vd) {
+  background: color-mix(in srgb, var(--vang) 30%, transparent);
+  box-shadow: inset 0 -2px 0 var(--vang);
+  color: var(--muc);
+}
+
+/* ---------- Trang thai: cho, rong, loi ---------- */
+.bp--cho::before, .bp--loi::before { background: var(--vien-mem); }
+.bp--cho, .bp--loi { box-shadow: var(--bong-the) var(--vien-mem); }
+.bp--cho .bp-van { color: transparent; position: relative; }
+
+.bp--cho .bp-van::after {
+  content: "";
+  position: absolute;
+  inset: .25rem 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--nen) 0%, var(--ray) 50%, var(--nen) 100%);
+  background-size: 200% 100%;
+  animation: quet 1.3s linear infinite;
+}
+
+@keyframes quet { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+.rong {
+  border: 2px dashed var(--vien-mem);
+  border-radius: var(--r-the);
+  padding: 1.75rem 1.2rem;
+  color: var(--muc-mo);
+  font-size: .93rem;
+  line-height: 1.6;
+}
+
+.rong b { color: var(--muc); font-weight: 600; }
+
+/* ---------- Thang tang: 0 -> 4 la mot chuoi that, nen danh so ---------- */
+.tang {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  gap: 0 .9rem;
+  border-top: 1.5px solid var(--vien-mem);
+  padding: .95rem 0;
+}
+
+.tang:last-child { border-bottom: 1.5px solid var(--vien-mem); }
+
+.tang-so {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--muc);
+  background: var(--nen);
+  border: 1.5px solid var(--vien);
+  font-variant-numeric: tabular-nums;
+}
+
+.tang .tang-ten { font-size: 1rem; font-weight: 700; margin: 0 0 .15rem; letter-spacing: -.01em; }
+.tang .tang-mo { font-size: .82rem; color: var(--muc-mo); margin: 0 0 .55rem; max-width: 60ch; }
+
+.tang .tang-van {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.62;
+  max-width: 68ch;
+}
+
+.tang-van--loi { font-family: var(--sans); font-size: .88rem; color: var(--la); }
+.tang-van--rong { font-family: var(--sans); font-size: .88rem; color: var(--muc-mo); }
+
+/* ---------- Ghi chu gioi han: phai doc duoc, khong phai chu nho mo ---------- */
+.ghi {
+  border-top: 1.5px solid var(--vien-mem);
+  padding-top: .9rem;
+  font-size: .87rem;
+  line-height: 1.62;
+  color: var(--muc-mo);
+  max-width: 68ch;
+}
+
+.ghi b, .ghi strong { color: var(--muc); font-weight: 600; }
+.ghi .vd { background: linear-gradient(180deg, transparent 54%, var(--vang) 54%, var(--vang) 95%, transparent 95%); color: var(--muc); }
+
+/* ---------- Khung Gradio: nut, o nhap, tab ---------- */
+.gradio-container textarea {
+  font-family: var(--serif) !important;
+  font-size: 1rem !important;
+  line-height: 1.62 !important;
+  border: 2px solid var(--vien) !important;
+  border-radius: var(--r-the) !important;
+}
+
+.gradio-container button.primary,
+.gradio-container button.secondary {
+  border: 2px solid var(--vien);
+  border-radius: var(--r-tron);
+  font-weight: 600;
+  box-shadow: 3px 3px 0 var(--vien);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.gradio-container button.secondary { background: var(--mat); color: var(--muc); }
+
+.gradio-container button.primary:hover,
+.gradio-container button.secondary:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--vien); }
+
+.gradio-container button.primary:active,
+.gradio-container button.secondary:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--vien); }
+
+.gradio-container button:disabled,
+.gradio-container button[disabled] { opacity: .45; box-shadow: none; transform: none; cursor: not-allowed; }
+
+.gradio-container .tabs > .tab-nav > button {
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: -.005em;
+  color: var(--muc-mo);
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+}
+
+.gradio-container .tabs > .tab-nav > button.selected {
+  color: var(--muc);
+  border-bottom-color: var(--muc);
+}
+
+/* Bang bai mau cua gr.Examples */
+.gradio-container table {
+  border: 1.5px solid var(--vien-mem);
+  border-radius: var(--r-the);
+  overflow: hidden;
+}
+
+.gradio-container table td { font-family: var(--sans); font-size: .88rem; }
+
+.gradio-container button:focus-visible,
+.gradio-container textarea:focus-visible,
+.gradio-container .tab-nav > button:focus-visible,
+.gradio-container [tabindex]:focus-visible {
+  outline: 3px solid var(--la);
+  outline-offset: 2px;
+}
+
+/* Nut doi nen: nam canh hero, khong tranh cho voi nut chinh. */
+.gradio-container .nut-nen {
+  background: transparent;
+  color: var(--muc-mo);
+  border: 1.5px solid var(--vien-mem);
+  box-shadow: none;
+  font-size: .8rem;
+}
+
+.gradio-container .nut-nen:hover {
+  color: var(--muc);
+  border-color: var(--vien);
+  transform: none;
+  box-shadow: none;
+}
+
+.gradio-container footer { display: none !important; }
+
+@media (max-width: 760px) {
+  .thanh-hang { grid-template-columns: 7.5rem minmax(0, 1fr) 3.8rem; gap: .5rem; }
+  .hero h1 { max-width: none; }
+  .bp { padding: 1.25rem .95rem .9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bp--cho .bp-van::after { animation: none; }
+  .gradio-container button.primary,
+  .gradio-container button.secondary { transition: none; }
+}
