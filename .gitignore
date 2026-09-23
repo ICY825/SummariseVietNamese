@@ -46,6 +46,9 @@ results/human_eval/phu_y/khoa.json
 # bai bao doi theo thoi gian nen ban tai lai co the khac -- do la ly do phai co SHA-256.
 data/tin_moi/tin.json
 data/tin_moi/html/
+# `results/predictions/tin_moi.json` cung bi loai boi quy tac `results/predictions/*` o tren,
+# va day la CO Y: ban trich rut chep nguyen cau tu bai bao, cung tinh chat voi tin.json.
+# Dung lai bang `src/agent/duong_co_so.py` (~18 phut CPU) tu tin.json.
 
 # Cache va checkpoint
 .cache/
