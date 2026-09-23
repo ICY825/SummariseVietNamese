@@ -283,20 +283,36 @@ def cmd_phieu_nguoi(args):
 
 
 def _doc_phieu_nguoi(tep, gan):
-    """{mã bài: {nhãn: [đánh dấu]}} — báo lỗi rõ chỗ nào thiếu hoặc điền sai."""
-    ra, hang = {}, list(csv.DictReader(tep.open(encoding="utf-8-sig")))
+    """{mã bài: {nhãn: [đánh dấu]}} — chỉ những bài đã điền xong.
+
+    Bài để trống hoàn toàn thì bỏ qua, để còn làm dở vài bài rồi đo thử trước khi bỏ công
+    làm hết. Nhưng bài điền DỞ DANG thì báo lỗi: một ô bỏ sót lặng lẽ tính thành "không phủ"
+    sẽ hạ điểm của đúng hệ thống mà dòng đó rơi vào.
+    """
+    hang = list(csv.DictReader(tep.open(encoding="utf-8-sig")))
     nhan = [c for c in hang[0] if c not in ("ma_bai", "stt", "y", "ghi_chu")]
+    theo_bai = {}
     for h in hang:
-        ma, i = h["ma_bai"], int(h["stt"])
-        for n in nhan:
-            o = (h[n] or "").strip()
-            if o not in ("0", "1"):
-                raise SystemExit(f"{tep.name} — {ma} ý {i} cột {n}: {o!r} (phải là 0 hoặc 1).")
-            ra.setdefault(ma, {}).setdefault(n, []).append(o == "1")
-    for ma, v in ra.items():
-        for n, dau in v.items():
+        theo_bai.setdefault(h["ma_bai"], []).append(h)
+
+    ra = {}
+    for ma, hs in theo_bai.items():
+        o = [(h[n] or "").strip() for h in hs for n in nhan]
+        if not any(o):
+            continue                                   # chua lam bai nay
+        for h in hs:
+            for n in nhan:
+                x = (h[n] or "").strip()
+                if x not in ("0", "1"):
+                    raise SystemExit(
+                        f"{tep.name} — {ma} ý {h['stt']} cột {n}: {x!r} (phải là 0 hoặc 1). "
+                        "Bài đã điền dở thì phải điền cho hết, hoặc xoá trắng cả bài.")
+                ra.setdefault(ma, {}).setdefault(n, []).append(x == "1")
+        for n, dau in ra[ma].items():
             if len(dau) != len(gan[ma]["y"]):
                 raise SystemExit(f"{tep.name} — {ma} cột {n}: {len(dau)} dòng, cần {len(gan[ma]['y'])}.")
+    if not ra:
+        raise SystemExit(f"{tep.name} chưa điền bài nào.")
     return ra
 
 
