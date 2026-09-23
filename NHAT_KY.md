@@ -11,9 +11,28 @@ ghi **đang ở đâu, việc gì còn dở, chạy lệnh gì tiếp**, cùng n
   commit và push ở `1cea014`.
 - **Hướng mới (một hệ thống, đủ ý và không sai sự thật):** giai đoạn 0–4 xong, hệ thống cuối là giai đoạn 1; không dùng
   BARTpho trong hệ thống cuối; `test` đã chấm, demo và mở đầu README đã theo khung mới.
-- **Còn lại:** báo cáo và slide (bạn đã chọn để sau), kiểm tra tái lập trên máy sạch.
+- **Giai đoạn 5 (23/09): thước đo phủ ý** — đếm ý thay vì cho điểm 1–5. Xong, ba lượt gán
+  đều là máy, alpha 0,94–0,96. **Chưa có lượt người nào.**
+- **Hướng agent (23/09), theo đường C: agent tìm tin nhưng CHẤM trên ngữ liệu đóng băng.**
+  6a (đóng băng 40 tin) và 6b (đường cơ sở) xong. 6c (agent một nguồn) **chưa bắt đầu**.
+- **Còn lại:** báo cáo và slide (bạn đã chọn để sau), kiểm tra tái lập trên máy sạch, và
+  hai việc của hướng agent ở mục "Việc còn dở" bên dưới.
 - Demo Gradio chạy đầu-cuối được trên máy này (kiểm lại lần cuối 16/09 sau mọi thay đổi
   của tuần 8).
+
+Các commit của phiên **23/09/2026**, theo thứ tự:
+
+| Commit | Nội dung |
+|---|---|
+| `891268d` | giao diện demo mới + trục thứ hai "phủ x/y ý" trên thẻ kết quả |
+| `3254b28` | bài mẫu thứ ba: bài BARTpho **không** bịa, để bộ mẫu thôi chọn bài có lợi |
+| `bf1f07e` | giai đoạn 5: thước đo phủ ý, 12 bài `val`, 122 ý, 488 lượt đánh dấu |
+| `d4d4c83` | phiếu trống cho người gán + lệnh `so-sanh` (Krippendorff alpha) |
+| `e938b73` | `so-sanh` cho phép làm dở, nhưng chặn bài điền dở dang |
+| `fcfe76e` | hai lượt gán độc lập bằng tác tử con — alpha 0,944–0,962 |
+| `7d3f2d0` | giai đoạn 6a: đóng băng 40 tin mới (Tuổi Trẻ, Thanh Niên, VietnamNet) |
+| `615030b` | giai đoạn 6b: đường cơ sở trên tin mới + ràng buộc tách từ của bộ đo |
+| `c1a7255` | ghi rõ vì sao predictions của ngữ liệu tin mới không commit |
 
 Các commit mốc của phiên 16/09/2026, theo thứ tự:
 
@@ -184,6 +203,39 @@ sách độ dài, không thì "dài hơn" sẽ luôn thắng.
 
 ## Việc còn dở — theo thứ tự nên làm
 
+### 0. Hướng agent (23/09) — **đang làm dở, ưu tiên cao nhất**
+
+**0a. Một lượt NGƯỜI gán phủ ý — việc của bạn, tôi không làm thay được.**
+Ba lượt gán hiện có đều là máy, nên alpha 0,96 chỉ chứng minh *bộ quy tắc đủ chặt để lặp
+lại*, không chứng minh *bản gán đúng*. Ba lượt cùng là mô hình ngôn ngữ thì có thể cùng
+lệch một kiểu. Làm tối thiểu **2 bài**: `B12` (9 ý, dòng Excel 32–40) và `B42` (6 ý, dòng
+89–94), khoảng 60 ô, chừng 25–30 phút.
+
+    # điền results/human_eval/phu_y/cham_phu_y_nguoi1.csv (Excel, lưu CSV UTF-8)
+    # đọc bài và các bản ở results/human_eval/phu_y/phieu_phu.md
+    .venv/Scripts/python.exe src/eval/phu_y.py so-sanh --ten nguoi1
+
+**KHÔNG mở** `gan_y.json`, `khoa.json`, `cham_phu_y_may2.csv`, `cham_phu_y_may3.csv` — trong
+đó có sẵn bản đánh dấu của các lượt trước. Quy tắc dễ lệch nhất: *gắn sai chi tiết vẫn tính
+là phủ* (sai sự thật do thước đo khác lo), và *ý gồm nhiều vế thì phủ được mệnh đề chính là
+tính 1*. Với 2 bài, đọc alpha và bảng đối chiếu; **bỏ qua các p-value** — bootstrap trên 2
+bài là con số vô nghĩa.
+
+**0b. Giai đoạn 6c — agent một nguồn.** Chưa bắt đầu. Kiến trúc đã chốt: Summarizer →
+Verifier → nếu trượt hai lần thì **rơi về hệ thống trích rút** (0/40 bài bịa, nên có mức sàn
+an toàn có bằng chứng). Chạy trên đúng 40 bài đã đóng băng để so thẳng với bảng 6b.
+
+Hai thứ còn treo, cần bạn quyết trước khi viết code:
+
+- **Mô hình và chi phí.** Chưa chốt. Phải tra giá thật trước khi tiêu tiền, không đoán.
+- **Thời gian còn lại.** Chưa biết. Nếu gấp thì dừng ở 6c vẫn là một đồ án hoàn chỉnh; 6d
+  (thêm tìm kiếm, nhiều nguồn) là phần đẹp chứ không phải phần lõi, và nó **không đo được**
+  bằng ngữ liệu đóng băng.
+
+Hai cảnh báo rút từ dữ liệu của chính đồ án, cần xử lý trước khi nối Verifier vào vòng lặp:
+bộ đo **bắt thừa** ở chỗ nối câu (mỗi lần báo nhầm là một lần viết lại vô ích), và **bỏ lọt**
+lỗi gán nhầm đối tượng.
+
 ### 1. Báo cáo và slide (tuần 8) — **chưa làm, bạn đã chọn để sau**
 
 Chưa chốt định dạng (đã hỏi: Markdown trong `report/`, Word, hay LaTeX). Nguyên liệu đã
@@ -304,6 +356,17 @@ hỏng khi trên máy có nhiều bản.
   (đã kiểm từng byte), rồi chép `khoa.json` về.
 - File dự đoán của baseline (`results/predictions/baselines_*`) — bỏ khỏi git có chủ ý,
   sinh lại bằng `run_baselines.py` trên CPU.
+- `data/tin_moi/tin.json` và `data/tin_moi/html/` — **toàn văn 40 bài báo và HTML thô**, bỏ
+  khỏi git vì là nội dung có bản quyền của các toà soạn còn repo này công khai.
+  `data/tin_moi/ke_khai.json` **có** trong git và giữ URL, thời điểm tải, độ dài, SHA-256
+  từng bài — đủ để kiểm bộ dữ liệu không bị sửa. Tải lại bằng
+  `src/agent/thu_thap.py thu-thap`, nhưng **bài báo đổi theo thời gian nên bản tải lại có
+  thể khác**; đó chính là lý do phải có SHA-256. Mất HTML thô thì `trich` không chạy được.
+- `results/predictions/tin_moi.json` — bản tóm tắt của 5 hệ thống trên ngữ liệu tin mới.
+  Bỏ khỏi git có chủ ý: bản trích rút chép nguyên câu từ bài báo. Sinh lại bằng
+  `src/agent/duong_co_so.py` (~18 phút CPU) **từ `tin.json`** — mất `tin.json` là mất luôn.
+- `results/human_eval/phu_y/khoa.json` — khoá nhãn của thước đo phủ ý, cùng lý do với khoá
+  tuần 7. Dựng lại tất định bằng `src/eval/phu_y.py phieu-phu` (đã kiểm ra y hệt bản cũ).
 
 ## Môi trường
 
@@ -371,6 +434,30 @@ Tự kiểm tra sau mỗi lần sửa code (vài giây, không cần mạng):
 - **Schema file kết quả:** `length` có khoá `mean_syllables` (không phải `mean`); `novel` có
   `1gram`/`2gram`/`4gram`; chỉ số ROUGE/BERTScore trong `corpus` là dict `{mean, lo, hi}`.
   In cấu trúc ra trước khi viết code đọc số.
+
+- **gradio 6.27 làm `launch()` vỡ** với `AttributeError: 'str' object has no attribute 'name'`
+  nếu `gr.themes.Base(font=[...])` nhận chuỗi thuần: bản 6 so sánh theme với các theme dựng
+  sẵn khi khởi động. Phải bọc `gr.themes.Font("...")`. Và `css/head/theme/js` đã chuyển từ
+  `Blocks(...)` sang `launch(...)` — để ở chỗ cũ vẫn chạy nhưng in cảnh báo.
+- **`chi_tiet_la` KHÔNG trung lập với cách tách từ.** Bản tóm tắt và bài gốc phải cùng một
+  dạng. Đối chiếu 200 cặp: chấm với bài gốc dạng thô thay vì tách từ làm lệch 4 cặp, cả 4
+  đều là *báo nhầm* ("10 h37", "1 6") vì hai bên cắt âm tiết khác nhau.
+- **`do_phu_chi_tiet` trả `None`** khi sapo không có chi tiết nào để đối chiếu. Không lọc
+  trước khi lấy trung bình thì cả cột thành `nan`. Và `co_chi_tiet_la` phải **nhân 100** mới
+  cùng thang với các bảng cũ — quên là hai bảng khác thang mà nhìn như giống nhau.
+- **`vnexpress.net` chặn bot thu thập cho AI** trong `robots.txt` (`Disallow: /` cho
+  ClaudeBot, anthropic-ai, GPTBot, CCBot), chỉ cho phép truy cập do người dùng chủ động;
+  `dantri.com.vn` cũng nêu tên claudebot. Tuổi Trẻ, Thanh Niên, VietnamNet thì `Allow: /`
+  cho mọi bot. Kiểm `robots.txt` **trước** khi chọn nguồn, không phải sau.
+- **RSS của mỗi báo đặt tên chuyên mục một kiểu.** Thanh Niên không có `kinh-doanh` hay
+  `phap-luat` (404) mà là `kinh-te` và `doi-song`. Lỗi này im lặng: nó chỉ làm hụt số bài.
+- **Vòng lặp lấy tin theo hạn mức của *nguồn* làm cả bộ ngữ liệu rơi vào một chuyên mục.**
+  Đợt đầu ra đủ 40 bài nhưng cả 40 đều là `thoi-su`. Phải đặt hạn mức cho **từng chuyên mục**.
+- **Trích nội dung báo: bốn lỗi không tự lộ.** Mốc cắt nằm *bên trong* thẻ mở (phải nhảy qua
+  dấu `>`); khối "tặng sao"/bình luận cuối bài của Tuổi Trẻ; thẻ bài liên quan nhúng **giữa**
+  thân bài (phải *gỡ khối*, cắt đuôi là mất nửa bài); thẻ bài liên quan lồng nhiều tầng `div`
+  (`type="RelatedOneNews"`) — regex `<div.*?</div>` cắt ở thẻ đóng đầu tiên và để lại rác.
+  **Luôn lưu HTML thô** để sửa bộ trích mà không phải tải lại từ máy chủ toà soạn.
 
 ## Mở phiên làm việc mới
 
