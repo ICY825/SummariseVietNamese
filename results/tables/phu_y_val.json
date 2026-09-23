@@ -1,0 +1,75 @@
+{
+ "n_bai": 12,
+ "ma_bai": [
+  "B01",
+  "B04",
+  "B09",
+  "B12",
+  "B17",
+  "B33",
+  "B34",
+  "B37",
+  "B38",
+  "B42",
+  "B43",
+  "B47"
+ ],
+ "so_y": {
+  "tong": 122,
+  "tb": 10.166666666666666,
+  "min": 6,
+  "max": 15
+ },
+ "he_thong": {
+  "sapo": {
+   "phu_y": 15.7,
+   "lo": 8.3,
+   "hi": 24.4
+  },
+  "lead3": {
+   "phu_y": 31.5,
+   "lo": 23.5,
+   "hi": 39.8
+  },
+  "bartpho": {
+   "phu_y": 11.8,
+   "lo": 8.2,
+   "hi": 15.6
+  },
+  "chon-cau": {
+   "phu_y": 30.8,
+   "lo": 25.0,
+   "hi": 36.6
+  }
+ },
+ "so_cap": {
+  "chon-cau - lead3": {
+   "diff": -0.724,
+   "lo": -5.979,
+   "hi": 4.101,
+   "p": 0.82,
+   "significant": false
+  },
+  "chon-cau - bartpho": {
+   "diff": 18.985,
+   "lo": 14.112,
+   "hi": 24.097,
+   "p": 0.0,
+   "significant": true
+  },
+  "lead3 - bartpho": {
+   "diff": 19.709,
+   "lo": 12.458,
+   "hi": 27.44,
+   "p": 0.0,
+   "significant": true
+  },
+  "chon-cau - sapo": {
+   "diff": 15.103,
+   "lo": 8.68,
+   "hi": 21.783,
+   "p": 0.0,
+   "significant": true
+  }
+ }
+}

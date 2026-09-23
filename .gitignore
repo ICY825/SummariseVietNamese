@@ -37,6 +37,7 @@ results/predictions/*
 # chay lai tren may sach ra dung phieu va dung khoa (da kiem tung byte).
 results/human_eval/khoa.json
 results/human_eval/gd3/khoa.json
+results/human_eval/phu_y/khoa.json
 
 # Cache va checkpoint
 .cache/

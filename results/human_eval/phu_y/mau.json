@@ -1,0 +1,23 @@
+{
+ "split": "val",
+ "seed": 13,
+ "n": 12,
+ "tat_ca": false,
+ "he_thong": [
+  "sapo",
+  "lead3",
+  "bartpho",
+  "chon-cau"
+ ],
+ "tu_mau_tuan7": "results\\human_eval\\khoa.json",
+ "quy_tac": [
+  "Đọc bài gốc trước, và viết danh sách ý **trước khi** xem bất kỳ bản tóm tắt nào.",
+  "Mỗi ý một dòng, dạng chủ thể – hành động – đối tượng.",
+  "Một câu có thể chứa hai ý, và hai câu có thể cùng nói một ý. Đừng để danh sách ý biến thành danh sách câu.",
+  "Chú thích ảnh, tít phụ và tên tác giả không phải nội dung bài — không tính là ý.",
+  "Ý chỉ có trong sapo mà thân bài không nhắc thì không tính, vì không hệ thống trích rút nào lấy được.",
+  "Một ý tính là PHỦ khi bản tóm tắt nói được phần cốt lõi (chủ thể và hành động); thiếu chi tiết phụ vẫn tính là phủ.",
+  "Nói đúng ý nhưng gắn sai chi tiết (sai quận, sai giờ) vẫn tính là phủ — sai sự thật là việc của thước đo chi tiết lạ, không phải của thước đo này."
+ ],
+ "created_at": "2026-09-23 11:28:34"
+}

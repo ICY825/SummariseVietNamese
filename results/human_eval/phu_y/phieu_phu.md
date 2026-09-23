@@ -1,0 +1,308 @@
+# Phiếu đánh dấu phủ ý — pha 2
+
+Với mỗi bản, đánh dấu ý nào bản đó nói được. Quy tắc:
+
+- Một ý tính là PHỦ khi bản tóm tắt nói được phần cốt lõi (chủ thể và hành động); thiếu chi tiết phụ vẫn tính là phủ.
+- Nói đúng ý nhưng gắn sai chi tiết (sai quận, sai giờ) vẫn tính là phủ — sai sự thật là việc của thước đo chi tiết lạ, không phải của thước đo này.
+
+## B01 (guid 306)
+
+**Bài gốc.** Báo Pháp luật TP. HCM dẫn lời Công an TP. Long Khánh (Đồng Nai) cho biết đang tạm giữ hình sự đối với Quách Lục Tuấn (41 tuổi, ngụ phường Xuân An, TP Long Khánh) để tiếp tục điều tra, xử lý về hành vi trộm cắp và cố ý gây thương tích. Trước đó, ngày 9/8, Tuấn đột nhập nhà ông Thái Ngọc Lục (59 tuổi, ngụ phường Bảo Vinh, TP. Long Khánh) để trộm cắp. Hành động của tên trộm nhanh chóng bị phát giác. Khi chủ nhà lớn tiếng hô hoán thì đối tượng Tuấn rút dao giấu sẵn trong người đâm khiến ông Lục bị thương. Lúc này, nghe tiếng tri hô của ông Lục, một số người dân xung quanh đã đến hỗ trợ vây bắt và sau đó điện báo, bàn giao Tuấn cho Công an phường Bảo Vinh. Riêng ông Lục được người nhà đưa đi cấp cứu. Trao đổi với báo Đồng Nai lãnh đạo Bệnh viện đa khoa khu vực Long Khánh cho biết, ông Lục được ngươi nhà đưa vào bệnh viện cấp cứu trong tình trạng bị đâm ở chân và tay. Sau khi cấp cứu ông Lục tiếp tục được điều trị tại khoa Chấn thương chỉnh hình của bệnh viện. Hiện ông Lục đã bình phục và sẽ xuất viện trong vài ngày tới. Bá Di (Tổng hợp) Đối tượng Tuấn tại cơ quan công an (ảnh: PLO).
+
+**Ý chính.**
+
+1. Công an TP Long Khánh (Đồng Nai) tạm giữ hình sự Quách Lục Tuấn (41 tuổi) để điều tra hành vi trộm cắp và cố ý gây thương tích
+2. Ngày 9/8, Tuấn đột nhập nhà ông Thái Ngọc Lục (59 tuổi) để trộm cắp
+3. Hành động của tên trộm nhanh chóng bị phát giác
+4. Khi chủ nhà hô hoán, Tuấn rút dao giấu sẵn đâm khiến ông Lục bị thương
+5. Người dân xung quanh đến vây bắt và bàn giao Tuấn cho Công an phường Bảo Vinh
+6. Ông Lục được người nhà đưa đi cấp cứu, bị đâm ở chân và tay
+7. Ông Lục tiếp tục được điều trị tại khoa Chấn thương chỉnh hình của bệnh viện
+8. Ông Lục đã bình phục và sẽ xuất viện trong vài ngày tới
+
+**Bản A.** Báo Pháp luật TP. HCM dẫn lời Công an TP. Long Khánh (Đồng Nai) cho biết đang tạm giữ hình sự đối với Quách Lục Tuấn (41 tuổi, ngụ phường Xuân An, TP Long Khánh) để tiếp tục điều tra, xử lý về hành vi trộm cắp và cố ý gây thương tích. Trước đó, ngày 9/8, Tuấn đột nhập nhà ông Thái Ngọc Lục (59 tuổi, ngụ phường Bảo Vinh, TP. Long Khánh) để trộm cắp. Khi chủ nhà lớn tiếng hô hoán thì đối tượng Tuấn rút dao giấu sẵn trong người đâm khiến ông Lục bị thương.
+
+**Bản B.** Báo Pháp luật TP. HCM dẫn lời Công an TP. Long Khánh (Đồng Nai) cho biết đang tạm giữ hình sự đối với Quách Lục Tuấn (41 tuổi, ngụ phường Xuân An, TP Long Khánh) để tiếp tục điều tra, xử lý về hành vi trộm cắp và cố ý gây thương tích. Trước đó, ngày 9/8, Tuấn đột nhập nhà ông Thái Ngọc Lục (59 tuổi, ngụ phường Bảo Vinh, TP. Long Khánh) để trộm cắp. Hành động của tên trộm nhanh chóng bị phát giác.
+
+**Bản C.** Khi chủ nhà lớn tiếng hô hoán thì đối tượng Tuấn rút dao giấu sẵn trong người đâm khiến ông Lục bị thương.
+
+**Bản D.** Tên trộm mang theo dao, đột nhập nhà người dân để cướp tài sản, khi bị phát hiện đã tấn công khiến chủ nhà bị thương.
+
+## B04 (guid 2050)
+
+**Bài gốc.** Ngoài việc chia sẻ về nội MV Biết mãi là bao lâu, ca sĩ Quang Dũng cũng trải lòng về chuyện tình cảm hiện tại của mình, anh cho biết: "Tôi luôn trong tâm trạng chờ đợi tình yêu đến dù sống trong yêu thương đủ đầy của khán giả, bạn bè, người thân. Nhưng tôi nghĩ chuyện tình cảm là định mệnh, không phải mình muốn là được nên không ráo riết tìm ai đó. Tôi từng thất bại trong tình yêu, trải qua một lần đổ vỡ hôn nhân. Tuy nhiên, kết cục đó không buồn, ngược lại tôi hạnh phúc vì có một đứa con trai - Bảo Nam". Nói thêm về cậu con trai Quang Dũng chia sẻ: "Bé không sống với tôi nhưng quan hệ cha con luôn gần gũi, nhất là sau khi Bảo Nam về Việt Nam học tiếng Việt. Nếu có show diễn ở Hà Nội, tôi đều thăm bé, đưa con trai đi mua sắm, đi chơi. Bảo Nam tâm sự những câu chuyện về trường học, bạn bè cho bà ngoại hay Jennifer Phạm thì họ đều truyền đạt lại cho tôi nghe. Tôi không lo ngại việc Bảo Nam biết yêu sớm bởi bé lớn lên ở môi trường nước ngoài, sớm được giáo dục về vấn đề giới tính. Tôi để con trai phát triển một cách tự nhiên nhất". Có một sự nghiệp thành công khiến nhiều người ngưỡng mộ, nhưng hiện tại dù ly hôn đã lâu ca sĩ Quang Dũng vẫn độc thân và hài lòng với cuộc sống hiện tại. "May mắn của tôi là được ở cùng gia đình, các cháu tôi, chị tôi, mẹ tôi. Đại gia đình tôi bây giờ vào Sài Gòn nên tôi không phải sống cô đơn. Chuyện tình cảm yêu đương khó nói lắm, đó là số phận, kinh tế bạn có thể tìm kiếm để có được nhưng đối với tình duyên lại rất tự nhiên. Tôi vui, tôi hạnh phúc với cuộc sống hiện tại đầy đủ mà tôi đang có. Không cần bon chen tìm người nào đó, không nhất thiết. Điều nữa là chuyện tình cảm mỗi người có một số phận, nhiều khi muốn cũng không được, có khi đến không hiểu tại sao lại đến. Quan trọng phải sống đúng với tinh thần của mình, hạnh phúc với những gì hiện tại", Quang Dũng tâm sự. Trước đó trong chương trình 60 phút rực rỡ, Quang Dũng cũng chia sẻ về cuộc ly hôn ồn ào của mình và Jennifer Phạm, anh nói: "Con người không phải ai cũng có tất cả. Tôi có sự may mắn, có hạnh phúc, có nụ cười và cũng có sự chia ly, mất mát. Khi hết duyên nên dành sự tử tế cho nhau". Sự tử tế - đó chính là điều còn lại sau cuộc ly hôn từng vướng nhiều ồn ào của họ. Để đến bây giờ, Quang Dũng - Jennifer có thể đối mặt với nhau thoải mái, thậm chí nở nụ cười và chụp ảnh bên nhau như những người bạn thân. Ca sĩ Quang Dũng và Hoa hậu Jennifer Phạm yêu nhau vào năm 2006, thời điểm đó dư luận lập tức dấy lên làn sóng bàn tán sôi nổi. Ủng hộ có, phản đối có nhưng ai cũng phải thừa nhận họ quả là một sự kết hợp ăn ý, một cặp "trai tài gái sắc" trời sinh. Không đầy một năm, từ tháng 9/2006 tình cờ gặp nhau trong chuyến du lịch Nha Trang rồi lời đồn thổi về "phim giả tình thật" trong Những chiếc lá thời gian, Quang Dũng và Jennifer Phạm kết thúc mối nghi vấn bằng một đám cưới lãng mạn như trong mơ. Đến tháng 2/2008, bé Bảo Nam chào đời, lại càng chứng minh về hạnh phúc của cặp đôi ngôi sao đẹp nhất Việt Nam này. Thế nhưng, niềm hạnh phúc mà khán giả thường thấy dần phai nhạt. Bắt đầu từ khoảng cuối năm 2009, một số các event, người ta thường thấy họ không còn sánh bước cùng nhau, thường xuyên tách đôi. Suốt một thời gian sau đó, giới báo chí thường xuyên chụp được những bức ảnh "đi riêng" của hai người và quan trọng nhất là trên tay anh và cả Jennifer cũng không còn đeo chiếc nhẫn cưới quen thuộc. Họ chính thức chia tay sau đó. Quốc Tiệp (tổng hợp) Ca sĩ Quang Dũng. Ca sĩ Quang Dũng và cậu con trai Bảo Nam. Ca sĩ Quang Dũng và Hoa hậu Jennifer Phạm.
+
+**Ý chính.**
+
+1. Quang Dũng nói anh luôn chờ đợi tình yêu nhưng không ráo riết tìm ai đó
+2. Anh từng đổ vỡ hôn nhân nhưng thấy hạnh phúc vì có con trai Bảo Nam
+3. Bảo Nam không sống với anh nhưng quan hệ cha con gần gũi, nhất là sau khi bé về Việt Nam học tiếng Việt
+4. Anh thăm con, đưa con đi mua sắm và đi chơi mỗi khi có show ở Hà Nội
+5. Anh không lo Bảo Nam biết yêu sớm vì bé lớn lên ở nước ngoài, sớm được giáo dục về giới tính
+6. Dù ly hôn đã lâu, Quang Dũng vẫn độc thân và hài lòng với cuộc sống hiện tại
+7. Anh sống cùng đại gia đình ở Sài Gòn nên không phải sống cô đơn
+8. Trong chương trình 60 phút rực rỡ, anh nói khi hết duyên nên dành sự tử tế cho nhau
+9. Quang Dũng và Jennifer Phạm nay có thể thoải mái đối mặt, chụp ảnh bên nhau như bạn thân
+10. Hai người yêu nhau từ năm 2006 sau lần gặp trong chuyến du lịch Nha Trang rồi làm đám cưới
+11. Tháng 2/2008, bé Bảo Nam chào đời
+12. Từ cuối năm 2009 họ thường xuất hiện riêng, không còn đeo nhẫn cưới, rồi chính thức chia tay
+
+**Bản A.** Ngoài việc chia sẻ về nội MV Biết mãi là bao lâu, ca sĩ Quang Dũng cũng trải lòng về chuyện tình cảm hiện tại của mình, anh cho biết: "Tôi luôn trong tâm trạng chờ đợi tình yêu đến dù sống trong yêu thương đủ đầy của khán giả, bạn bè, người thân. Tuy nhiên, kết cục đó không buồn, ngược lại tôi hạnh phúc vì có một đứa con trai - Bảo Nam ". Có một sự nghiệp thành công khiến nhiều người ngưỡng mộ, nhưng hiện tại dù ly hôn đã lâu ca sĩ Quang Dũng vẫn độc thân và hài lòng với cuộc sống hiện tại.
+
+**Bản B.** Mới đây, ca sĩ Quang Dũng cho ra mắt sản phẩm âm nhạc mới – MV Biết mãi là bao lâu. Điều đặc biệt gây chú ý bởi đây chính là MV đầu tiên của Quang Dũng trong 10 năm qua.
+
+**Bản C.** Ngoài việc chia sẻ về nội MV Biết mãi là bao lâu, ca sĩ Quang Dũng cũng trải lòng về chuyện tình cảm hiện tại của mình, anh cho biết: "Tôi luôn trong tâm trạng chờ đợi tình yêu đến dù sống trong yêu thương đủ đầy của khán giả, bạn bè, người thân. Nhưng tôi nghĩ chuyện tình cảm là định mệnh, không phải mình muốn là được nên không ráo riết tìm ai đó. Tôi từng thất bại trong tình yêu, trải qua một lần đổ vỡ hôn nhân.
+
+**Bản D.** Mới đây, ca sĩ Quang Dũng đã có những chia sẻ thẳng thắn về chuyện tình cảm hiện tại của mình.
+
+## B09 (guid 4274)
+
+**Bài gốc.** Nội dung được nêu trong công điện do Phó thủ tướng Trương Hoà Bình ban hành chiều tối 27-5 về các giải pháp cấp bách hạn chế tai nạn giao thông đường sắt. Công điện nêu rõ liên tiếp trong những ngày qua trên các tuyến đường sắt đã xảy ra 4 vụ tai nạn giao thông rất nghiêm trọng làm 2 người tử vong, 11 người bị thương; nhiều đầu máy, toa xe và hàng trăm mét đường sắt bị hư hỏng nặng gây thiệt hại hàng tỉ đồng, làm tê liệt tuyến đường sắt Bắc - Nam nhiều giờ. Công điện nhận định nguyên nhân trực tiếp của 3 trong 4 vụ tai nạn trên do hành vi của tổ chức, cá nhân ngành đường sắt vi phạm quy trình tác nghiệp tại nơi giao cắt giữa đường bộ và đường sắt, khi đón tàu, dồn tàu tại các ga; do đầu máy, toa xe không đảm bảo an toàn kỹ thuật phương tiện; 2 trong 4 vụ có liên quan đến hành vi điều khiển phương tiện đường bộ vi phạm quy định khi vượt qua giao cắt với đường sắt. Để kịp thời chấn chỉnh, khắc phục những hạn chế nêu trên và nâng cao hiệu quả những giải pháp bảo đảm trật tự an toàn giao thông, kéo giảm tai nạn giao thông đường đường sắt, Phó thủ tướng Trương Hoà Bình - chủ tịch Uỷ ban An toàn giao thông quốc gia - yêu cầu Bộ GTVT chỉ đạo các cơ quan chức năng và Tổng công ty Đường sắt Việt Nam phối hợp các địa phương khẩn trương điều tra, làm rõ nguyên nhân, xử lý nghiêm tổ chức, cá nhân vi phạm để xảy ra các vụ tai nạn trên và kịp thời cung cấp thông tin cho cơ quan thông tấn báo chí để tuyên truyền. Tổng hợp báo cáo đầy đủ các vụ tai nạn giao thông đường sắt từ đầu năm 2018 do nguyên nhân chủ quan gây ra; phân tích, đánh giá toàn diện, khách quan, công minh các vi phạm để rút kinh nghiệm, chấn chỉnh trong tổ chức thực hiện và xử lý nghiêm các tổ chức, cá nhân để xảy ra sai phạm. Rà soát các quy định pháp luật, các quy trình, quy phạm về công tác tổ chức chạy tàu hiện có để điều chỉnh, bổ sung chặt chẽ hơn, quy định rõ trách nhiệm của tổ chức, cá nhân, đặc biệt là trách nhiệm của người đứng đầu để xảy ra tai nạn đường sắt do chủ quan. Tăng cường công tác kiểm tra, giám sát việc thực hiện quy định, quy trình chạy tàu của công nhân viên, lái tàu ngành đường sắt. Đẩy mạnh ứng dụng khoa học công nghệ vào công tác tổ chức chạy tàu và công tác kiểm tra, giám sát. Bộ Công an chỉ đạo công an các đơn vị, địa phương có đường sắt đi qua khẩn trương điều tra, xác minh và tiến hành các thủ tục pháp lý cần thiết để xử lý nghiêm các tổ chức, cá nhân vi phạm quy định pháp luật gây ra các vụ vụ tai nạn giao thông đường sắt; tăng cường công tác tuần tra, kiểm soát và xử lý nghiêm hành vi vi phạm trật tự, an toàn giao thông đường bộ, đường sắt, đặc biệt là các vi phạm trong công tác chạy tàu của nhân viên ngành đường sắt. Tai nạn giữa xe bồn tàu hàng số hiệu SH3 chạy hướng Bắc Nam tại đường ngang dân sinh có biển báo cấm ô tô tại xã Diễn An, Diễn Châu, Nghệ An chiều 27-5 - Ảnh: X. BẢY
+
+**Ý chính.**
+
+1. Phó thủ tướng Trương Hoà Bình ban hành công điện chiều tối 27-5 về giải pháp cấp bách hạn chế tai nạn giao thông đường sắt
+2. Liên tiếp xảy ra 4 vụ tai nạn đường sắt rất nghiêm trọng làm 2 người tử vong, 11 người bị thương
+3. Nhiều đầu máy, toa xe và hàng trăm mét đường sắt hư hỏng nặng, thiệt hại hàng tỉ đồng, tê liệt tuyến Bắc - Nam nhiều giờ
+4. Nguyên nhân trực tiếp của 3 trong 4 vụ là do người của ngành đường sắt vi phạm quy trình tác nghiệp và phương tiện không đảm bảo an toàn kỹ thuật
+5. 2 trong 4 vụ liên quan tới hành vi vi phạm của người điều khiển phương tiện đường bộ khi vượt qua giao cắt
+6. Phó thủ tướng yêu cầu Bộ GTVT điều tra làm rõ nguyên nhân và xử lý nghiêm tổ chức, cá nhân vi phạm
+7. Yêu cầu tổng hợp báo cáo các vụ tai nạn đường sắt từ đầu năm 2018 do nguyên nhân chủ quan
+8. Yêu cầu rà soát quy định và quy trình chạy tàu, quy rõ trách nhiệm người đứng đầu
+9. Yêu cầu tăng cường kiểm tra giám sát và ứng dụng khoa học công nghệ vào tổ chức chạy tàu
+10. Bộ Công an được chỉ đạo điều tra xử lý nghiêm vi phạm và tăng cường tuần tra kiểm soát
+
+**Bản A.** Nội dung được nêu trong công điện do Phó thủ tướng Trương Hoà Bình ban hành chiều tối 27-5 về các giải pháp cấp bách hạn chế tai nạn giao thông đường sắt. Công điện nêu rõ liên tiếp trong những ngày qua trên các tuyến đường sắt đã xảy ra 4 vụ tai nạn giao thông rất nghiêm trọng làm 2 người tử vong, 11 người bị thương; nhiều đầu máy, toa xe và hàng trăm mét đường sắt bị hư hỏng nặng gây thiệt hại hàng tỉ đồng, làm tê liệt tuyến đường sắt Bắc - Nam nhiều giờ. Công điện nhận định nguyên nhân trực tiếp của 3 trong 4 vụ tai nạn trên do hành vi của tổ chức, cá nhân ngành đường sắt vi phạm quy trình tác nghiệp tại nơi giao cắt giữa đường bộ và đường sắt, khi đón tàu, dồn tàu tại các ga; do đầu máy, toa xe không đảm bảo an toàn kỹ thuật phương tiện; 2 trong 4 vụ có liên quan đến hành vi điều khiển phương tiện đường bộ vi phạm quy định khi vượt qua giao cắt với đường sắt.
+
+**Bản B.** Phó thủ tướng Trương Hoà Bình yêu cầu Bộ Công an chỉ đạo công an các đơn vị, địa phương có đường sắt đi qua khẩn trương điều tra, xác minh và tiến hành các thủ tục pháp lý cần thiết để xử lý nghiêm các tổ chức, cá nhân vi phạm quy định pháp luật gây ra các vụ tai nạn giao thông đường sắt.
+
+**Bản C.** Phó thủ tướng Trương Hoà Bình, chủ tịch Uỷ ban An toàn giao thông quốc gia, đề nghị bổ sung chặt chẽ hơn, quy định rõ trách nhiệm của tổ chức, cá nhân, đặc biệt trách nhiệm của người đứng đầu để xảy ra tai nạn đường sắt do chủ quan.
+
+**Bản D.** Nội dung được nêu trong công điện do Phó thủ tướng Trương Hoà Bình ban hành chiều tối 27-5 về các giải pháp cấp bách hạn chế tai nạn giao thông đường sắt. Công điện nêu rõ liên tiếp trong những ngày qua trên các tuyến đường sắt đã xảy ra 4 vụ tai nạn giao thông rất nghiêm trọng làm 2 người tử vong, 11 người bị thương; nhiều đầu máy, toa xe và hàng trăm mét đường sắt bị hư hỏng nặng gây thiệt hại hàng tỉ đồng, làm tê liệt tuyến đường sắt Bắc - Nam nhiều giờ.
+
+## B12 (guid 5388)
+
+**Bài gốc.** Cuộc khảo sát được thực hiện qua điện thoại với 1.600 người bởi Trung tâm Thăm dò dư luận toàn Nga (VCIOM). Trước câu hỏi "bạn muốn Ông già tuyết ban cho điều gì?", phần lớn (37%) người Nga cho biết đó là sức khoẻ cho bản thân, gia đình và bạn bè. Ông già tuyết là nhân vật thần thoại được yêu thích của người Nga vào dịp năm mới, giống như Ông già Noel ở phương Tây. "Điều đầu tiên người Nga muốn là sức khoẻ, và điều quan trọng thứ hai (10% người được hỏi lựa chọn) là hoà bình cho thế giới" - thông cáo của VCIOM viết. Tiếp theo, 9% người Nga muốn được ban cho tiền bạc và ổn định tài chính; 5% muốn được tăng lương, tìm được công việc tốt hoặc thăng tiến trong nghề nghiệp. Khoảng 4% người Nga ước quốc gia ổn định và thịnh vượng; 3% khác cầu mong hạnh phúc cho tất cả mọi người, lương hưu tăng và điều kiện sống cải thiện. Những thứ "lặt vặt" khác còn bao gồm vật giá giảm, được đi du lịch, con cháu hạnh phúc, trả hết nợ... "Người trẻ ước kiếm được nhiều tiền, công việc hấp dẫn, mua được căn hộ, nhà nghỉ ở ngoại ô hoặc xe hơi; còn người già ước sức khoẻ và hoà bình" - ông Stepan Lvov, lãnh đạo VCIOM, nhận xét về kết quả khảo sát. Dịp năm mới tại Nga là giữa mùa đông nên nhiệt độ khá thấp - Ảnh: TASS
+
+**Ý chính.**
+
+1. Trung tâm VCIOM khảo sát qua điện thoại 1.600 người Nga về điều họ muốn Ông già tuyết ban cho
+2. 37% người Nga muốn sức khoẻ cho bản thân, gia đình và bạn bè - chiếm phần lớn
+3. Ông già tuyết là nhân vật thần thoại được người Nga yêu thích dịp năm mới, giống Ông già Noel ở phương Tây
+4. 10% muốn hoà bình cho thế giới, đứng thứ hai
+5. 9% muốn được ban cho tiền bạc và ổn định tài chính
+6. 5% muốn tăng lương, tìm được công việc tốt hoặc thăng tiến
+7. 4% ước quốc gia ổn định thịnh vượng, 3% cầu hạnh phúc cho mọi người, lương hưu tăng và điều kiện sống cải thiện
+8. Các mong muốn khác gồm vật giá giảm, được đi du lịch, con cháu hạnh phúc, trả hết nợ
+9. Ông Stepan Lvov nhận xét người trẻ ước tiền và công việc, người già ước sức khoẻ và hoà bình
+
+**Bản A.** Phần lớn người Nga muốn được Ông già tuyết ban cho sức khoẻ, tiền bạc và ổn định tài chính trong dịp năm mới.
+
+**Bản B.** Một khảo sát trước thềm năm mới 2019 cho thấy phần lớn người Nga cầu mong sức khoẻ cho bản thân và gia đình nếu được Ông già tuyết ban cho điều ước.
+
+**Bản C.** Cuộc khảo sát được thực hiện qua điện thoại với 1.600 người bởi Trung tâm Thăm dò dư luận toàn Nga (VCIOM). Trước câu hỏi "bạn muốn Ông già tuyết ban cho điều gì? ", phần lớn (37%) người Nga cho biết đó là sức khoẻ cho bản thân, gia đình và bạn bè. "Điều đầu tiên người Nga muốn là sức khoẻ, và điều quan trọng thứ hai (10% người được hỏi lựa chọn) là hoà bình cho thế giới" - thông cáo của VCIOM viết.
+
+**Bản D.** Cuộc khảo sát được thực hiện qua điện thoại với 1.600 người bởi Trung tâm Thăm dò dư luận toàn Nga (VCIOM). Trước câu hỏi "bạn muốn Ông già tuyết ban cho điều gì?", phần lớn (37%) người Nga cho biết đó là sức khoẻ cho bản thân, gia đình và bạn bè.
+
+## B17 (guid 6531)
+
+**Bài gốc.** Các chuyên gia quân sự Trung Quốc cho biết, máy bay không người lái tàng hình mới nhất của nước này sẽ cung cấp cho quân đội kinh nghiệm khắc chế các máy bay chiến đấu tàng hình như F -35, giữa bối cảnh Mỹ và các đồng minh ở khu vực châu Á - Thái Bình Dương đang triển khai ngày càng nhiều mẫu máy bay này. Được trưng bày tại gian hàng của Đại học Bách khoa Tây Bắc (Trung Quốc) tại triển lãm Hàng không và Vũ trụ Quốc tế (MAKS) 2019 của Nga - LJ - I là máy bay không người lái có khả năng mô phỏng các máy bay chiến đấu thế hệ thứ tư hoặc thứ năm ở dạng cơ bản. LJ - I có khả năng tàng hình, có thể bay trong thời gian dài, với khả năng cơ động cao và được trang bị các biện pháp ứng phó với tác chiến điện tử và khả năng gây nhiễu, tuyên bố của trường đại học cho hay. Máy bay không người lái này dài 4,7 m, rộng 2,5 m và có mức giá rất rẻ. Triển khai số lượng lớn LJ - I cũng có thể xây dựng một đội hình mô phỏng thực sự. Với đặc tính kỹ thuật nói trên, LJ - I có thể hoạt động như một mục tiêu mô phỏng các máy bay chiến đấu tàng hình mới nhất của thế giới như F -35, một chuyên gia quân sự giấu tên nói với Thời báo Hoàn cầu. Mỹ đã bán F -35 cho nhiều đồng minh ở khu vực châu Á - Thái Bình Dương, bao gồm Nhật Bản, Hàn Quốc và Australia, cũng như triển khai trên tàu sân bay và tàu tấn công đổ bộ. Các nhà phân tích quân sự cho rằng Mỹ đang nỗ lực xây dựng một "vòng tròn liên minh F -35" trong khu vực, điều này có thể trở thành mối đe doạ đối với quốc phòng của Trung Quốc. Với việc sở hữu các máy bay không người lái tàng hình mô phỏng mục tiêu, Trung Quốc có thể thực hành các kỹ thuật và chiến thuật, đồng thời phát triển vũ khí mới dựa trên kết quả huấn luyện. Quân đội Trung Quốc sẽ có thêm nhiều kinh nghiệm khi gặp một máy bay chiến đấu tàng hình và có sự chuẩn bị tốt hơn cho một cuộc đụng độ tiềm năng với các máy bay chiến đấu tàng hình của kẻ địch, giới chuyên gia nước này nhận định. Trung Quốc tuyên bố có vũ khí có thể cung cấp khả năng khắc chế F -35.
+
+**Ý chính.**
+
+1. Chuyên gia quân sự Trung Quốc nói máy bay không người lái tàng hình mới nhất sẽ cho quân đội kinh nghiệm khắc chế máy bay tàng hình như F-35
+2. LJ-I được Đại học Bách khoa Tây Bắc trưng bày tại triển lãm hàng không MAKS 2019 của Nga
+3. LJ-I có thể mô phỏng máy bay chiến đấu thế hệ thứ tư hoặc thứ năm ở dạng cơ bản
+4. LJ-I tàng hình, bay lâu, cơ động cao, có biện pháp ứng phó tác chiến điện tử và khả năng gây nhiễu
+5. Máy bay dài 4,7 m, rộng 2,5 m và có mức giá rất rẻ
+6. Triển khai số lượng lớn LJ-I có thể xây dựng một đội hình mô phỏng thực sự
+7. Mỹ đã bán F-35 cho nhiều đồng minh châu Á - Thái Bình Dương gồm Nhật Bản, Hàn Quốc, Australia và triển khai trên tàu sân bay
+8. Giới phân tích cho rằng Mỹ đang xây vòng tròn liên minh F-35, có thể đe doạ quốc phòng Trung Quốc
+9. Có máy bay không người lái mô phỏng mục tiêu, Trung Quốc có thể thực hành chiến thuật và phát triển vũ khí mới từ kết quả huấn luyện
+
+**Bản A.** Vũ khí mới của Trung Quốc là một mẫu máy bay không người lái mô phỏng, được giới thiệu tại một triển lãm của Nga mới đây.
+
+**Bản B.** Các chuyên gia quân sự Trung Quốc cho biết, máy bay không người lái tàng hình mới nhất của nước này sẽ cung cấp cho quân đội kinh nghiệm khắc chế các máy bay chiến đấu tàng hình như F -35, giữa bối cảnh Mỹ và các đồng minh ở khu vực châu Á - Thái Bình Dương đang triển khai ngày càng nhiều mẫu máy bay này. Được trưng bày tại gian hàng của Đại học Bách khoa Tây Bắc (Trung Quốc) tại triển lãm Hàng không và Vũ trụ Quốc tế (MAKS) 2019 của Nga - LJ - I là máy bay không người lái có khả năng mô phỏng các máy bay chiến đấu thế hệ thứ tư hoặc thứ năm ở dạng cơ bản. LJ - I có khả năng tàng hình, có thể bay trong thời gian dài, với khả năng cơ động cao và được trang bị các biện pháp ứng phó với tác chiến điện tử và khả năng gây nhiễu, tuyên bố của trường đại học cho hay.
+
+**Bản C.** Các chuyên gia quân sự Trung Quốc cho biết, máy bay không người lái tàng hình mới nhất của nước này sẽ cung cấp cho quân đội kinh nghiệm khắc chế các máy bay chiến đấu tàng hình như F -35.
+
+**Bản D.** Các chuyên gia quân sự Trung Quốc cho biết, máy bay không người lái tàng hình mới nhất của nước này sẽ cung cấp cho quân đội kinh nghiệm khắc chế các máy bay chiến đấu tàng hình như F -35, giữa bối cảnh Mỹ và các đồng minh ở khu vực châu Á - Thái Bình Dương đang triển khai ngày càng nhiều mẫu máy bay này. Máy bay không người lái này dài 4,7 m, rộng 2,5 m và có mức giá rất rẻ. Triển khai số lượng lớn LJ - I cũng có thể xây dựng một đội hình mô phỏng thực sự.
+
+## B33 (guid 18505)
+
+**Bài gốc.** Cụ thể, mức chi quỹ bình ổn cho xăng E5 RON92 là 704 đồng / lít, trong khi kỳ trước chi sử dụng 600 đồng / lít. Đối với các loại dầu như dầu diesel tăng chi 92 đồng / lít so với mức chi 0 đồng / lít, dầu hoả là 453 đồng / lít so với kỳ trước chi sử dụng 105 đồng / lít, dầu mazut cũng tăng mức chi 52 đồng / kg so với 0 đồng. Như vậy, sau khi thực hiện trích lập và chi sử dụng Quỹ Bình ổn giá xăng dầu, cơ quan điều hành quyết định giữ ổn định giá bán các mặt hàng xăng dầu. Sau kỳ điều chỉnh, giá bán tối đa các mặt hàng xăng dầu tiêu dùng phổ biến trên thị trường như sau: Xăng E5 RON 92: 18.340 đồng / lít Dầu diesel: 0.05 S: 15.716 đồng / lít Dầu hoả: 14.560 đồng / lít Dầu mazut 180CST 3.5 S: 12.528 đồng / kg Dù xăng RON 95 không nằm trong danh sách công bố giá bán lẻ, song liên Bộ Tài chính - Công thương cho biết qua theo dõi, giám sát, giá xăng RON95 trên thị trường thế giới kỳ điều hành này tăng so với kỳ trước. Cụ thể mức bình quân kỳ trước là 75,897 USD / thùng thì kỳ này bình quân là 76,187 USD / thùng. Do đó, cơ quan này đề nghị các thương nhân chi sử dụng Quỹ Bình ổn giá xăng dầu ở mức 80 đồng / lít xăng RON95 và giữ ổn định giá bán xăng RON95 như hiện hành. Theo liên bộ, bình quân giá thành phẩm xăng dầu thế giới trong 15 ngày trước ngày 08-3-2018 là: 73,516 USD / thùng xăng RON92 (xăng nền để pha chế xăng E5 RON 92). Giá ethanol E100 đưa vào tính giá cơ sở mặt hàng xăng E5 RON92 được tính toán ở mức 13.828,43 đồng / lít (chưa bao gồm thuế VAT). Việc tăng chi sử dụng quỹ bình ổn giúp giá xăng dầu được giữ nguyên - Ảnh: CHÍ TUỆ
+
+**Ý chính.**
+
+1. Mức chi quỹ bình ổn cho xăng E5 RON92 là 704 đồng/lít, kỳ trước chi 600 đồng/lít
+2. Tăng chi quỹ với dầu diesel 92 đồng/lít, dầu hoả 453 đồng/lít, dầu mazut 52 đồng/kg so với kỳ trước
+3. Sau khi trích lập và chi sử dụng quỹ bình ổn, cơ quan điều hành quyết định giữ ổn định giá bán các mặt hàng xăng dầu
+4. Giá bán tối đa sau điều chỉnh: xăng E5 RON92 18.340 đồng/lít, dầu diesel 15.716 đồng/lít, dầu hoả 14.560 đồng/lít, dầu mazut 12.528 đồng/kg
+5. Giá xăng RON95 thế giới kỳ này tăng, bình quân 76,187 USD/thùng so với 75,897 USD/thùng kỳ trước
+6. Liên bộ đề nghị thương nhân chi quỹ bình ổn 80 đồng/lít xăng RON95 và giữ ổn định giá bán RON95
+7. Bình quân giá thành phẩm xăng dầu thế giới 15 ngày trước 08-3-2018 là 73,516 USD/thùng xăng RON92
+8. Giá ethanol E100 đưa vào tính giá cơ sở xăng E5 RON92 ở mức 13.828,43 đồng/lít chưa gồm thuế VAT
+
+**Bản A.** Thông tin từ liên Bộ Tài chính - Công thương, kỳ điều hành ngày 8-3 sẽ giữ ổn định giá bán xăng dầu sau khi dù quyết định tăng chi sử dụng Quỹ bình ổn.
+
+**Bản B.** Cụ thể, mức chi quỹ bình ổn cho xăng E5 RON92 là 704 đồng / lít, trong khi kỳ trước chi sử dụng 600 đồng / lít. Đối với các loại dầu như dầu diesel tăng chi 92 đồng / lít so với mức chi 0 đồng / lít, dầu hoả là 453 đồng / lít so với kỳ trước chi sử dụng 105 đồng / lít, dầu mazut cũng tăng mức chi 52 đồng / kg so với 0 đồng. Như vậy, sau khi thực hiện trích lập và chi sử dụng Quỹ Bình ổn giá xăng dầu, cơ quan điều hành quyết định giữ ổn định giá bán các mặt hàng xăng dầu.
+
+**Bản C.** Cụ thể, mức chi quỹ bình ổn cho xăng E5 RON92 là 704 đồng / lít, trong khi kỳ trước chi sử dụng 600 đồng / lít. Đối với các loại dầu như dầu diesel tăng chi 92 đồng / lít so với mức chi 0 đồng / lít, dầu hoả là 453 đồng / lít so với kỳ trước chi sử dụng 105 đồng / lít, dầu mazut cũng tăng mức chi 52 đồng / kg so với 0 đồng. Như vậy, sau khi thực hiện trích lập và chi sử dụng Quỹ Bình ổn giá xăng dầu, cơ quan điều hành quyết định giữ ổn định giá bán các mặt hàng xăng dầu.
+
+**Bản D.** Liên bộ Tài chính - Công thương vừa có văn bản điều chỉnh tăng mức trích lập và chi sử dụng Quỹ Bình ổn giá xăng dầu đối với xăng E5 RON92 và dầu mazut.
+
+## B34 (guid 18547)
+
+**Bài gốc.** Đây là lần đầu tiên sau 6 năm, một doanh nghiệp Việt Nam phát hành thành công trái phiếu chuyển đổi trên sàn giao dịch quốc tế. Trong đợt phát hành trái phiếu chuyển đổi này, Novaland thu hút nhiều sự quan tâm của các nhà đầu tư tại Châu Á và Châu Âu. Trái phiếu chuyển đổi được phát hành bằng đồng đôla Mỹ, đáo hạn vào năm 2023, có thể chuyển đổi thành cổ phần phổ thông với giá chuyển đổi ban đầu là 74.750 VND / cổ phần, cao hơn 15% so với giá cổ phần tham chiếu tại ngày phát hành. Trái phiếu chuyển đổi phát hành theo mệnh giá có lãi suất là 5,5% / năm, được thanh toán 6 tháng 1 lần và lợi tức đáo hạn là 6,25% / năm. Credit Suisse (Singapore) Limited đóng vai trò là bên tư vấn và thu xếp chính cho đợt huy động vốn này. Trước đó, Novaland cũng huy động thành công 150 triệu USD từ việc phát hành cổ phần theo dạng top - up, nâng tổng số vốn huy động lên 310 triệu USD. Đây cũng là đợt huy động vốn lớn nhất từ trước đến nay của một doanh nghiệp Việt Nam từ việc đồng thời phát hành cổ phần và trái phiếu chuyển đổi. Trang Global Capital đánh giá, giao dịch của Tập đoàn Novaland là một trường hợp đặc biệt. Đây là giao dịch trái phiếu chuyển đổi niêm yết trên sàn giao dịch quốc tế đầu tiên phát hành từ Việt Nam trong 06 năm, phá vỡ sự trầm lắng kéo dài kể từ giao dịch tương tự trước đó đã diễn ra vào năm 2012. Việc Novaland mạnh dạn tham gia vào phương thức huy động vốn thông qua phát hành kết hợp cổ phiếu và trái phiếu chuyển đổi đã thể hiện một nỗ lực đáng chú ý của doanh nghiệp Việt Nam trên thị trường vốn của khu vực. Đợt huy động cơ cấu phát hành kép này đã gây chú ý và đáng để các doanh nghiệp trong khu vực nghiên cứu. Victoria Village - "Phố Âu" mới tại quận 2 mới được Novaland giới thiệu trong tháng 4-2018 và đã được hàng trăm khách hàng giữ chỗ Novaland dự kiến sử dụng nguồn vốn huy động từ việc phát hành kết hợp này để tăng quỹ đất ở các vị trí đắc địa và phát triển các dự án bất động sản, cũng như tăng cường nguồn vốn lưu động và phục vụ các mục đích hoạt động chung của Tập đoàn. Với nguồn huy động này, công ty dự kiến giới thiệu ra thị trường 3 dự án mới trong năm nay. Tuần vừa qua, Đại hội đồng Cổ đông Novaland đã thông qua kế hoạch kinh doanh năm 2018, với doanh thu dự kiến đạt 21.780 tỉ đồng, lợi nhuận sau thuế 3.200 tỉ đồng, tăng trưởng lần lượt 87% và 55% so với cùng kỳ năm 2017. Với 11 dự án - khoảng 6.500 sản phẩm dự kiến bàn giao trong năm nay, Novaland tự tin có thể đạt được mục tiêu đầy tham vọng này. Tất cả các dự án dự kiến bàn giao đều toạ lạc tại các vị trí đắc địa tại TP. HCM với tỷ lệ khách hàng lựa chọn trung bình trên 90%, thậm chí 99%. Tổng doanh số bán hàng của các dự án này sẽ được hạch toán thành doanh thu khi dự án được bàn giao, góp phần tăng trưởng mạnh doanh thu, lợi nhuận của Tập đoàn.
+
+**Ý chính.**
+
+1. Lần đầu sau 6 năm, một doanh nghiệp Việt Nam phát hành thành công trái phiếu chuyển đổi trên sàn giao dịch quốc tế
+2. Đợt phát hành của Novaland thu hút sự quan tâm của nhà đầu tư châu Á và châu Âu
+3. Trái phiếu phát hành bằng đôla Mỹ, đáo hạn năm 2023, chuyển đổi thành cổ phần phổ thông với giá ban đầu 74.750 đồng/cổ phần, cao hơn 15% giá tham chiếu
+4. Trái phiếu có lãi suất 5,5%/năm trả 6 tháng một lần, lợi tức đáo hạn 6,25%/năm
+5. Credit Suisse (Singapore) Limited là bên tư vấn và thu xếp chính cho đợt huy động vốn
+6. Trước đó Novaland huy động 150 triệu USD từ phát hành cổ phần dạng top-up, nâng tổng vốn huy động lên 310 triệu USD
+7. Đây là đợt huy động vốn lớn nhất từ trước tới nay của một doanh nghiệp Việt Nam qua đồng thời phát hành cổ phần và trái phiếu chuyển đổi
+8. Trang Global Capital đánh giá giao dịch của Novaland là trường hợp đặc biệt, phá vỡ sự trầm lắng kéo dài từ giao dịch tương tự năm 2012
+9. Novaland dự kiến dùng vốn huy động để tăng quỹ đất ở vị trí đắc địa, phát triển dự án bất động sản và tăng vốn lưu động
+10. Công ty dự kiến giới thiệu ra thị trường 3 dự án mới trong năm nay
+11. Đại hội đồng cổ đông thông qua kế hoạch 2018 với doanh thu 21.780 tỉ đồng và lợi nhuận sau thuế 3.200 tỉ đồng, tăng 87% và 55% so với 2017
+12. Novaland dự kiến bàn giao 11 dự án với khoảng 6.500 sản phẩm trong năm, đều ở vị trí đắc địa tại TP. HCM
+
+**Bản A.** Công ty Cổ phần Tập đoàn Novaland vừa công bố phát hành thành công trái phiếu chuyển đổi với giá chuyển đổi ban đầu là 74.750 VND / cổ phần.
+
+**Bản B.** Đây là lần đầu tiên sau 6 năm, một doanh nghiệp Việt Nam phát hành thành công trái phiếu chuyển đổi trên sàn giao dịch quốc tế. Trong đợt phát hành trái phiếu chuyển đổi này, Novaland thu hút nhiều sự quan tâm của các nhà đầu tư tại Châu Á và Châu Âu. Trái phiếu chuyển đổi được phát hành bằng đồng đôla Mỹ, đáo hạn vào năm 2023, có thể chuyển đổi thành cổ phần phổ thông với giá chuyển đổi ban đầu là 74.750 VND / cổ phần, cao hơn 15% so với giá cổ phần tham chiếu tại ngày phát hành.
+
+**Bản C.** àn Novaland vừa huy động thành công 160 triệu USD từ phát hành trái phiếu chuyển đổi quốc tế. Số trái phiếu này được chính thức niêm yết trên Sở Giao Dịch Chứng Khoán Singapore (SGX) vào ngày 30-4-2018.
+
+**Bản D.** Đây là lần đầu tiên sau 6 năm, một doanh nghiệp Việt Nam phát hành thành công trái phiếu chuyển đổi trên sàn giao dịch quốc tế. Trong đợt phát hành trái phiếu chuyển đổi này, Novaland thu hút nhiều sự quan tâm của các nhà đầu tư tại Châu Á và Châu Âu. Đây cũng là đợt huy động vốn lớn nhất từ trước đến nay của một doanh nghiệp Việt Nam từ việc đồng thời phát hành cổ phần và trái phiếu chuyển đổi. Trang Global Capital đánh giá, giao dịch của Tập đoàn Novaland là một trường hợp đặc biệt.
+
+## B37 (guid 18914)
+
+**Bài gốc.** Đây quả thực là một thông tin hấp dẫn, cổ vũ rất nhiều cho những cá nhân, tập thể đang hoạt động trong lĩnh vực sáng tạo có thêm niềm tin vào con đường khó và gian nan mà họ đã chọn. Buổi giới thiệu dự án Không gian văn hoá sáng tạo Việt Nam và thảo luận, chia sẻ cùng các chủ không gian văn hoá sáng tạo diễn ra chiều 17-5 tại TP. HCM là "chân dung" thu nhỏ của một lĩnh vực làm nghệ thuật khác, ít sôi nổi trên các phương tiện truyền thông nhưng âm ỉ và ngày càng thu hút công chúng bởi tính tiên phong trong cách tiếp cận. Những cái tên không xa lạ với sáng tạo trẻ trong cả nước như không gian Toa tàu, Art Labor, Cà phê thứ bảy ở TP. HCM, Vicas Art Studio, Phù Sa Lab ở Hà Nội, DNES ở Đà Nẵng, Go Fish Studio ở Hội An… là một vài trong số 140 không gian văn hoá sáng tạo (theo thống kê của Hội đồng Anh trong quá trình tìm hiểu), chứng tỏ sự phát triển và lớn mạnh không ngừng của loại hình nghệ thuật này tại Việt Nam thời gian qua. Điều mà rất nhiều nghệ sĩ hoạt động tự do, các không gian văn hoá sáng tạo hướng đến: phục vụ, hướng đến cộng đồng, tạo điều kiện cho mọi người ở mọi ngành nghề khác nhau có cơ hội tiếp xúc với nghệ thuật. Tuy nhiên, những cá nhân, tổ chức... đại diện cho các không gian văn hoá sáng tạo cũng chia sẻ những khó khăn trong việc duy trì hoạt động. Các tổ chức này thường gặp rất nhiều khó khăn trong việc xin giấy phép để tổ chức các chương trình. Ba cam kết lớn nhất mà dự án Không gian văn hoá sáng tạo mang đến lần này, ngoài vấn đề kinh phí và nguồn tài chính, còn là nâng cao năng lực quản lý của các chủ không gian văn hoá, nhằm xây dựng và kết nối công chúng với những loại hình nghệ thuật đương đại hiệu quả hơn. Thứ hai là kết nối các không gian văn hoá sáng tạo với các cơ quan quản lý nhà nước trong lĩnh vực văn hoá để các mô hình này thực sự có được sự hỗ trợ, công nhận từ phía Chính phủ, tạo tiền đề tốt cho việc thực thi chiến lược quốc gia về phát triển văn hoá. Và cuối cùng là kết nối mạng lưới các không gian này với các không gian tương tự ở châu Âu để có sự trao đổi, học tập lẫn nhau. Các bệnh nhi của Bệnh viện Mắt TP. HCM trong một không gian mới, do các nghệ sĩ của dự án Niềm tin không điều kiện thuộc nhóm Art Labor thực hiện - Ảnh: SÀN ART
+
+**Ý chính.**
+
+1. Buổi giới thiệu dự án Không gian văn hoá sáng tạo Việt Nam và thảo luận cùng các chủ không gian diễn ra chiều 17-5 tại TP. HCM
+2. Theo thống kê của Hội đồng Anh, Việt Nam có khoảng 140 không gian văn hoá sáng tạo
+3. Một số cái tên tiêu biểu là Toa tàu, Art Labor, Cà phê thứ bảy ở TP. HCM, Vicas Art Studio, Phù Sa Lab ở Hà Nội, DNES ở Đà Nẵng, Go Fish Studio ở Hội An
+4. Các không gian này hướng đến phục vụ cộng đồng, tạo điều kiện cho mọi người ở mọi ngành nghề tiếp xúc với nghệ thuật
+5. Đại diện các không gian chia sẻ khó khăn trong duy trì hoạt động, nhất là xin giấy phép tổ chức chương trình
+6. Dự án cam kết hỗ trợ kinh phí và nâng cao năng lực quản lý của các chủ không gian văn hoá
+7. Dự án cam kết kết nối các không gian với cơ quan quản lý nhà nước để có được hỗ trợ và công nhận từ Chính phủ
+8. Dự án cam kết kết nối mạng lưới các không gian này với các không gian tương tự ở châu Âu để trao đổi, học tập
+
+**Bản A.** Sáu không gian văn hoá sáng tạo đang hoạt động tại Việt Nam sẽ được nhận gói tài trợ trị giá 8.500 euro trong thời gian ba năm, từ 2018 đến 2021.
+
+**Bản B.** Đây quả thực là một thông tin hấp dẫn, cổ vũ rất nhiều cho những cá nhân, tập thể đang hoạt động trong lĩnh vực sáng tạo có thêm niềm tin vào con đường khó và gian nan mà họ đã chọn. Buổi giới thiệu dự án Không gian văn hoá sáng tạo Việt Nam và thảo luận, chia sẻ cùng các chủ không gian văn hoá sáng tạo diễn ra chiều 17-5 tại TP. HCM là "chân dung" thu nhỏ của một lĩnh vực làm nghệ thuật khác, ít sôi nổi trên các phương tiện truyền thông nhưng âm ỉ và ngày càng thu hút công chúng bởi tính tiên phong trong cách tiếp cận. Những cái tên không xa lạ với sáng tạo trẻ trong cả nước như không gian Toa tàu, Art Labor, Cà phê thứ bảy ở TP. HCM, Vicas Art Studio, Phù Sa Lab ở Hà Nội, DNES ở Đà Nẵng, Go Fish Studio ở Hội An… là một vài trong số 140 không gian văn hoá sáng tạo (theo thống kê của Hội đồng Anh trong quá trình tìm hiểu), chứng tỏ sự phát triển và lớn mạnh không ngừng của loại hình nghệ thuật này tại Việt Nam thời gian qua.
+
+**Bản C.** Buổi giới thiệu dự án Không gian văn hoá sáng tạo Việt Nam và thảo luận, chia sẻ cùng các chủ không gian văn hoá sáng tạo diễn ra chiều 17-5 tại TP. HCM là "chân dung" thu nhỏ của một lĩnh vực làm nghệ thuật khác, ít sôi nổi trên các phương tiện truyền thông nhưng âm ỉ và ngày càng thu hút công chúng bởi tính tiên phong trong cách tiếp cận. Tuy nhiên, những cá nhân, tổ chức... đại diện cho các không gian văn hoá sáng tạo cũng chia sẻ những khó khăn trong việc duy trì hoạt động.
+
+**Bản D.** Đó là thông tin được đưa ra tại buổi giới thiệu dự án Không gian văn hoá sáng tạo Việt Nam diễn ra chiều 17-5 tại TP. HCM.
+
+## B38 (guid 19369)
+
+**Bài gốc.** Theo Quyết định về định hạn chế và cấp phép ôtô tải lưu thông trong khu vực nội đô TP HCM, từ ngày 1/8, xe tải, xe chở hàng dưới 2,5 tấn không được đi vào nội đô thành phố từ 6 đến 9h và từ 16 đến 20h. Quy định cũ khung giờ cấm loại xe này vào buổi sáng chỉ từ 6 đến 8h sáng. Ôtô tải trọng trên 2,5 tấn không được vào nội đô thành phố từ 6 đến 22h (trừ một số tuyến hành lang được quy định). Quy định cũ loại xe này bị cấm từ 6 đến 24h. Khu vực nội đô và các tuyến đường hành lang cấm xe. Các loại xe được cấp phép đi trong giờ cấm cũng được điều chỉnh, mở rộng hơn, có thêm các xe: chở ôxy, vaccine cho bệnh viện; vận chuyển suất ăn công nghiệp hoặc thực phẩm tươi sống cho các trung tâm xã hội, trường học, bệnh viện, siêu thị, khu công nghiệp hoặc phục vụ chương trình bình ổn giá của thành phố; vận chuyển đạo cụ các đoàn lân sư rồng; vận chuyển nước sạch… Hành lang cấm xe được quy định cụ thể gồm: hướng Bắc và Tây là đường Quốc lộ 1 (đoạn từ giao lộ Quốc lộ 1 - Xa Lộ Hà Nội đến giao lộ Quốc lộ 1 - đường Nguyễn Văn Linh); hướng Đông là Xa Lộ Hà Nội (đoạn từ giao lộ Quốc lộ 1 - Xa Lộ Hà Nội đến nút giao Cát Lái) - Mai Chí Thọ - Đồng Văn Cống (đến đường Võ Chí Công); Hướng Nam là đường Võ Chí Công (từ Đồng Văn Cống đến cầu Phú Mỹ) - cầu Phú Mỹ - đường Trên cao (từ cầu Phú Mỹ đến nút giao Khu A Nam Sài Gòn) - đường Nguyễn Văn Linh (đoạn từ nút giao Khu A Nam Sài Gòn đến Quốc lộ 1). Trong quyết định mới, thành phố cũng bãi bỏ hàng loạt giấy tờ khi làm hồ sơ cấp phép cho các loại xe đi vào giờ cấm (do Sở Giao thông Vận tải TP HCM cấp) như giấy CMND, uỷ quyền, chứng nhận đăng kiểm, đăng ký kinh doanh. Riêng với xe quá tải, quá khổ, siêu trường, siêu trọng, xe đi vào đường cấm… thì không bỏ các loại giấy tờ này. Đồng thời, để tăng hiệu quả quản lý, các xe được cấp phép phải gắn hộp đen giám sát hành trình để truyền dữ liệu liên tục, ổn định về Sở Giao thông thành phố nhằm kiểm soát thời gian, lộ trình di chuyển… Cũng từ 1/8, TP HCM sẽ triển khai thu phí ôtô đỗ dưới lòng đường ở 23 tuyến ở các quận 1, 5 và 10. Mức phí mới sẽ tăng lên tối thiểu 20.000 đồng - 30.000 đồng mỗi giờ, thay vì chỉ 5.000 đồng mỗi lượt. Những xe được phép đỗ tại các tuyến đường này là ôtô từ 16 chỗ trở xuống hoặc xe tải có tải trọng 1,5 - 2,5 tấn. Việc thu phí sẽ triển khai theo hình thức công nghệ, người có nhu cầu gửi xe phải cài đặt và sử dụng ứng dụng My Parking trên điện thoại thông minh. Hữu Nguyên Khu vực nội đô và các tuyến đường hành lang cấm xe.
+
+**Ý chính.**
+
+1. Từ ngày 1/8, xe tải dưới 2,5 tấn không được vào nội đô TP HCM từ 6 đến 9h và từ 16 đến 20h, thay cho quy định cũ buổi sáng chỉ cấm 6 đến 8h
+2. Ôtô tải trên 2,5 tấn không được vào nội đô từ 6 đến 22h, thay cho quy định cũ cấm từ 6 đến 24h
+3. Danh sách xe được cấp phép đi trong giờ cấm được mở rộng, thêm xe chở ôxy, vaccine, suất ăn công nghiệp, thực phẩm tươi sống, đạo cụ lân sư rồng, nước sạch
+4. Quyết định quy định cụ thể các tuyến hành lang cấm xe ở hướng Bắc, Tây, Đông và Nam
+5. Thành phố bãi bỏ hàng loạt giấy tờ khi làm hồ sơ cấp phép cho xe đi vào giờ cấm
+6. Riêng xe quá tải, quá khổ, siêu trường siêu trọng và xe đi vào đường cấm thì không bỏ các loại giấy tờ đó
+7. Xe được cấp phép phải gắn hộp đen giám sát hành trình truyền dữ liệu về Sở Giao thông thành phố
+8. Cũng từ 1/8, TP HCM thu phí ôtô đỗ dưới lòng đường ở 23 tuyến thuộc quận 1, 5 và 10
+9. Mức phí tăng lên tối thiểu 20.000 đến 30.000 đồng mỗi giờ thay vì 5.000 đồng mỗi lượt
+10. Xe được phép đỗ tại các tuyến này là ôtô từ 16 chỗ trở xuống hoặc xe tải 1,5 đến 2,5 tấn
+11. Việc thu phí triển khai bằng công nghệ, người gửi xe phải cài ứng dụng My Parking trên điện thoại thông minh
+
+**Bản A.** Từ 1/8, xe tải, xe chở hàng dưới 2,5 tấn không được đi vào nội đô thành phố từ 6 đến 9h và từ 16 đến 20h.
+
+**Bản B.** Xe dưới 2,5 tấn bị cấm vào nội đô 6-9 h sáng, tăng một giờ so với trước, trong khi thời gian cấm ôtô tải nặng được rút xuống 2 giờ.
+
+**Bản C.** Theo Quyết định về định hạn chế và cấp phép ôtô tải lưu thông trong khu vực nội đô TP HCM, từ ngày 1/8, xe tải, xe chở hàng dưới 2,5 tấn không được đi vào nội đô thành phố từ 6 đến 9h và từ 16 đến 20h. Quy định cũ khung giờ cấm loại xe này vào buổi sáng chỉ từ 6 đến 8h sáng. Ôtô tải trọng trên 2,5 tấn không được vào nội đô thành phố từ 6 đến 22h (trừ một số tuyến hành lang được quy định).
+
+**Bản D.** Theo Quyết định về định hạn chế và cấp phép ôtô tải lưu thông trong khu vực nội đô TP HCM, từ ngày 1/8, xe tải, xe chở hàng dưới 2,5 tấn không được đi vào nội đô thành phố từ 6 đến 9h và từ 16 đến 20h. Quy định cũ khung giờ cấm loại xe này vào buổi sáng chỉ từ 6 đến 8h sáng. Ôtô tải trọng trên 2,5 tấn không được vào nội đô thành phố từ 6 đến 22h (trừ một số tuyến hành lang được quy định).
+
+## B42 (guid 19790)
+
+**Bài gốc.** Ngày 18/12, ông Lâm Minh Phúc, Giám đốc Trung tâm đăng kiểm xe cơ giới Thanh Hoá cho biết, lãnh đạo Sở Giao thông Vận tải vừa quyết định dừng hoạt động kiểm định tại Trung tâm đăng kiểm xe cơ giới chi nhánh Bỉm Sơn (3602 S), đóng trên địa bàn phường Bắc Sơn, thị xã Bỉm Sơn. Nguyên nhân là do thiếu cán bộ lãnh đạo nên chi nhánh này không đáp ứng được các điều kiện hoạt động. Trung tâm đăng kiểm chi nhánh Bỉm Sơn sẽ hoạt động trở lại khi cơ quan chức năng bố trí được cán bộ thay thế phù hợp. Trung tâm đăng kiểm xe cơ giới Thanh Hoá thời gian gần đây bị phát hiện có nhiều sai sót về chuyên môn, nghiệp vụ. Trước đó, ngày 15/12, bốn cán bộ ở trung tâm bị Sở Giao thông đình chỉ gồm ông Nguyễn Ngọc Thái, Phó giám đốc Trung tâm đăng kiểm xe cơ giới Thanh Hoá kiêm Giám đốc chi nhánh đăng kiểm 3601 S; ông Lê Thanh Tùng, Phó giám đốc Trung tâm đăng kiểm xe cơ giới Thanh Hoá kiêm Giám đốc chi nhánh đăng kiểm 3602 S; ông Phạm Thanh Minh, đăng kiểm viên xe cơ giới bậc cao thuộc chi nhánh đăng kiểm 3601S và ông Phạm Tuân, đăng kiểm viên xe cơ giới thuộc chi nhánh đăng kiểm 3601S. Nhóm cán bộ này được cho là mắc nhiều sai sót trong quá trình thực hiện kiểm định xe tự đổ, xe xitec, xe tải. Lê Hoàng Trung tâm đăng kiểm xe cơ giới Thanh Hoá thời gian gần đây bị phát hiện có nhiều sai sót về chuyên môn, nghiệp vụ.
+
+**Ý chính.**
+
+1. Ngày 18/12, Sở Giao thông Vận tải quyết định dừng hoạt động kiểm định tại Trung tâm đăng kiểm xe cơ giới chi nhánh Bỉm Sơn (3602 S), thị xã Bỉm Sơn
+2. Nguyên nhân là thiếu cán bộ lãnh đạo nên chi nhánh không đáp ứng được các điều kiện hoạt động
+3. Chi nhánh sẽ hoạt động trở lại khi cơ quan chức năng bố trí được cán bộ thay thế phù hợp
+4. Trung tâm đăng kiểm xe cơ giới Thanh Hoá thời gian gần đây bị phát hiện nhiều sai sót về chuyên môn, nghiệp vụ
+5. Ngày 15/12, bốn cán bộ của trung tâm bị Sở Giao thông đình chỉ, gồm hai phó giám đốc kiêm giám đốc chi nhánh và hai đăng kiểm viên
+6. Nhóm cán bộ này được cho là mắc nhiều sai sót trong quá trình kiểm định xe tự đổ, xe xitec, xe tải
+
+**Bản A.** Do nhiều cán bộ cùng lúc bị đình chỉ công tác vì sai phạm chuyên môn, Sở Giao thông Thanh Hoá cho dừng hoạt động kiểm định tại Chi nhánh đăng kiểm xe cơ giới 3602S.
+
+**Bản B.** Ngày 18/12, ông Lâm Minh Phúc, Giám đốc Trung tâm đăng kiểm xe cơ giới Thanh Hoá cho biết, lãnh đạo Sở Giao thông Vận tải vừa quyết định dừng hoạt động kiểm định tại Trung tâm đăng kiểm xe cơ giới chi nhánh Bỉm Sơn (3602 S), đóng trên địa bàn phường Bắc Sơn, thị xã Bỉm Sơn. Nguyên nhân là do thiếu cán bộ lãnh đạo nên chi nhánh này không đáp ứng được các điều kiện hoạt động. Nhóm cán bộ này được cho là mắc nhiều sai sót trong quá trình thực hiện kiểm định xe tự đổ, xe xitec, xe tải.
+
+**Bản C.** Ngày 18/12, ông Lâm Minh Phúc, Giám đốc Trung tâm đăng kiểm xe cơ giới Thanh Hoá cho biết, lãnh đạo Sở Giao thông Vận tải vừa quyết định dừng hoạt động kiểm định tại Trung tâm đăng kiểm xe cơ giới chi nhánh Bỉm Sơn (3602 S), đóng trên địa bàn phường Bắc Sơn, thị xã Bỉm Sơn. Nguyên nhân là do thiếu cán bộ lãnh đạo nên chi nhánh này không đáp ứng được các điều kiện hoạt động. Trung tâm đăng kiểm chi nhánh Bỉm Sơn sẽ hoạt động trở lại khi cơ quan chức năng bố trí được cán bộ thay thế phù hợp.
+
+**Bản D.** Do thiếu cán bộ lãnh đạo nên Trung tâm đăng kiểm xe cơ giới Thanh Hoá không đáp ứng được các điều kiện hoạt động.
+
+## B43 (guid 19848)
+
+**Bài gốc.** Sáng 13/3, Đội an ninh công an quận Cẩm Lệ (TP Đà Nẵng) thông báo kết quả điều tra ban đầu về công trình trái phép thuộc đất của Tổng kho miền Trung ở số 3 đường Phạm Hùng (phường Hoà Xuân), cùng sự xuất hiện của nhóm người Trung Quốc tại "khu phố" này. Theo điều tra, công ty VietMay Home cho công ty TNHH Liên hợp Thế Duy (trụ sở 67 Ngô Thì Nhậm, quận Liên Chiểu, Đà Nẵng) thuê đất. Công ty Liên hợp Thế Duy sau đó cải tạo xây dựng thành công trình Trung tâm giới thiệu trà và đặc sản Việt Nam. Bên trong "khu phố" xây dựng không phép ở Đà Nẵng là hai dãy nhà liền kề theo kiến trúc cổ, có vỉa hè, điện chiếu sáng. Lúc 8h ngày 9/3, khi công an và quy tắc đô thị kiểm tra, đơn vị thi công không xuất trình được hợp đồng thuê đất cũng như giấy phép cải tạo. 9h cùng ngày, một đoàn khách 5 người Trung Quốc, được ông Nguyễn Công Nguyên (30 tuổi, hướng dẫn viên du lịch) đưa vào công trình. Khi công an kiểm tra, ông Nguyên không đeo thẻ hướng dẫn viên, không xuất trình được giấy phân công hướng dẫn viên, chương trình đoàn khách, hợp đồng lao động. Ông Nguyên đã thừa nhận sai phạm của mình. "Chúng tôi đang củng cố hồ sơ, đề xuất chủ tịch UBND quận Cẩm Lệ xử phạt vi phạm hành chính với ông Nguyên. Riêng nhóm người Trung Quốc khai đến khu công trình trên để đi du lịch", ông Văn Công Bình, đội phó an ninh công an quận Cẩm Lệ nói. Trong khi đó qua điện thoại, ông Bùi Đăng Thiên, Giám đốc công ty TNHH Liên hợp Thế Duy, lại cho biết nhóm người nước ngoài này là chuyên gia về trà đạo, được một đơn vị khác bảo lãnh mời sang Việt Nam dự sự kiện Festival cà phê ở Buôn Mê Thuột. "Khi những người này đi khảo sát thị trường ở miền Trung, chúng tôi có kết hợp mời họ đến shop của mình xem", ông Thiên nói. Ông Thiên cho hay, "khu phố" không phép do công ty đầu tư xây dựng để làm nơi "giới thiệu trà, cà phê và nông sản Việt Nam cho du khách nước ngoài". "Thị trường chúng tôi hướng đến là khách du lịch quốc tế đến Đà Nẵng", ông Thiên khẳng định. Theo ông Thiên, khi thuê lại nhà kho của công ty VietMay Home, nơi đây đã là một công trình xây dựng kiên cố và có giấy phép xây dựng. Phía công ty khi cải tạo không đả động đến kết cấu móng và kết cấu xung quanh, chỉ làm những gian hàng nhỏ dạng mô hình, nên không xin phép cơ quan chức năng. Nêu lý do xây không phép, ông Thiên nói: "Chúng tôi nhận thiếu sót do nhầm lẫn và chưa hiểu rõ giữa việc cải tạo và xây dựng. Hiện chúng tôi đã làm hồ sơ xin giấy phép bổ sung trình Sở Xây dựng". Trả lời câu hỏi có hay không người Trung Quốc đứng đằng sau công ty và công trình "khu phố" này, ông Thiên khẳng định: "Chúng tôi góp vốn với đối tác khác, nhưng 100% vốn là của Việt Nam. Giấy phép kinh doanh đều thể hiện như thế". Riêng về kiến trúc "khu phố", ông Thiên nói công trình được thiết kế theo nhà cổ ở Hội An và Hà Nội "còn có giống kiến trúc Trung Quốc hay không là tuỳ cảm nhận của mỗi người". Trước đó ngày 9/3, chính quyền phường Hoà Xuân phối hợp với công an, quy tắc đô thị đến kiểm tra nhà kho tại số 3 đường Phạm Hùng và phát hiện phía trong là một "khu phố" với 6 ngôi nhà theo kiến trúc cổ được xây thành hai dãy liền kề, đối xứng nhau, diện tích 1.500 m2. Do đơn vị thi công không xuất trình được giấy phép xây dựng, UBND phường Hoà Xuân đã lập biên bản "Vi phạm hành chính và yêu cầu ngừng thi công công trình vi phạm". "Công trình này xây trong nhà kho kín, nếu không có tin báo của người dân thì không thể phát hiện ra", ông Võ Linh Thể, Chủ tịch UBND phường Hoà Xuân, nói và cho biết thêm phường Hoà Xuân kiến nghị UBND quận Cẩm Lệ đề nghị Sở Xây dựng không cấp giấy phép bổ sung. Chiều 13/3, ông Nguyễn Văn Nam, Phó giám đốc Sở Xây dựng Đà Nẵng, cho biết đã nhận được văn bản đề nghị không cấp giấy phép bổ sung với cụm công trình vi phạm của UBND quận Cẩm Lệ, đồng thời công ty Liên hợp Thế Duy có văn bản xin cấp giấy phép bổ sung. "Chúng tôi đang giao cho các phòng chuyên môn nghiên cứu, chưa có quyết định", ông Nam nói. Nguyễn Đông Bên trong "khu phố" xây dựng không phép ở Đà Nẵng là hai dãy nhà liền kề theo kiến trúc cổ, có vỉa hè, điện chiếu sáng. "Khu phố" bên trong nhà kho xây không phép. Đại diện chủ đầu tư "khu phố" cho biết vì chỉ cải tạo bên trong nhà kho nên không xin giấy phép.
+
+**Ý chính.**
+
+1. Sáng 13/3, công an quận Cẩm Lệ (Đà Nẵng) thông báo kết quả điều tra ban đầu về công trình trái phép ở số 3 đường Phạm Hùng và sự xuất hiện của nhóm người Trung Quốc
+2. Công ty VietMay Home cho công ty Liên hợp Thế Duy thuê đất, Thế Duy cải tạo thành Trung tâm giới thiệu trà và đặc sản Việt Nam
+3. Bên trong khu phố không phép là hai dãy nhà liền kề theo kiến trúc cổ, có vỉa hè và điện chiếu sáng
+4. Lúc 8h ngày 9/3 khi công an và quy tắc đô thị kiểm tra, đơn vị thi công không xuất trình được hợp đồng thuê đất và giấy phép cải tạo
+5. 9h cùng ngày, hướng dẫn viên Nguyễn Công Nguyên (30 tuổi) đưa đoàn 5 khách Trung Quốc vào công trình nhưng không có thẻ và các giấy tờ cần thiết, và đã thừa nhận sai phạm
+6. Công an đang củng cố hồ sơ đề xuất xử phạt hành chính ông Nguyên, còn nhóm người Trung Quốc khai đến đó để du lịch
+7. Giám đốc Thế Duy Bùi Đăng Thiên nói nhóm người nước ngoài là chuyên gia trà đạo được mời sang dự Festival cà phê ở Buôn Mê Thuột
+8. Ông Thiên cho biết khu phố được xây để giới thiệu trà, cà phê và nông sản Việt Nam cho khách du lịch quốc tế
+9. Ông Thiên giải thích không xin phép vì chỉ cải tạo bên trong nhà kho vốn đã có giấy phép, và đã làm hồ sơ xin cấp phép bổ sung
+10. Ông Thiên khẳng định công ty góp vốn với đối tác nhưng 100% vốn là của Việt Nam, không có người Trung Quốc đứng sau
+11. Ông Thiên nói công trình được thiết kế theo nhà cổ ở Hội An và Hà Nội
+12. Ngày 9/3, phường Hoà Xuân kiểm tra và phát hiện khu phố gồm 6 ngôi nhà kiến trúc cổ, diện tích 1.500 m2, đã lập biên bản và yêu cầu ngừng thi công
+13. Chủ tịch phường Hoà Xuân nói công trình xây trong nhà kho kín, không có tin báo của dân thì không phát hiện được, và phường kiến nghị không cấp giấy phép bổ sung
+14. Chiều 13/3, Phó giám đốc Sở Xây dựng Đà Nẵng cho biết đã nhận cả văn bản đề nghị không cấp phép lẫn đơn xin cấp phép bổ sung, đang giao phòng chuyên môn nghiên cứu
+
+**Bản A.** Sáng 13/3, Đội an ninh công an quận Cẩm Lệ (TP Đà Nẵng) thông báo kết quả điều tra ban đầu về công trình trái phép thuộc đất của Tổng kho miền Trung ở số 3 đường Phạm Hùng (phường Hoà Xuân), cùng sự xuất hiện của nhóm người Trung Quốc tại "khu phố" này. Theo điều tra, công ty VietMay Home cho công ty TNHH Liên hợp Thế Duy (trụ sở 67 Ngô Thì Nhậm, quận Liên Chiểu, Đà Nẵng) thuê đất. Công ty Liên hợp Thế Duy sau đó cải tạo xây dựng thành công trình Trung tâm giới thiệu trà và đặc sản Việt Nam.
+
+**Bản B.** Sáng 13/3, Đội an ninh công an quận Cẩm Lệ (TP Đà Nẵng) thông báo kết quả điều tra ban đầu về công trình trái phép thuộc đất của Tổng kho miền Trung ở số 3 đường Phạm Hùng (phường Hoà Xuân), cùng sự xuất hiện của nhóm người Trung Quốc tại "khu phố" này. Bên trong "khu phố" xây dựng không phép ở Đà Nẵng là hai dãy nhà liền kề theo kiến trúc cổ, có vỉa hè, điện chiếu sáng. 9h cùng ngày, một đoàn khách 5 người Trung Quốc, được ông Nguyễn Công Nguyên (30 tuổi, hướng dẫn viên du lịch) đưa vào công trình.
+
+**Bản C.** Công an quận Cẩm Lệ (Đà Nẵng) đang củng cố hồ sơ, đề xuất chủ tịch UBND quận xử phạt vi phạm hành chính với ông Nguyễn Công Nguyên (30 tuổi, hướng dẫn viên du lịch) cùng nhóm người Trung Quốc xây dựng "khu phố" trái phép.
+
+**Bản D.** Chủ đầu tư dãy nhà 1.500 m2 bên trong nhà kho cho rằng đã nhầm lẫn khái niệm cải tạo và xây dựng nên không xin giấy phép từ cơ quan chức năng.
+
+## B47 (guid 20757)
+
+**Bài gốc.** Là một trong hai đại biểu cuối cùng đặt câu hỏi trong ngày chất vấn đầu tiên, ông Trần Ngọc Vinh nêu vấn đề an toàn thực phẩm đối với Bộ Nông nghiệp và Phát triển nông thôn. Đại biểu Trần Ngọc Vinh. Nhắc lại lời hứa của Bộ trưởng Cao Đức Phát trong việc khắc phục tình trạng sử dụng thuốc trừ sâu, chất cấm trong chế biến nông sản và chăn nuôi, đại biểu Hải Phòng nhận định vấn đề này không giảm mà có chiều hướng gia tăng về số lượng và mức độ nguy hiểm. Dẫn nhiều ví dụ về thịt lợn có chất cấm, chuối ngâm thuốc trừ sâu, rau quả có dư lượng thuốc bảo vệ thực vật vượt mức cho phép, đại biểu nói: "Có thể nói con đường từ dạ dày đến nghĩa địa của mỗi người chúng ta chưa bao giờ ngắn và dễ dàng thế". Câu nói của ông Vinh làm cả hội trường xôn xao. Từ đó, ông Vinh đặt câu hỏi: "Tại sao Bộ đã thực hiện nhiều giải pháp song tình trạng này không giảm mà vẫn còn chiều hướng gia tăng? Nguyên nhân của vấn đề này là gì?" Phải chăng do chính sách chưa đủ răn đe hay do sự thiếu quyết tâm của Bộ? Trách nhiệm của cá nhân Bộ trưởng và ngành nông nghiệp trước cử tri cả nước như thế nào khi hàng năm có hàng chục nghìn cái chết được dự báo trước xuất phát từ thức ăn bị nhiễm độc ", ông Vinh truy vấn. Trong phần giải đáp vào sáng 17/11, Bộ trưởng Cao Đức Phát cho biết, liên quan đến lĩnh vực vật tư nông nghiệp, an toàn vệ sinh thực phẩm, toàn ngành đã xác định sẽ làm hết sức để chấn chỉnh; tập trung vào 5 nhóm giải pháp như tuyên truyền nâng cao nhận thức, xây dựng hành lang pháp lý, hỗ trợ người dân tổ chức sản xuất kinh doanh thực phẩm an toàn, kiểm tra giám sát xử lý vi phạm, tăng cường năng lực hệ thống. Người đứng đầu ngành nông nghiệp thừa nhận các giải pháp chỉ thực hiện ở mức độ kiềm chế tình hình chứ chưa có cải thiện đáng kể. Thậm chí gần đây một số việc còn xấu đi như việc sử dụng kháng sinh, chất cấm chăn nuôi đang bùng phát. Dẫn báo cáo giám sát an toàn thực phẩm 9 tháng đầu năm cho thấy, 1% thuỷ sản, 10% rau, 7% thịt có dư lượng vượt mức cho phép, nguyên nhân theo ông Phát không phải là thiếu quyết tâm hay cơ sở pháp lý mà bởi việc triển khai hướng dẫn tổ chức sản xuất, kiểm tra giám sát tới hàng triệu hộ nông dân và hàng chục nghìn cơ sở sản xuất vật tư chưa đủ sâu rộng để tạo ra chuyển biến căn cơ." Những ngày này chúng tôi phối hợp Bộ Công an tổ chức đoàn kiểm tra đến bắt tận tay doanh nghiệp sử dụng chất cấm trong chăn nuôi, vì vậy thực trạng đã giảm, nhất là phía nam. Mẫu chất cấm giảm chỉ còn 3-4% so với trước đó 16% ", ông Phát nói. Một số đại biểu khác lo ngại khó khăn trong lĩnh vực nông nghiệp khi Việt Nam hội nhập với nền kinh tế thế giới." AEC và TPP sẽ mở ra các cơ hội lớn cho nền kinh tế Việt Nam nói chung và nông nghiệp nói riêng, nông dân Việt Nam mong muốn nắm bắt cơ hội này, xin Bộ trưởng tư vấn cho nông dân nên trồng cây gì, nuôi con gì để sản phẩm nông nghiệp có thể hội nhập ", đại biểu Nguyễn Ngọc Hoà nói. Đại biểu Hoà cũng đưa ra thực trạng sản phẩm nông nghiệp Việt Nam đang" nhường chỗ "cho sản phẩm nước ngoài." Gạo Thái Lan được bày bán ngày càng nhiều trên thị trường; thịt gà Mỹ, thịt bò Australia nhập khẩu ngày càng nhiều ", từ đó ông đặt câu hỏi" Liệu nông nghiệp có thua trên sân nhà hay không ". Đáp lại, Bộ trưởng Cao Đức Phát cho rằng, các hiệp định tạo cơ hội cho nông nghiệp tiếp cận thị trường nhiều hơn, nhưng cần có sản phẩm với khả năng cạnh tranh mạnh mới phát huy được. Trong khi đó, một số sản phẩm của Việt Nam như như mía đường, sản phẩm chăn nuôi... sức cạnh tranh lại rất yếu. Lý giải về điều này, ông Phát dẫn chứng, 70% sản phẩm chăn nuôi của Việt Nam là do các hộ nhỏ lẻ sản xuất. Trong khi Mỹ chỉ có 40 công ty và 29.500 hộ nuôi nhưng mỗi năm xuất tới 9 tỷ con gà, Việt Nam có tới 8 triệu hộ nuôi nhưng chỉ nuôi 320 triệu con gà một năm, vì vậy năng suất chất lượng thấp mà giá thành cao. Để khắc phục, ông Phát đưa ra giải pháp là tổ chức sản xuất và hỗ trợ nông dân nhanh chóng ứng dụng khoa học kỹ thuật sản xuất ra nông sản có chất lượng. Chưa thoả mãn với câu trả lời, theo đại biểu Hoà, nếu tổ chức sản xuất áp dụng khoa học kỹ thuật thì đúng với tất cả ngành." Điều mà tôi mong đợi là chiến lược của ngành khi hội nhập AEC và TPP là gì, trong đó sản phẩm nông nghiệp là con gì, cây gì được sử dụng để thâm nhập vào thị trường bên ngoài, và ngược lại thị trường nội địa làm gì để không thua trên sân nhà ", ông Hoà hỏi lại. Hương Thu Đại biểu Trần Ngọc Vinh. Bộ trưởng Cao Đức Phát. Đại biểu Nguyễn Ngọc Hoà.
+
+**Ý chính.**
+
+1. Đại biểu Trần Ngọc Vinh chất vấn Bộ Nông nghiệp và Phát triển nông thôn về an toàn thực phẩm
+2. Ông Vinh nhận định tình trạng dùng thuốc trừ sâu và chất cấm không giảm mà có chiều hướng gia tăng về số lượng lẫn mức độ nguy hiểm
+3. Ông Vinh nói con đường từ dạ dày đến nghĩa địa chưa bao giờ ngắn và dễ dàng thế, làm cả hội trường xôn xao
+4. Ông Vinh hỏi nguyên nhân vì sao tình trạng không giảm và truy trách nhiệm cá nhân Bộ trưởng khi hàng năm có hàng chục nghìn cái chết dự báo trước từ thức ăn nhiễm độc
+5. Sáng 17/11, Bộ trưởng Cao Đức Phát cho biết ngành tập trung vào 5 nhóm giải pháp về vật tư nông nghiệp và an toàn thực phẩm
+6. Ông Phát thừa nhận các giải pháp mới chỉ kiềm chế tình hình chứ chưa cải thiện đáng kể, thậm chí việc dùng kháng sinh và chất cấm còn bùng phát
+7. Báo cáo giám sát 9 tháng đầu năm cho thấy 1% thuỷ sản, 10% rau và 7% thịt có dư lượng vượt mức cho phép
+8. Ông Phát cho rằng nguyên nhân không phải thiếu quyết tâm hay cơ sở pháp lý mà do triển khai chưa đủ sâu rộng tới hàng triệu hộ nông dân
+9. Ông Phát nói phối hợp Bộ Công an bắt tận tay doanh nghiệp dùng chất cấm nên mẫu chất cấm giảm còn 3-4% so với 16% trước đó
+10. Đại biểu Nguyễn Ngọc Hoà hỏi chiến lược để nông dân nắm cơ hội từ AEC và TPP, nên trồng cây gì nuôi con gì
+11. Ông Hoà nêu thực trạng gạo Thái Lan, thịt gà Mỹ, thịt bò Australia nhập khẩu ngày càng nhiều và hỏi nông nghiệp có thua trên sân nhà không
+12. Ông Phát đáp các hiệp định tạo cơ hội tiếp cận thị trường nhưng cần sản phẩm cạnh tranh mạnh, trong khi mía đường và chăn nuôi sức cạnh tranh yếu
+13. Ông Phát dẫn chứng 70% sản phẩm chăn nuôi do hộ nhỏ lẻ, Mỹ có 40 công ty và 29.500 hộ xuất 9 tỷ con gà mỗi năm còn Việt Nam 8 triệu hộ chỉ nuôi 320 triệu con
+14. Ông Phát đưa ra giải pháp tổ chức sản xuất và hỗ trợ nông dân ứng dụng khoa học kỹ thuật để có nông sản chất lượng
+15. Ông Hoà chưa thoả mãn và hỏi lại về chiến lược cụ thể của ngành khi hội nhập AEC và TPP
+
+**Bản A.** Dẫn nhiều ví dụ về thịt lợn có chất cấm, chuối ngâm thuốc trừ sâu, rau quả có dư lượng thuốc bảo vệ thực vật vượt mức cho phép, đại biểu Trần Ngọc Vinh nói: "Có thể nói con đường từ dạ dày đến nghĩa địa của mỗi người chúng ta chưa bao giờ ngắn và dễ dàng thế".
+
+**Bản B.** Là một trong hai đại biểu cuối cùng đặt câu hỏi trong ngày chất vấn đầu tiên, ông Trần Ngọc Vinh nêu vấn đề an toàn thực phẩm đối với Bộ Nông nghiệp và Phát triển nông thôn. Đại biểu Trần Ngọc Vinh. Nhắc lại lời hứa của Bộ trưởng Cao Đức Phát trong việc khắc phục tình trạng sử dụng thuốc trừ sâu, chất cấm trong chế biến nông sản và chăn nuôi, đại biểu Hải Phòng nhận định vấn đề này không giảm mà có chiều hướng gia tăng về số lượng và mức độ nguy hiểm.
+
+**Bản C.** Dẫn ra nhiều ví dụ về tình trạng thực phẩm nhiễm chất cấm, thuốc bảo vệ thực vật trong bữa ăn hàng ngày, đại biểu Trần Ngọc Vinh cảnh báo nguy cơ mất an toàn đối với sức khoẻ của người dân đang ở mức trầm trọng.
+
+**Bản D.** Là một trong hai đại biểu cuối cùng đặt câu hỏi trong ngày chất vấn đầu tiên, ông Trần Ngọc Vinh nêu vấn đề an toàn thực phẩm đối với Bộ Nông nghiệp và Phát triển nông thôn. Nhắc lại lời hứa của Bộ trưởng Cao Đức Phát trong việc khắc phục tình trạng sử dụng thuốc trừ sâu, chất cấm trong chế biến nông sản và chăn nuôi, đại biểu Hải Phòng nhận định vấn đề này không giảm mà có chiều hướng gia tăng về số lượng và mức độ nguy hiểm. Câu nói của ông Vinh làm cả hội trường xôn xao. Đại biểu Nguyễn Ngọc Hoà.

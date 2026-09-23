@@ -2373,6 +2373,76 @@ BARTpho: recall +22,34, phủ chi tiết +22,74, đổi lại F1 −5,83 — đ�
 **Giới hạn khác trên `test`:** 310/2.000 bản (15,5%) có câu treo — cùng tỷ lệ `val` (152/1.000);
 9 bản vượt 110 âm tiết, dài nhất 181 (câu đầu dài hơn ngân sách).
 
+### Giai đoạn 5 — thước đo phủ ý: đếm ý thay vì cho điểm 1–5
+
+    .venv/Scripts/python.exe src/eval/phu_y.py chuan-bi     # phiếu liệt kê ý (pha 1)
+    .venv/Scripts/python.exe src/eval/phu_y.py phieu-phu    # phiếu đánh dấu phủ (pha 2)
+    .venv/Scripts/python.exe src/eval/phu_y.py phan-tich    # bảng kết quả
+
+**Vì sao cần thêm thước đo khi đã có `day_du`.** Hai chỗ thang 1–5 không trả lời được:
+
+1. *Độ trôi.* Hệ thống cuối chấm ở đợt mới, BARTpho và Lead-3 chấm ở tuần 7; trôi `day_du` là
+   −0,55 nên theo quy tắc đã chốt, **mọi so sánh chéo đợt ở tiêu chí này không được viết thành
+   kết luận** (giai đoạn 3). Thước đo này chấm cả bốn hệ thống trong **một lượt trên cùng một
+   danh sách ý**, nên không có đợt để mà trôi.
+2. *Thang điểm không nói ý nào bị bỏ.* "3 điểm đầy đủ" không cho biết hệ thống rụng ý ở đầu bài
+   hay cuối bài. Đếm theo từng ý thì biết, và biết rồi mới sửa được.
+
+Nó cũng nhắm thẳng vào **mâu thuẫn chưa giải** của giai đoạn 3: chỉ số tự động nói hệ thống cuối
+phủ chi tiết hơn Lead-3, máy chấm nói kém `day_du` hơn −0,25.
+
+**Cách làm — hai pha, và vì sao phải tách.** Danh sách ý viết ở pha 1 khi người gán **chưa nhìn
+thấy bản tóm tắt nào**; `phieu-phu` từ chối chạy nếu pha 1 chưa xong. Nhìn trước rồi mới liệt kê
+thì danh sách ý uốn theo bản mình có thiện cảm, và thước đo mất giá trị. Quy tắc gán nằm trong
+`src/eval/phu_y.py` và được chép vào `mau.json` của mỗi lần dựng phiếu.
+
+**Mẫu.** Dùng lại 12 bài `val` mà **người** đã chấm ở tuần 7 (cùng mã bài B01–B50), nên điểm phủ ý
+ghép thẳng theo bài với `day_du` của cả người lẫn máy. Tổng 122 ý, trung bình 10,2 ý/bài (ít nhất
+6, nhiều nhất 15); 4 hệ thống × 122 ý = 488 lượt đánh dấu.
+
+| Hệ thống | Phủ ý (%) | Khoảng tin cậy 95% |
+|---|---|---|
+| Lead-3 | 31,5 | [23,5, 39,8] |
+| Hệ thống cuối | 30,8 | [25,0, 36,6] |
+| Sapo (tham chiếu) | 15,7 | [8,3, 24,4] |
+| BARTpho | 11,8 | [8,2, 15,6] |
+
+| Cặp | Chênh lệch | p |
+|---|---|---|
+| Hệ thống cuối − Lead-3 | −0,7 [−6,0, +4,1] | 0,82 |
+| Hệ thống cuối − BARTpho | **+19,0 [+14,1, +24,1]** | < 0,0001 |
+| Lead-3 − BARTpho | **+19,7 [+12,5, +27,4]** | < 0,0001 |
+| Hệ thống cuối − sapo | **+15,1 [+8,7, +21,8]** | < 0,0001 |
+
+Đọc bảng:
+
+- **Hơn BARTpho về số ý lấy được: giờ là kết luận.** Giai đoạn 3 không kết luận được vế này vì
+  trôi; đo trong một lượt thì hiệu +19,0 điểm phần trăm, p < 0,0001.
+- **Ngang Lead-3, không hơn cũng không kém** (−0,7, p = 0,82). Mâu thuẫn của giai đoạn 3 được giải
+  theo hướng **cả hai phía đều sai**: hệ thống cuối không phủ ý hơn Lead-3 như chỉ số tự động gợi
+  ý, cũng không kém như máy chấm gợi ý. Từng bài thì 5 bài hoà, 4 bài hơn, 3 bài kém.
+- **Sapo của toà soạn chỉ phủ 15,7% số ý của thân bài** — thấp hơn cả hai hệ thống extractive, và
+  ở B04 phủ **0/12 ý** vì sapo nói về MV mới còn thân bài nói chuyện tình cảm. Đây là bằng chứng
+  trực tiếp cho điều giai đoạn 0 đã ngờ: sapo là **tít dẫn, không phải bản tóm tắt đủ ý**, nên
+  ROUGE chấm theo sapo không đo được "đủ ý". Cùng hướng với con số 34,4% sapo `test` chứa chi tiết
+  không có trong thân bài.
+- **Trần thật sự rất thấp.** Hệ thống tốt nhất cũng chỉ lấy được **chưa tới một phần ba** số ý.
+  Trích rút chép nguyên câu nên phải trả trọn giá một câu để lấy một ý, và hết ngân sách trước khi
+  đọc tới cuối bài.
+
+**Giới hạn — phải nêu khi trích.**
+
+- **Người gán là mô hình ngôn ngữ, không phải người.** Cùng tình trạng với `llm_judge` của tuần 7,
+  nhưng ở tuần 7 có 12 bài người chấm để kiểm chứng, còn ở đây **chưa có**. Việc cần làm tiếp là
+  một người gán độc lập trên chính 12 bài này rồi đo độ đồng thuận.
+- **n = 12 bài.** Khoảng tin cậy rộng; hiệu với BARTpho lớn nên vẫn đứng vững, hiệu với Lead-3 nhỏ
+  nên "ngang nhau" chỉ có nghĩa là *chưa phân biệt được*, không phải *đã chứng minh bằng nhau*.
+- **Không chốt được tính blind.** Nhãn xáo riêng từng bài, nhưng người gán nhận ra hệ thống qua
+  hình thức văn bản: extractive chép nguyên câu, BARTpho viết một câu ngắn.
+- **Mức chi tiết của danh sách ý quyết định mọi con số.** Tách "điều 4 xe chuyên dụng" thành ý
+  riêng hay gộp vào "cảnh sát tới dập lửa" sẽ đổi mẫu số. Quy tắc đã chốt trước và ghi lại, nhưng
+  chưa có phép đo độ nhất quán giữa hai lần gán.
+
 ## Demo Gradio — hệ thống cuối cạnh BARTpho, và bốn tầng
 
 Chạy hoàn toàn trên CPU.
@@ -2489,6 +2559,8 @@ src/eval/          rouge.py (đã đối chiếu Google), stats.py (bootstrap),
                    chinh_xac.py + cham_chinh_xac.py (thước đo đủ ý / chi tiết lạ),
                    so_cap_chinh_xac.py (so cặp trên bảng đã chấm),
                    cham_gd3.py (giai đoạn 3: chấm blind, dùng lại điểm tuần 7)
+                   phu_y.py (giai đoạn 5: thước đo phủ ý — liệt kê ý rồi đếm
+                   ý nào bản tóm tắt lấy được, hai pha tách rời)
 app/               demo Gradio (app.py, pipeline.py, vi_du.json)
 results/           đầu ra thô, bảng chỉ số, phiếu chấm
 report/            báo cáo và slide
