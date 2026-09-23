@@ -35,6 +35,7 @@ thẳng theo bài với `day_du` đã có. Mặc định chỉ lấy 12 bài mà
 """
 
 import argparse
+import csv
 import json
 import sys
 from datetime import datetime
@@ -43,6 +44,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from data.splits import load_split  # noqa: E402
 from data.text import for_scoring  # noqa: E402
+from eval.human_eval import krippendorff_alpha  # noqa: E402
 from eval.stats import bootstrap_ci, paired_bootstrap  # noqa: E402
 
 for _s in (sys.stdout, sys.stderr):
@@ -245,6 +247,116 @@ def cmd_phan_tich(args):
     print(f"\n-> {tep}")
 
 
+# --------------------------------------------------------------------------
+# phieu-nguoi / so-sanh: nguoi gan doc lap, roi do do dong thuan
+# --------------------------------------------------------------------------
+
+def _tep_nguoi(i):
+    return OUT / f"cham_phu_y_nguoi{i}.csv"
+
+
+def cmd_phieu_nguoi(args):
+    """Phiếu CSV trống để người gán đánh dấu phủ, dùng lại đúng danh sách ý đã có.
+
+    Người gán dùng **cùng danh sách ý** nên độ đồng thuận đo đúng bước đánh dấu, tách khỏi
+    bước liệt kê ý. Muốn kiểm luôn bước liệt kê thì viết danh sách ý riêng rồi so tay —
+    hai bước hỏng theo hai kiểu khác nhau và không nên trộn vào một con số.
+    """
+    gan = _doc_json(OUT / "gan_y.json")
+    chua = [ma for ma, v in gan.items() if not v["y"]]
+    if chua:
+        raise SystemExit(f"{len(chua)} bài chưa có danh sách ý: {', '.join(chua[:6])}…")
+    tep = _tep_nguoi(args.nguoi)
+    if tep.exists() and not args.ghi_de:
+        raise SystemExit(f"{tep} đã có. Dùng --ghi-de nếu thật sự muốn viết đè.")
+    nhan = sorted({n for v in _doc_json(OUT / "khoa.json")["bai"].values() for n in v["nhan"]})
+    with tep.open("w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["ma_bai", "stt", "y"] + nhan + ["ghi_chu"])
+        for ma, v in gan.items():
+            for i, y in enumerate(v["y"], 1):
+                w.writerow([ma, i, y] + [""] * len(nhan) + [""])
+    print(tep)
+    print(f"  Điền 1 (bản đó nói được ý này) hoặc 0 vào các cột {', '.join(nhan)}.")
+    print(f"  Đọc bài và các bản ở {OUT/'phieu_phu.md'}.")
+    print("  KHÔNG mở gan_y.json — trong đó có sẵn bản đánh dấu của lượt trước.")
+
+
+def _doc_phieu_nguoi(tep, gan):
+    """{mã bài: {nhãn: [đánh dấu]}} — báo lỗi rõ chỗ nào thiếu hoặc điền sai."""
+    ra, hang = {}, list(csv.DictReader(tep.open(encoding="utf-8-sig")))
+    nhan = [c for c in hang[0] if c not in ("ma_bai", "stt", "y", "ghi_chu")]
+    for h in hang:
+        ma, i = h["ma_bai"], int(h["stt"])
+        for n in nhan:
+            o = (h[n] or "").strip()
+            if o not in ("0", "1"):
+                raise SystemExit(f"{tep.name} — {ma} ý {i} cột {n}: {o!r} (phải là 0 hoặc 1).")
+            ra.setdefault(ma, {}).setdefault(n, []).append(o == "1")
+    for ma, v in ra.items():
+        for n, dau in v.items():
+            if len(dau) != len(gan[ma]["y"]):
+                raise SystemExit(f"{tep.name} — {ma} cột {n}: {len(dau)} dòng, cần {len(gan[ma]['y'])}.")
+    return ra
+
+
+def cmd_so_sanh(args):
+    gan, khoa = _doc_json(OUT / "gan_y.json"), _doc_json(OUT / "khoa.json")
+    tep = _tep_nguoi(args.nguoi)
+    if not tep.exists():
+        raise SystemExit(f"Chưa có {tep}. Chạy `phieu-nguoi` rồi điền vào đó trước.")
+    nguoi = _doc_phieu_nguoi(tep, gan)
+
+    # Do dong thuan tren TUNG luot danh dau: moi (bai, nhan, y) la mot don vi hai gia tri.
+    don_vi, trung, tong = [], 0, 0
+    for ma, v in nguoi.items():
+        for n, dau in v.items():
+            for i, x in enumerate(dau):
+                y = bool(gan[ma]["phu"][n][i])
+                don_vi.append([float(x), float(y)])
+                trung += x == y
+                tong += 1
+    alpha = krippendorff_alpha(don_vi)
+
+    # Ket luan co doi chieu khong: tinh lai bang cua nguoi gan doc lap.
+    diem_n = {t: [] for t in HE_THONG}
+    for ma, v in nguoi.items():
+        for n, dau in v.items():
+            diem_n[khoa["bai"][ma]["nhan"][n]].append(100 * sum(dau) / len(dau))
+    diem_m, _ = _diem({ma: gan[ma] for ma in nguoi}, khoa)
+
+    print(f"{tong} lượt đánh dấu trên {len(nguoi)} bài")
+    print()
+    print(f"  trùng nhau           {100*trung/tong:.1f}%")
+    print(f"  Krippendorff alpha   {alpha:.3f}" if alpha is not None
+          else "  Krippendorff alpha   không tính được (mọi lượt đánh dấu giống nhau)")
+    print("  (chuẩn đã dùng ở tuần 7: alpha >= 0,667 thì coi là đủ đồng thuận)")
+    print()
+    print(f"{'hệ thống':12}{'người gán':>12}{'lượt trước':>12}{'chênh':>9}")
+    for t in sorted(diem_n, key=lambda k: -(sum(diem_n[k]) / len(diem_n[k]) if diem_n[k] else 0)):
+        if not diem_n[t]:
+            continue
+        a = sum(diem_n[t]) / len(diem_n[t])
+        b = sum(diem_m[t]) / len(diem_m[t])
+        print(f"{t:12}{a:>11.1f}%{b:>11.1f}%{a-b:>+9.1f}")
+    print()
+    for a, b in (("chon-cau", "lead3"), ("chon-cau", "bartpho"), ("chon-cau", "sapo")):
+        if diem_n[a] and diem_n[b]:
+            r = paired_bootstrap(diem_n[a], diem_n[b], seed=SEED)
+            cu = paired_bootstrap(diem_m[a], diem_m[b], seed=SEED)
+            doi = "GIU NGUYEN" if r["significant"] == cu["significant"] else "**ĐỔI CHIỀU**"
+            print(f"  {a} - {b:10} người {r['diff']:+6.1f} (p={r['p']:.4f}) | "
+                  f"lượt trước {cu['diff']:+6.1f} (p={cu['p']:.4f}) -> kết luận {doi}")
+    tep_ra = RESULTS / "tables" / "phu_y_nguoi_vs_may_val.json"
+    tep_ra.write_text(json.dumps(
+        {"n_bai": len(nguoi), "n_luot": tong, "trung_nhau": round(100 * trung / tong, 1),
+         "alpha": alpha, "nguoi": {t: round(sum(v) / len(v), 1) for t, v in diem_n.items() if v},
+         "luot_truoc": {t: round(sum(v) / len(v), 1) for t, v in diem_m.items() if v}},
+        ensure_ascii=False, indent=1), encoding="utf-8")
+    print()
+    print(f"-> {tep_ra}")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     s = p.add_subparsers(dest="lenh", required=True)
@@ -254,6 +366,13 @@ def main():
     c.set_defaults(fn=cmd_chuan_bi)
     s.add_parser("phieu-phu", help="dựng phiếu đánh dấu phủ ý (pha 2)").set_defaults(fn=cmd_phieu_phu)
     s.add_parser("phan-tich", help="ghép nhãn với hệ thống, ra bảng").set_defaults(fn=cmd_phan_tich)
+    n = s.add_parser("phieu-nguoi", help="phiếu CSV trống cho người gán độc lập")
+    n.add_argument("--nguoi", type=int, default=1, help="người gán thứ mấy (mặc định 1)")
+    n.add_argument("--ghi-de", action="store_true", help="viết đè phiếu đã có")
+    n.set_defaults(fn=cmd_phieu_nguoi)
+    c = s.add_parser("so-sanh", help="đo đồng thuận giữa người gán và lượt gán trước")
+    c.add_argument("--nguoi", type=int, default=1)
+    c.set_defaults(fn=cmd_so_sanh)
     a = p.parse_args()
     a.fn(a)
 
