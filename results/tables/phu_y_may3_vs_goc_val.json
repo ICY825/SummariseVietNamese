@@ -1,0 +1,20 @@
+{
+ "n_bai": 12,
+ "n_luot": 488,
+ "trung_nhau": 98.2,
+ "luot": "may3",
+ "doi_chieu_voi": "goc",
+ "alpha": 0.9436687530091478,
+ "diem_luot_nay": {
+  "sapo": 16.3,
+  "lead3": 30.6,
+  "bartpho": 13.4,
+  "chon-cau": 32.3
+ },
+ "diem_ban_goc": {
+  "sapo": 15.7,
+  "lead3": 31.5,
+  "bartpho": 11.8,
+  "chon-cau": 30.8
+ }
+}

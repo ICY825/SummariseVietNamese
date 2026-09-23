@@ -251,8 +251,13 @@ def cmd_phan_tich(args):
 # phieu-nguoi / so-sanh: nguoi gan doc lap, roi do do dong thuan
 # --------------------------------------------------------------------------
 
-def _tep_nguoi(i):
-    return OUT / f"cham_phu_y_nguoi{i}.csv"
+def _tep_nguoi(ten):
+    """Mỗi lượt gán một file riêng: `nguoi1` cho người, `may2`/`may3` cho tác tử con.
+
+    Tên nằm trong tên file chứ không phải trong một cột, để không lượt nào ghi đè lượt nào
+    và để mở file ra là biết ngay ai gán.
+    """
+    return OUT / f"cham_phu_y_{ten}.csv"
 
 
 def cmd_phieu_nguoi(args):
@@ -266,7 +271,7 @@ def cmd_phieu_nguoi(args):
     chua = [ma for ma, v in gan.items() if not v["y"]]
     if chua:
         raise SystemExit(f"{len(chua)} bài chưa có danh sách ý: {', '.join(chua[:6])}…")
-    tep = _tep_nguoi(args.nguoi)
+    tep = _tep_nguoi(args.ten)
     if tep.exists() and not args.ghi_de:
         raise SystemExit(f"{tep} đã có. Dùng --ghi-de nếu thật sự muốn viết đè.")
     nhan = sorted({n for v in _doc_json(OUT / "khoa.json")["bai"].values() for n in v["nhan"]})
@@ -316,19 +321,40 @@ def _doc_phieu_nguoi(tep, gan):
     return ra
 
 
+def _dau_ban_goc(gan, chi_bai):
+    """Đánh dấu của bản gán gốc trong `gan_y.json`, cùng dạng với một phiếu CSV."""
+    return {ma: {n: [bool(x) for x in dau] for n, dau in gan[ma]["phu"].items()}
+            for ma in chi_bai}
+
+
 def cmd_so_sanh(args):
     gan, khoa = _doc_json(OUT / "gan_y.json"), _doc_json(OUT / "khoa.json")
-    tep = _tep_nguoi(args.nguoi)
+    tep = _tep_nguoi(args.ten)
     if not tep.exists():
         raise SystemExit(f"Chưa có {tep}. Chạy `phieu-nguoi` rồi điền vào đó trước.")
     nguoi = _doc_phieu_nguoi(tep, gan)
+    # Doi chieu voi ban gan goc (mac dinh) hoac voi mot luot gan khac (--voi).
+    # Alpha giua hai luot SACH noi len do chat cua bo quy tac; alpha voi ban goc con lan
+    # them mot thu khac, vi ban goc duoc gan boi nguoi da biet truoc gia thuyet.
+    if args.voi:
+        tep_b = _tep_nguoi(args.voi)
+        if not tep_b.exists():
+            raise SystemExit(f"Chưa có {tep_b}.")
+        doi_chieu = _doc_phieu_nguoi(tep_b, gan)
+        chung = [ma for ma in nguoi if ma in doi_chieu]
+        if not chung:
+            raise SystemExit("Hai lượt không có bài nào chung đã điền xong.")
+        nguoi = {ma: nguoi[ma] for ma in chung}
+        moc, ten_moc = {ma: doi_chieu[ma] for ma in chung}, args.voi
+    else:
+        moc, ten_moc = _dau_ban_goc(gan, nguoi), "bản gốc"
 
     # Do dong thuan tren TUNG luot danh dau: moi (bai, nhan, y) la mot don vi hai gia tri.
     don_vi, trung, tong = [], 0, 0
     for ma, v in nguoi.items():
         for n, dau in v.items():
             for i, x in enumerate(dau):
-                y = bool(gan[ma]["phu"][n][i])
+                y = bool(moc[ma][n][i])
                 don_vi.append([float(x), float(y)])
                 trung += x == y
                 tong += 1
@@ -339,7 +365,10 @@ def cmd_so_sanh(args):
     for ma, v in nguoi.items():
         for n, dau in v.items():
             diem_n[khoa["bai"][ma]["nhan"][n]].append(100 * sum(dau) / len(dau))
-    diem_m, _ = _diem({ma: gan[ma] for ma in nguoi}, khoa)
+    diem_m = {t: [] for t in HE_THONG}
+    for ma, v in moc.items():
+        for n, dau in v.items():
+            diem_m[khoa["bai"][ma]["nhan"][n]].append(100 * sum(dau) / len(dau))
 
     print(f"{tong} lượt đánh dấu trên {len(nguoi)} bài")
     print()
@@ -348,7 +377,7 @@ def cmd_so_sanh(args):
           else "  Krippendorff alpha   không tính được (mọi lượt đánh dấu giống nhau)")
     print("  (chuẩn đã dùng ở tuần 7: alpha >= 0,667 thì coi là đủ đồng thuận)")
     print()
-    print(f"{'hệ thống':12}{'người gán':>12}{'lượt trước':>12}{'chênh':>9}")
+    print(f"{'hệ thống':12}{args.ten:>12}{ten_moc:>12}{'chênh':>9}")
     for t in sorted(diem_n, key=lambda k: -(sum(diem_n[k]) / len(diem_n[k]) if diem_n[k] else 0)):
         if not diem_n[t]:
             continue
@@ -361,13 +390,14 @@ def cmd_so_sanh(args):
             r = paired_bootstrap(diem_n[a], diem_n[b], seed=SEED)
             cu = paired_bootstrap(diem_m[a], diem_m[b], seed=SEED)
             doi = "GIU NGUYEN" if r["significant"] == cu["significant"] else "**ĐỔI CHIỀU**"
-            print(f"  {a} - {b:10} người {r['diff']:+6.1f} (p={r['p']:.4f}) | "
-                  f"lượt trước {cu['diff']:+6.1f} (p={cu['p']:.4f}) -> kết luận {doi}")
-    tep_ra = RESULTS / "tables" / "phu_y_nguoi_vs_may_val.json"
+            print(f"  {a} - {b:10} {args.ten} {r['diff']:+6.1f} (p={r['p']:.4f}) | "
+                  f"{ten_moc} {cu['diff']:+6.1f} (p={cu['p']:.4f}) -> kết luận {doi}")
+    tep_ra = RESULTS / "tables" / f"phu_y_{args.ten}_vs_{args.voi or 'goc'}_val.json"
     tep_ra.write_text(json.dumps(
         {"n_bai": len(nguoi), "n_luot": tong, "trung_nhau": round(100 * trung / tong, 1),
-         "alpha": alpha, "nguoi": {t: round(sum(v) / len(v), 1) for t, v in diem_n.items() if v},
-         "luot_truoc": {t: round(sum(v) / len(v), 1) for t, v in diem_m.items() if v}},
+         "luot": args.ten, "doi_chieu_voi": args.voi or "goc", "alpha": alpha,
+         "diem_luot_nay": {t: round(sum(v) / len(v), 1) for t, v in diem_n.items() if v},
+         "diem_ban_goc": {t: round(sum(v) / len(v), 1) for t, v in diem_m.items() if v}},
         ensure_ascii=False, indent=1), encoding="utf-8")
     print()
     print(f"-> {tep_ra}")
@@ -382,12 +412,13 @@ def main():
     c.set_defaults(fn=cmd_chuan_bi)
     s.add_parser("phieu-phu", help="dựng phiếu đánh dấu phủ ý (pha 2)").set_defaults(fn=cmd_phieu_phu)
     s.add_parser("phan-tich", help="ghép nhãn với hệ thống, ra bảng").set_defaults(fn=cmd_phan_tich)
-    n = s.add_parser("phieu-nguoi", help="phiếu CSV trống cho người gán độc lập")
-    n.add_argument("--nguoi", type=int, default=1, help="người gán thứ mấy (mặc định 1)")
+    n = s.add_parser("phieu-nguoi", help="phiếu CSV trống cho một lượt gán độc lập")
+    n.add_argument("--ten", default="nguoi1", help="tên lượt gán, ví dụ nguoi1 hoặc may2")
     n.add_argument("--ghi-de", action="store_true", help="viết đè phiếu đã có")
     n.set_defaults(fn=cmd_phieu_nguoi)
-    c = s.add_parser("so-sanh", help="đo đồng thuận giữa người gán và lượt gán trước")
-    c.add_argument("--nguoi", type=int, default=1)
+    c = s.add_parser("so-sanh", help="đo đồng thuận giữa một lượt gán và lượt gốc")
+    c.add_argument("--ten", default="nguoi1", help="tên lượt gán cần đối chiếu")
+    c.add_argument("--voi", help="đối chiếu với một lượt gán khác thay vì với bản gốc")
     c.set_defaults(fn=cmd_so_sanh)
     a = p.parse_args()
     a.fn(a)

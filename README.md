@@ -2432,16 +2432,52 @@ ghép thẳng theo bài với `day_du` của cả người lẫn máy. Tổng 12
 
 **Giới hạn — phải nêu khi trích.**
 
-- **Người gán là mô hình ngôn ngữ, không phải người.** Cùng tình trạng với `llm_judge` của tuần 7,
-  nhưng ở tuần 7 có 12 bài người chấm để kiểm chứng, còn ở đây **chưa có**. Việc cần làm tiếp là
-  một người gán độc lập trên chính 12 bài này rồi đo độ đồng thuận.
+- **Người gán là mô hình ngôn ngữ, không phải người.** Ba lượt gán đều là máy (xem mục dưới).
+  Tuần 7 có 12 bài người chấm để kiểm chứng máy; ở đây **chưa có lượt người nào**, nên mọi kết
+  luận chỉ được phát biểu là *theo máy gán*. Phiếu trống cho người gán đã sẵn ở
+  `cham_phu_y_nguoi1.csv` (`phu_y.py phieu-nguoi`), điền được bài nào đo bài đó.
 - **n = 12 bài.** Khoảng tin cậy rộng; hiệu với BARTpho lớn nên vẫn đứng vững, hiệu với Lead-3 nhỏ
   nên "ngang nhau" chỉ có nghĩa là *chưa phân biệt được*, không phải *đã chứng minh bằng nhau*.
 - **Không chốt được tính blind.** Nhãn xáo riêng từng bài, nhưng người gán nhận ra hệ thống qua
   hình thức văn bản: extractive chép nguyên câu, BARTpho viết một câu ngắn.
 - **Mức chi tiết của danh sách ý quyết định mọi con số.** Tách "điều 4 xe chuyên dụng" thành ý
-  riêng hay gộp vào "cảnh sát tới dập lửa" sẽ đổi mẫu số. Quy tắc đã chốt trước và ghi lại, nhưng
-  chưa có phép đo độ nhất quán giữa hai lần gán.
+  riêng hay gộp vào "cảnh sát tới dập lửa" sẽ đổi mẫu số. Danh sách ý chỉ có **một** lượt, nên
+  phần đo đồng thuận dưới đây kiểm được bước *đánh dấu*, **không** kiểm được bước *liệt kê ý*.
+
+#### Đo đồng thuận — ba lượt gán, đều là máy
+
+    .venv/Scripts/python.exe src/eval/phu_y.py phieu-nguoi --ten may2   # phiếu trống
+    .venv/Scripts/python.exe src/eval/phu_y.py so-sanh --ten may2             # so với bản gốc
+    .venv/Scripts/python.exe src/eval/phu_y.py so-sanh --ten may3 --voi may2  # so hai lượt với nhau
+
+Lượt gốc (`gan_y.json`) **không sạch**: người gán lúc đó đã đọc README, đã dựng công cụ và đã
+biết trước giả thuyết "hệ thống cuối thiếu ý". Nên có thêm hai lượt bằng tác tử con khởi động từ
+con số không, chỉ thấy `phieu_phu.md` và bộ quy tắc — không thấy khoá nhãn, không thấy lượt nào
+khác. Cùng lối với `llm_judge_1`/`llm_judge_2` của tuần 7. Mỗi lượt đánh 488 ô.
+
+| Cặp lượt | Trùng nhau | Krippendorff alpha |
+|---|---|---|
+| máy 2 — bản gốc | 98,8% | **0,962** |
+| máy 3 — bản gốc | 98,2% | **0,944** |
+| máy 2 — máy 3 (hai lượt sạch) | 98,6% | **0,957** |
+
+| Hệ thống | Bản gốc | Máy 2 | Máy 3 |
+|---|---|---|---|
+| Lead-3 | 31,5 | 31,5 | 30,6 |
+| Hệ thống cuối | 30,8 | 30,8 | 32,3 |
+| Sapo | 15,7 | 16,3 | 16,3 |
+| BARTpho | 11,8 | 12,0 | 13,4 |
+
+Cả ba alpha vượt xa ngưỡng 0,667 đã dùng ở tuần 7, và **cả ba kết luận giữ nguyên ở cả ba lượt**:
+hơn BARTpho (+18,8 đến +19,0, p < 0,0001), hơn sapo (+14,4 đến +15,9, p < 0,0001), ngang Lead-3.
+Riêng hiệu với Lead-3 đổi dấu giữa các lượt (−0,7 ở hai lượt, +1,7 ở lượt máy 3) nhưng p từ 0,58
+đến 0,82 ở mọi lượt — chính điều đó củng cố kết luận "chưa phân biệt được", chứ không làm lung lay.
+
+Đọc cho đúng: alpha cao nghĩa là **bộ quy tắc đủ chặt để lặp lại**, không nghĩa là bản gán **đúng**.
+Ba lượt cùng là mô hình ngôn ngữ nên có thể cùng lệch một kiểu; chỉ một lượt người gán mới phát hiện
+được điều đó. Chỗ cả ba lượt đều ghi là phân vân: ý gồm nhiều vế mà bản tóm tắt chỉ nói được một vế
+(quy ước hiện tại: phủ mệnh đề chính thì tính là phủ), và B01 ý 3 — "hô hoán" có hàm ý "bị phát
+giác" hay không (bản gốc và máy 2 đánh là không, máy 3 đánh là có).
 
 ## Demo Gradio — hệ thống cuối cạnh BARTpho, và bốn tầng
 
