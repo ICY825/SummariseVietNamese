@@ -2544,6 +2544,60 @@ tải, độ dài và SHA-256 từng bài, đủ để kiểm chứng bộ dữ 
 được bằng `thu-thap`, nhưng bài báo đổi theo thời gian nên bản tải lại có thể khác — đó chính là
 lý do phải có SHA-256.
 
+### Giai đoạn 6b — đường cơ sở trên ngữ liệu tin mới
+
+    ~/.venvs/demo/Scripts/python.exe src/agent/duong_co_so.py              # sinh và chấm
+    ~/.venvs/demo/Scripts/python.exe src/agent/duong_co_so.py --cham-lai   # chấm lại từ bản đã sinh
+
+Các tầng gọi qua `app/pipeline.py` — cùng hàm mà demo và bảng `test` đã dùng — nên đây không
+phải một đường chạy dựng lại. Bản tóm tắt lưu ở `results/predictions/tin_moi.json`, điểm ở
+`results/tables/chinh_xac_tin_moi.json`, cùng khuôn với các bảng cũ.
+
+| Hệ thống | R1-recall | R1-F1 | Phủ chi tiết | Có chi tiết lạ (%) | Âm tiết |
+|---|---|---|---|---|---|
+| Lead-1 | 37,6 | 33,4 | 50,0 | 0,0 | 46,3 |
+| Lead-3 | 58,4 | 29,5 | 69,1 | 0,0 | 116,5 |
+| LexRank | 58,6 | 27,4 | 63,9 | 0,0 | 136,4 |
+| Hệ thống cuối | 57,1 | 31,5 | 68,6 | 0,0 | 103,8 |
+| BARTpho | 34,4 | 35,2 | 41,1 | 12,5 | 36,4 |
+
+**Kết quả chính: không phát hiện được sự xuống cấp vì dịch chuyển miền.** BARTpho huấn luyện
+trên VietNews (tin 2016–2018), ngữ liệu này là tin 2026, vậy mà mọi chỉ số đều nằm trong khoảng
+tin cậy của số cũ:
+
+| Hệ thống | R1-recall: `test` → tin mới | Có chi tiết lạ: `test` → tin mới |
+|---|---|---|
+| Lead-3 | 54,0 → 58,4 [51,6, 65,4] | 0,0 → 0,0 [0,0, 0,0] |
+| Hệ thống cuối | 57,4 → 57,1 [51,5, 63,1] | 0,1 → 0,0 [0,0, 0,0] |
+| BARTpho | 35,1 → 34,4 [28,2, 41,6] | 10,0 → 12,5 [2,5, 22,5] |
+
+Khoảng tin cậy của BARTpho rộng (2,5–22,5%) vì chỉ có 40 bài, nên đây là
+**"chưa phát hiện được khác biệt"**, không phải "đã chứng minh là không khác". Nhưng nó đủ để nói
+rằng mô hình không sụp đổ khi gặp tin của tám năm sau.
+
+**Hệ thống cuối giữ nguyên tính chất cấu trúc: 0/40 bài có chi tiết lạ**, đúng như mức 0,15% trên
+`test`. BARTpho bịa ở **5/40 bài** — vẫn đúng loại lỗi mà cả đồ án xoay quanh, trên ngữ liệu nó
+chưa từng thấy.
+
+**Một đảo chiều nhỏ đáng ghi:** trên `test`, hệ thống cuối hơn Lead-3 về recall (57,4 so với
+54,0); trên ngữ liệu mới thì Lead-3 nhỉnh hơn (58,4 so với 57,1). Khoảng tin cậy chồng nhau
+gần hết nên không kết luận được, và nó trùng hướng với phát hiện của giai đoạn 5: hai hệ thống
+này phủ ý ngang nhau.
+
+**Một ràng buộc của bộ đo, phát hiện khi kiểm lại.** Bộ đo `chi_tiet_la` **không** trung lập với
+cách tách từ: bản tóm tắt và bài gốc phải cùng một dạng. Đối chiếu 200 cặp (40 bài × 5 hệ thống),
+chấm với bài gốc dạng thô thay vì dạng tách từ làm lệch **4 cặp**, và cả 4 đều là *báo nhầm*:
+các hệ thống trích rút chép nguyên câu nên về cấu trúc không thể bịa, nhưng bộ đo vẫn cờ
+"10 h37", "1 6", "12/45/6" — vì bản tóm tắt sinh từ văn bản tách từ còn bài gốc thì không, hai
+bên cắt âm tiết khác nhau. BARTpho không dính lỗi này vì bản của nó vốn sinh từ văn bản thô.
+
+Hệ quả cho hướng agent: agent dùng mô hình ngôn ngữ trên văn bản thô thì **cả hai vế đều thô**,
+nên ràng buộc này tự thoả. Nhưng không được trộn hai dạng trong cùng một phép chấm.
+
+**Nhắc lại giới hạn của tham chiếu.** Sapo dùng làm tham chiếu ở bảng trên, mà giai đoạn 5 đã đo
+được sapo chỉ phủ 15,7% số ý thân bài. Nên ROUGE ở đây chỉ để nối với bảng cũ; thước đo chính cho
+agent phải là phủ ý gán tay.
+
 ## Demo Gradio — hệ thống cuối cạnh BARTpho, và bốn tầng
 
 Chạy hoàn toàn trên CPU.
