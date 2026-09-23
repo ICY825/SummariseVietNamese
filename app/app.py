@@ -260,6 +260,11 @@ def _the_loi(ten, e):
     )
 
 
+def _ma(chu):
+    """Escape rồi cho `mã` trong dấu huyền thành <code> — ghi chú có nhắc tên tệp và tên split."""
+    return re.sub(r"`([^`]+)`", r"<code></code>", html.escape(chu))
+
+
 def _ghi_nguon(bai, seg):
     nguon = (
         "Bài mẫu, chạy trên đúng dạng tách từ của bộ dữ liệu: hệ thống cuối trùng bản đã báo cáo, "
@@ -275,6 +280,11 @@ def _ghi_nguon(bai, seg):
     ghi_y = bai_mau.get("y_ghi_chu", "")
     if ghi_y:
         them += f"<p><b>Cách gán ý ở bài này:</b> {html.escape(ghi_y)}</p>"
+    # Noi thang vi sao bai nay nam trong bo mau. Bo mau ba bai thi de bi ngo la chon bai co loi
+    # cho minh, nen ly do chon phai hien ngay tren trang chu khong nam trong dau nguoi lam.
+    vi_sao = bai_mau.get("vi_sao_chon", "")
+    if vi_sao:
+        them += f"<p><b>Vì sao bài này nằm trong bộ mẫu:</b> {_ma(vi_sao)}</p>"
     return f"<div class='ghi'><p>{nguon}</p>{them}</div>"
 
 
@@ -367,7 +377,7 @@ with gr.Blocks(title="Tóm tắt tin tức tiếng Việt — đủ ý và khôn
                     gr.ClearButton(c_bai, value="Xoá", scale=1)
                 gr.Examples([[x["tho"]] for x in VI_DU_CUOI], inputs=c_bai,
                             example_labels=[x["tieu_de"] for x in VI_DU_CUOI],
-                            label="Bài mẫu `val` — lỗi của BARTpho đã được xác nhận ở tuần 7")
+                            label="Bài mẫu từ `val` — hai bài BARTpho bịa chi tiết, một bài nó sạch")
             with gr.Column(scale=5):
                 c_cuoi = gr.HTML(_rong(
                     "<b>Hai bản tóm tắt sẽ hiện ở đây.</b><br>Dán một bài báo, hoặc chọn một bài "
