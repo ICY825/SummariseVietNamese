@@ -425,25 +425,6 @@ Tự kiểm tra sau mỗi lần sửa code (vài giây, không cần mạng):
   nếu `gr.themes.Base(font=[...])` nhận chuỗi thuần: bản 6 so sánh theme với các theme dựng
   sẵn khi khởi động. Phải bọc `gr.themes.Font("...")`. Và `css/head/theme/js` đã chuyển từ
   `Blocks(...)` sang `launch(...)` — để ở chỗ cũ vẫn chạy nhưng in cảnh báo.
-- **`chi_tiet_la` KHÔNG trung lập với cách tách từ.** Bản tóm tắt và bài gốc phải cùng một
-  dạng. Đối chiếu 200 cặp: chấm với bài gốc dạng thô thay vì tách từ làm lệch 4 cặp, cả 4
-  đều là *báo nhầm* ("10 h37", "1 6") vì hai bên cắt âm tiết khác nhau.
-- **`do_phu_chi_tiet` trả `None`** khi sapo không có chi tiết nào để đối chiếu. Không lọc
-  trước khi lấy trung bình thì cả cột thành `nan`. Và `co_chi_tiet_la` phải **nhân 100** mới
-  cùng thang với các bảng cũ — quên là hai bảng khác thang mà nhìn như giống nhau.
-- **`vnexpress.net` chặn bot thu thập cho AI** trong `robots.txt` (`Disallow: /` cho
-  ClaudeBot, anthropic-ai, GPTBot, CCBot), chỉ cho phép truy cập do người dùng chủ động;
-  `dantri.com.vn` cũng nêu tên claudebot. Tuổi Trẻ, Thanh Niên, VietnamNet thì `Allow: /`
-  cho mọi bot. Kiểm `robots.txt` **trước** khi chọn nguồn, không phải sau.
-- **RSS của mỗi báo đặt tên chuyên mục một kiểu.** Thanh Niên không có `kinh-doanh` hay
-  `phap-luat` (404) mà là `kinh-te` và `doi-song`. Lỗi này im lặng: nó chỉ làm hụt số bài.
-- **Vòng lặp lấy tin theo hạn mức của *nguồn* làm cả bộ ngữ liệu rơi vào một chuyên mục.**
-  Đợt đầu ra đủ 40 bài nhưng cả 40 đều là `thoi-su`. Phải đặt hạn mức cho **từng chuyên mục**.
-- **Trích nội dung báo: bốn lỗi không tự lộ.** Mốc cắt nằm *bên trong* thẻ mở (phải nhảy qua
-  dấu `>`); khối "tặng sao"/bình luận cuối bài của Tuổi Trẻ; thẻ bài liên quan nhúng **giữa**
-  thân bài (phải *gỡ khối*, cắt đuôi là mất nửa bài); thẻ bài liên quan lồng nhiều tầng `div`
-  (`type="RelatedOneNews"`) — regex `<div.*?</div>` cắt ở thẻ đóng đầu tiên và để lại rác.
-  **Luôn lưu HTML thô** để sửa bộ trích mà không phải tải lại từ máy chủ toà soạn.
 
 ## Mở phiên làm việc mới
 
